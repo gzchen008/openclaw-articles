@@ -228,6 +228,43 @@
             text-decoration: underline;
         }
         
+        .summary-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .summary-box h4 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .summary-box p {
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+        
+        .summary-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+        
+        .summary-box li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .summary-box li:last-child {
+            border-bottom: none;
+        }
+        
         @media (max-width: 600px) {
             .header h1 {
                 font-size: 1.5em;
@@ -270,6 +307,18 @@
                     <li><a href="#advanced">进阶技巧</a></li>
                     <li><a href="#faq">常见问题</a></li>
                 </ul>
+            </div>
+
+            <div class="summary-box">
+                <h4>🎯 一分钟读懂：多会话有什么用？</h4>
+                <p><strong>简单说：</strong>就像你有多个专业助手，每个人负责一件事，但它们共享同一个大脑。</p>
+                <ul>
+                    <li>📱 <strong>一个写公众号</strong> → 不会被你的闲聊打断思路</li>
+                    <li>💻 <strong>一个写代码</strong> → 专注技术，不受其他话题干扰</li>
+                    <li>📊 <strong>一个做报表</strong> → 长时间任务后台跑，不用等</li>
+                    <li>🧠 <strong>主脑统一管理</strong> → 所有助手共享记忆，互相配合</li>
+                </ul>
+                <p><strong>核心好处：</strong>任务互不干扰 + 并行执行 + 知识共享 = 效率翻倍</p>
             </div>
 
             <h2 id="intro">你有没有遇到过这种情况？</h2>
