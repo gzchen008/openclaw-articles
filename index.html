@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我雇了一个24小时在线的"私人女秘书"</title>
+    <title>OpenClaw 教程文章</title>
     <style>
         * {
             margin: 0;
@@ -12,741 +12,191 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            line-height: 1.8;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+            color: #fff;
         }
         
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
             text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
         .header h1 {
-            font-size: 28px;
-            margin-bottom: 15px;
-            line-height: 1.4;
+            font-size: 2.5em;
+            margin-bottom: 10px;
         }
         
-        .header .subtitle {
-            font-size: 16px;
+        .header p {
             opacity: 0.9;
-            margin-bottom: 20px;
+            font-size: 1.1em;
         }
         
-        .header .highlight {
-            background: rgba(255,255,255,0.2);
-            padding: 15px 25px;
-            border-radius: 10px;
-            display: inline-block;
-            font-weight: bold;
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
         }
         
-        .content {
-            padding: 40px;
-        }
-        
-        .section {
-            margin-bottom: 40px;
-        }
-        
-        .section-title {
-            font-size: 22px;
-            color: #667eea;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .section-title .emoji {
-            font-size: 28px;
-        }
-        
-        .pain-points {
-            background: #fff5f5;
-            border-left: 4px solid #fc8181;
-            padding: 20px;
-            border-radius: 0 10px 10px 0;
-            margin: 20px 0;
-        }
-        
-        .pain-points ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .pain-points li {
-            padding: 8px 0;
-            padding-left: 30px;
-            position: relative;
-        }
-        
-        .pain-points li::before {
-            content: "😫";
-            position: absolute;
-            left: 0;
-        }
-        
-        .timeline {
+        .article-list {
             display: grid;
             gap: 20px;
         }
         
-        .timeline-item {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        .article-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
             padding: 25px;
-            border-radius: 15px;
-            position: relative;
-            padding-left: 80px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
-        .timeline-item::before {
-            content: attr(data-time);
-            position: absolute;
-            left: 20px;
-            top: 25px;
-            background: #667eea;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
+        .article-card:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         
-        .timeline-item h4 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
-        
-        .timeline-item ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .timeline-item li {
-            padding: 5px 0;
-            padding-left: 25px;
-            position: relative;
-        }
-        
-        .timeline-item li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #48bb78;
-            font-weight: bold;
-        }
-        
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
-        }
-        
-        .comparison-table th {
-            background: #667eea;
-            color: white;
-            padding: 15px;
-            text-align: left;
-        }
-        
-        .comparison-table td {
-            padding: 15px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .comparison-table tr:nth-child(even) {
-            background: #f7fafc;
-        }
-        
-        .comparison-table tr:hover {
-            background: #edf2f7;
-        }
-        
-        .cost-highlight {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            color: white;
-            font-weight: bold;
-        }
-        
-        .scene-card {
-            background: #f7fafc;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            border: 2px solid #e2e8f0;
-        }
-        
-        .scene-card h4 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        
-        .chat-bubble {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        
-        .chat-bubble.me {
-            border-left: 4px solid #667eea;
-        }
-        
-        .chat-bubble.ai {
-            border-left: 4px solid #48bb78;
-            background: #f0fff4;
-        }
-        
-        .chat-bubble .label {
-            font-size: 12px;
-            color: #718096;
-            margin-bottom: 5px;
-        }
-        
-        .advantages {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-        
-        .advantage-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-        }
-        
-        .advantage-card .number {
-            font-size: 36px;
-            font-weight: bold;
+        .article-card h2 {
+            font-size: 1.3em;
             margin-bottom: 10px;
         }
         
-        .advantage-card .desc {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        .setup-steps {
-            counter-reset: step;
-            list-style: none;
-        }
-        
-        .setup-steps li {
-            padding: 20px 20px 20px 70px;
-            margin: 15px 0;
-            background: #f7fafc;
-            border-radius: 10px;
-            position: relative;
-        }
-        
-        .setup-steps li::before {
-            counter-increment: step;
-            content: counter(step);
-            position: absolute;
-            left: 20px;
-            top: 20px;
-            width: 35px;
-            height: 35px;
-            background: #667eea;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        
-        .code-block {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 10px;
-            overflow-x: auto;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 14px;
-            margin: 15px 0;
-        }
-        
-        .warning-box {
-            background: #fffaf0;
-            border: 2px solid #ed8936;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .warning-box h4 {
-            color: #c05621;
-            margin-bottom: 10px;
-        }
-        
-        .cta-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 40px 0;
-        }
-        
-        .cta-box h3 {
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-        
-        .cta-box .btn {
-            display: inline-block;
-            background: white;
-            color: #667eea;
-            padding: 15px 40px;
-            border-radius: 30px;
+        .article-card h2 a {
+            color: #fff;
             text-decoration: none;
-            font-weight: bold;
-            margin-top: 20px;
-            transition: transform 0.3s;
         }
         
-        .cta-box .btn:hover {
-            transform: scale(1.05);
+        .article-card h2 a:hover {
+            color: #a8edea;
+        }
+        
+        .article-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+        
+        .article-desc {
+            opacity: 0.85;
+            line-height: 1.6;
         }
         
         .tags {
-            text-align: center;
-            padding: 30px;
-            background: #f7fafc;
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         
-        .tags span {
-            display: inline-block;
-            background: #e2e8f0;
-            color: #4a5568;
-            padding: 5px 15px;
+        .tag {
+            background: rgba(102, 126, 234, 0.3);
+            padding: 4px 12px;
             border-radius: 20px;
-            margin: 5px;
-            font-size: 14px;
+            font-size: 0.8em;
         }
         
         .footer {
             text-align: center;
-            padding: 30px;
-            color: #718096;
-            font-size: 14px;
+            padding: 40px;
+            opacity: 0.6;
+            font-size: 0.9em;
         }
         
-        @media (max-width: 600px) {
-            .header {
-                padding: 30px 20px;
-            }
-            
-            .header h1 {
-                font-size: 22px;
-            }
-            
-            .content {
-                padding: 25px;
-            }
-            
-            .timeline-item {
-                padding-left: 20px;
-                padding-top: 70px;
-            }
-            
-            .timeline-item::before {
-                top: 20px;
-                left: 20px;
-            }
-            
-            .advantages {
-                grid-template-columns: 1fr;
-            }
+        .footer a {
+            color: #a8edea;
+        }
+        
+        .day-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <h1>🤖 OpenClaw 教程文章</h1>
+        <p>28 天玩转 AI 助手 · 从入门到精通</p>
+    </div>
+    
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>👩‍💼 我雇了一个24小时在线的"私人女秘书"</h1>
-            <div class="subtitle">月成本不到50块，处理日程、回邮件、整理资料、提醒会议</div>
-            <div class="highlight">不是真人请不起，而是 AI 更有性价比</div>
+        <div class="article-list">
+            
+            <div class="article-card">
+                <div class="article-meta">
+                    <span class="day-badge">Day 14</span>
+                    <span>📅 2026-02-14</span>
+                    <span>⭐⭐⭐ 进阶</span>
+                </div>
+                <h2><a href="articles/2026-02-14-一个主脑多个分身OpenClaw会话管理技巧.html">一个主脑，多个分身：OpenClaw 会话管理技巧</a></h2>
+                <p class="article-desc">用「主脑 + 分身」模式打造 AI 团队，让不同会话各司其职，协作完成复杂任务。</p>
+                <div class="tags">
+                    <span class="tag">会话管理</span>
+                    <span class="tag">子会话</span>
+                    <span class="tag">多任务</span>
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="article-meta">
+                    <span class="day-badge">Day 10</span>
+                    <span>📅 2026-02-10</span>
+                    <span>⭐⭐ 中级</span>
+                </div>
+                <h2><a href="articles/2026-02-10-openclaw-ai-secretary.html">OpenClaw AI 秘书</a></h2>
+                <p class="article-desc">让 AI 成为你 24 小时在线的私人秘书，自动处理日程、消息、提醒。</p>
+                <div class="tags">
+                    <span class="tag">自动化</span>
+                    <span class="tag">定时任务</span>
+                    <span class="tag">效率</span>
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="article-meta">
+                    <span class="day-badge">Day 6</span>
+                    <span>📅 2026-02-09</span>
+                    <span>⭐⭐ 中级</span>
+                </div>
+                <h2><a href="articles/2026-02-09-10-hidden-tips.html">10 个隐藏技巧</a></h2>
+                <p class="article-desc">解锁 OpenClaw 的高级功能，让你的 AI 助手更强大。</p>
+                <div class="tags">
+                    <span class="tag">技巧</span>
+                    <span class="tag">进阶</span>
+                    <span class="tag">效率</span>
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="article-meta">
+                    <span class="day-badge">Day 4</span>
+                    <span>📅 2026-02-04</span>
+                    <span>⭐⭐⭐ 进阶</span>
+                </div>
+                <h2><a href="articles/2026-02-04-AI选股系统完整教程.html">AI 选股系统完整教程</a></h2>
+                <p class="article-desc">用 OpenClaw 打造智能选股助手，数据分析 + AI 决策。</p>
+                <div class="tags">
+                    <span class="tag">金融</span>
+                    <span class="tag">数据分析</span>
+                    <span class="tag">实战</span>
+                </div>
+            </div>
+            
         </div>
-        
-        <!-- Content -->
-        <div class="content">
-            <!-- Pain Points -->
-            <div class="section">
-                <div class="section-title">
-                    <span class="emoji">😫</span>
-                    <span>打工人的日常崩溃</span>
-                </div>
-                <p>每天早上被10个闹钟叫醒，还是差点迟到。</p>
-                <p>到了公司发现：</p>
-                <div class="pain-points">
-                    <ul>
-                        <li>邮箱堆了50+未读</li>
-                        <li>今天有3个会，但忘了准备材料</li>
-                        <li>老板临时要的报告，昨晚才想起来</li>
-                        <li>忙到下午2点，还没点午饭</li>
-                    </ul>
-                </div>
-                <p><strong>不是我不努力，是事情真的太多了。</strong></p>
-                <p>上周我用 OpenClaw 搭建了一个"私人 AI 秘书"，现在她帮我处理80%的琐事。</p>
-            </div>
-            
-            <!-- What She Does -->
-            <div class="section">
-                <div class="section-title">
-                    <span class="emoji">🎯</span>
-                    <span>她每天帮我做什么？</span>
-                </div>
-                
-                <div class="timeline">
-                    <div class="timeline-item" data-time="8:00">
-                        <h4>早晨｜一天启动</h4>
-                        <ul>
-                            <li>筛选重要邮件，summarize 关键信息</li>
-                            <li>播报今日日程："上午10点项目评审，材料已准备好"</li>
-                            <li>查天气 + 提醒："今天有雨，记得带伞"</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="timeline-item" data-time="WORK">
-                        <h4>工作时间｜效率加持</h4>
-                        <ul>
-                            <li>会议记录：自动转录 + 提取待办事项</li>
-                            <li>数据整理：把杂乱的 Excel 变成清晰的图表</li>
-                            <li>资料搜索："帮我查一下竞品最近的价格策略"</li>
-                            <li>文案润色：把口语化的内容改成正式邮件</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="timeline-item" data-time="11:30">
-                        <h4>午休时间｜生活管家</h4>
-                        <ul>
-                            <li>11:30 提醒点餐："根据你的口味，推荐附近新开的拉面店"</li>
-                            <li>定时提醒喝水、休息眼睛</li>
-                            <li>整理行业资讯：午休时快速浏览</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="timeline-item" data-time="19:00">
-                        <h4>晚上｜收尾复盘</h4>
-                        <ul>
-                            <li>生成今日工作日报</li>
-                            <li>设置明天的重要提醒</li>
-                            <li>提醒运动："今天步数只有3000，去楼下走两圈？"</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Comparison -->
-            <div class="section">
-                <div class="section-title">
-                    <span class="emoji">📱</span>
-                    <span>市面主流 AI 助手对比</span>
-                </div>
-                
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>产品</th>
-                            <th>定位</th>
-                            <th>工作场景</th>
-                            <th>主要问题</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Replika</td>
-                            <td>情感陪伴型</td>
-                            <td>❌ 几乎没有</td>
-                            <td>太偏向"虚拟恋人"</td>
-                        </tr>
-                        <tr>
-                            <td>Character.AI</td>
-                            <td>角色扮演</td>
-                            <td>⚠️ 可创建秘书</td>
-                            <td>无记忆，重启失忆</td>
-                        </tr>
-                        <tr>
-                            <td>ChatGPT Plus</td>
-                            <td>通用 AI 助手</td>
-                            <td>✅ 可处理文档</td>
-                            <td>无定时任务，$20/月</td>
-                        </tr>
-                        <tr>
-                            <td>钉钉/飞书</td>
-                            <td>企业办公</td>
-                            <td>✅ 集成办公套件</td>
-                            <td>功能固定，无法自定义</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Advantages -->
-            <div class="section">
-                <div class="section-title">
-                    <span class="emoji">💡</span>
-                    <span>为什么用 OpenClaw 自建？</span>
-                </div>
-                
-                <p style="text-align: center; margin-bottom: 30px; font-size: 18px;">
-                    <strong>她不只是执行命令，而是真的在"服务"你</strong>
-                </p>
-                
-                <div class="advantages">
-                    <div class="advantage-card">
-                        <div class="number">💼</div>
-                        <div class="desc">完全自定义工作流<br>在 SOUL.md 定义她的工作风格</div>
-                    </div>
-                    <div class="advantage-card">
-                        <div class="number">🔌</div>
-                        <div class="desc">接入你的工作流<br>邮箱/日历/微信/工具</div>
-                    </div>
-                    <div class="advantage-card">
-                        <div class="number">🧠</div>
-                        <div class="desc">永久记忆<br>记住你的一切习惯和偏好</div>
-                    </div>
-                    <div class="advantage-card">
-                        <div class="number">🔒</div>
-                        <div class="desc">数据安全<br>所有数据存在本地</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Cost Comparison -->
-            <div class="section">
-                <div class="section-title">
-                    <span class="emoji">💰</span>
-                    <span>成本对比</span>
-                </div>
-                
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>方案</th>
-                            <th>月成本</th>
-                            <th>能力</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>真人助理</td>
-                            <td>¥8000-15000</td>
-                            <td>全能，但会离职、请假</td>
-                        </tr>
-                        <tr>
-                            <td>ChatGPT Plus</td>
-                            <td>$20 (~¥140)</td>
-                            <td>通用对话，无定时任务</td>
-                        </tr>
-                        <tr>
-                            <td>钉钉专业版</td>
-                            <td>¥980/人</td>
-                            <td>企业功能，无个人助理</td>
-                        </tr>
-                        <tr class="cost-highlight">
-                            <td>OpenClaw 自建</td>
-                            <td>&lt;¥50</td>
-                            <td>完全自定义，24小时在线</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- How to Setup -->
-            <div class="section">
-                <div class="section-title">
-                    <span class="emoji">🚀</span>
-                    <span>怎么搭建？（15分钟搞定）</span>
-                </div>
-                
-                <ol class="setup-steps">
-                    <li>
-                        <strong>安装 OpenClaw</strong>
-                        <div class="code-block">npm install -g openclaw</div>
-                    </li>
-                    <li>
-                        <strong>设定"她"的人设（重点！）</strong>
-                        <p>创建 SOUL.md 文件，定义工作职责、工作风格、个人习惯</p>
-                    </li>
-                    <li>
-                        <strong>配置定时任务</strong>
-                        <div class="code-block">openclaw cron add --name "morning-briefing" \
-  --schedule "0 8 * * *" \
-  --agent-task "检查今天的日历和邮件，生成晨间简报"</div>
-                    </li>
-                    <li>
-                        <strong>启动服务</strong>
-                        <div class="code-block">openclaw gateway start</div>
-                    </li>
-                </ol>
-            </div>
-            
-            <!-- Scenes -->
-            <div class="section">
-                <div class="section-title">
-                    <span class="emoji">🎭</span>
-                    <span>实际工作场景演示</span>
-                </div>
-                
-                <div class="scene-card">
-                    <h4>场景1：会议管理</h4>
-                    <div class="chat-bubble me">
-                        <div class="label">你</div>
-                        明天上午10点有个项目评审会
-                    </div>
-                    <div class="chat-bubble ai">
-                        <div class="label">Alice</div>
-                        ✅ 已添加到日历：明天（周四）10:00 项目评审会<br><br>
-                        📋 需要我准备什么材料吗？<br>
-                        • 项目进度报告<br>
-                        • 风险清单<br>
-                        • 下一步计划<br><br>
-                        ⏰ 我会在明天 9:30 提醒你，并把这些材料找出来。
-                    </div>
-                </div>
-                
-                <div class="scene-card">
-                    <h4>场景2：邮件处理（主动服务）</h4>
-                    <div class="chat-bubble ai">
-                        <div class="label">Alice（主动发送）</div>
-                        📧 今日邮件摘要（5封重要）<br><br>
-                        🔴 紧急：客户A投诉系统延迟，需要立即回复<br>
-                        🟡 重要：老板询问Q3预算，明天中午前回复<br>
-                        🟢 普通：3封订阅邮件已自动归档<br><br>
-                        💡 建议：先处理客户投诉，我起草了回复模板，你看一下？
-                    </div>
-                </div>
-                
-                <div class="scene-card">
-                    <h4>场景3：资料搜索</h4>
-                    <div class="chat-bubble me">
-                        <div class="label">你</div>
-                        帮我查一下国内做RAG的创业公司，最近融资情况
-                    </div>
-                    <div class="chat-bubble ai">
-                        <div class="label">Alice（5分钟后）</div>
-                        🔍 RAG 创业公司融资情况（2024）<br><br>
-                        1. 智谱AI - B轮，数亿美元（红杉、高瓴）<br>
-                        2. MiniMax - C轮，超6亿美元（阿里、腾讯）<br>
-                        3. 百川智能 - A轮，3亿美元（阿里、腾讯、小米）<br><br>
-                        📄 详细报告已保存到 workspace/research/rag-startups.md
-                    </div>
-                </div>
-                
-                <div class="scene-card">
-                    <h4>场景4：周报生成</h4>
-                    <div class="chat-bubble ai">
-                        <div class="label">Alice（周五下午5点）</div>
-                        📊 本周工作报告（初稿）<br><br>
-                        <strong>完成事项：</strong><br>
-                        ✅ 完成产品PRD文档撰写<br>
-                        ✅ 参加3次客户会议，收集需求<br>
-                        ✅ 修复了登录模块的bug<br><br>
-                        <strong>进行中：</strong><br>
-                        ⏳ Q3预算审批（等老板签字）<br>
-                        ⏳ 技术架构评审（下周二）<br><br>
-                        📝 需要我调整什么吗？
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Warning -->
-            <div class="section">
-                <div class="section-title">
-                    <span class="emoji">⚠️</span>
-                    <span>但她的局限性</span>
-                </div>
-                
-                <div class="warning-box">
-                    <h4>Alice 做不到：</h4>
-                    <ul style="margin-left: 20px; line-height: 2;">
-                        <li>❌ 代替你开会（可以记录，但不能发言决策）</li>
-                        <li>❌ 处理需要线下操作的事（盖章、签字、送文件）</li>
-                        <li>❌ 理解复杂的公司政治（谁和谁不对付）</li>
-                        <li>❌ 建立真实的人际关系（她不会帮你拉资源）</li>
-                    </ul>
-                </div>
-                
-                <p style="text-align: center; padding: 20px; background: #f0fff4; border-radius: 10px;">
-                    <strong>最佳用法：</strong>让她处理信息整理、提醒、文案等"体力活"，<br>
-                    把省下来的时间用来做决策、搞关系、深度思考。
-                </p>
-            </div>
-            
-            <!-- CTA -->
-            <div class="cta-box">
-                <h3>🎁 福利：配置模板分享</h3>
-                <p>我已经整理好了：</p>
-                <p>✅ OpenClaw 一键安装脚本<br>
-                ✅ 3套助理人设模板（严谨型/亲和型/高效型）<br>
-                ✅ 常用定时任务配置<br>
-                ✅ 邮件处理工作流</p>
-                <a href="#" class="btn">点赞 + 评论"想要"，我私发给你</a>
-            </div>
-            
-            <!-- Interactive -->
-            <div class="section">
-                <div class="section-title">
-                    <span class="emoji">💬</span>
-                    <span>互动时间</span>
-                </div>
-                
-                <p><strong>你觉得 AI 助理能替代真人助理吗？</strong></p>
-                <ul style="margin: 15px 0; line-height: 2;">
-                    <li>A. 能，便宜又高效，还要什么自行车</li>
-                    <li>B. 不能，人情世故 AI 学不会</li>
-                    <li>C. 组合使用，AI 处理琐事，真人处理关系</li>
-                </ul>
-                
-                <p style="margin-top: 20px;"><strong>你现在最想让她帮你做什么？</strong></p>
-            </div>
-        </div>
-        
-        <!-- Tags -->
-        <div class="tags">
-            <span>#OpenClaw</span>
-            <span>#AI助理</span>
-            <span>#效率工具</span>
-            <span>#打工人</span>
-            <span>#私人秘书</span>
-            <span>#自动化</span>
-            <span>#ChatGPT</span>
-            <span>#职场效率</span>
-            <span>#时间管理</span>
-        </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            本文由 OpenClaw AI 助手协助整理
-        </div>
+    </div>
+    
+    <div class="footer">
+        <p>📝 由 <a href="https://openclaw.ai">OpenClaw</a> AI 助手协助创作</p>
+        <p style="margin-top: 10px;">
+            <a href="https://github.com/gzchen008/openclaw-articles">📦 GitHub 仓库</a>
+        </p>
     </div>
 </body>
 </html>
