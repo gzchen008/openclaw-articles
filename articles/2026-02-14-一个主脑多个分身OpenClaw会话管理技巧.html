@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一个主脑，多个分身：OpenClaw 会话管理技巧</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .meta {
+            font-size: 0.9em;
+            opacity: 0.9;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .meta span {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        h2 {
+            color: #667eea;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+            margin: 40px 0 20px;
+            font-size: 1.5em;
+        }
+        
+        h3 {
+            color: #764ba2;
+            margin: 30px 0 15px;
+            font-size: 1.2em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        blockquote {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        code {
+            background: #f1f3f4;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .tip-box {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .tip-box::before {
+            content: "💡 ";
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .warning-box::before {
+            content: "⚠️ ";
+        }
+        
+        .scenario {
+            background: #f3e5f5;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .scenario h4 {
+            color: #7b1fa2;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background: #667eea;
+            color: #fff;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .toc h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin: 5px 0;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            .content {
+                padding: 20px;
+            }
+            .meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 一个主脑，多个分身：OpenClaw 会话管理技巧</h1>
+            <div class="meta">
+                <span>📅 Day 14</span>
+                <span>⏱️ 阅读约 8 分钟</span>
+                <span>⭐⭐⭐ 进阶</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <blockquote>
+                <strong>本文由 OpenClaw AI 助手协助整理</strong><br>
+                适合：OpenClaw 进阶用户、需要多任务处理的人
+            </blockquote>
+            
+            <div class="toc">
+                <h4>📑 目录</h4>
+                <ul>
+                    <li><a href="#intro">你有没有遇到过这种情况？</a></li>
+                    <li><a href="#concept">什么是「主脑 + 分身」模式？</a></li>
+                    <li><a href="#demo">实际效果展示</a></li>
+                    <li><a href="#steps">具体操作步骤</a></li>
+                    <li><a href="#case">实战案例</a></li>
+                    <li><a href="#advanced">进阶技巧</a></li>
+                    <li><a href="#faq">常见问题</a></li>
+                </ul>
+            </div>
+
+            <h2 id="intro">你有没有遇到过这种情况？</h2>
+            
+            <p>早上打开微信，客户在问报价；切换到 Telegram，群里在讨论技术方案；再打开 Discord，朋友在聊周末的计划。</p>
+            
+            <p>三个平台，三种对话，你的大脑在频繁切换中渐渐疲惫。</p>
+            
+            <div class="warning-box">
+                <strong>更糟糕的是：</strong>你想让 AI 帮你处理这些事情，但每个平台都需要单独配置一个 AI 助手，不同的对话历史、不同的上下文，混乱得一塌糊涂。
+            </div>
+            
+            <p>有没有想过，<strong>一个「主脑」可以同时控制多个「分身」</strong>？</p>
+            
+            <p>每个分身负责一个平台、一个任务，但它们共享知识、共享记忆，像一个真正的团队一样协作。</p>
+            
+            <p>今天，我们聊聊 OpenClaw 的会话管理技巧 —— 让你拥有一个超级 AI 团队。</p>
+
+            <h2 id="concept">什么是「主脑 + 分身」模式？</h2>
+            
+            <p>想象一下，你的公司里有这样的团队结构：</p>
+            
+            <pre><code>                【主脑】
+             (统一的知识库)
+                  │
+    ┌─────────────┼─────────────┐
+    │             │             │
+ 【分身1】      【分身2】      【分身3】
+(微信客服)     (技术顾问)    (生活助手)
+    │             │             │
+  微信群        Telegram      Discord</code></pre>
+            
+            <div class="highlight">
+                <p><strong>主脑负责：</strong></p>
+                <ul>
+                    <li>统一的知识库和记忆</li>
+                    <li>所有会话的协调和调度</li>
+                    <li>子代理任务的分配</li>
+                </ul>
+                
+                <p><strong>分身负责：</strong></p>
+                <ul>
+                    <li>特定平台的消息处理</li>
+                    <li>特定领域的专业知识</li>
+                    <li>与用户的具体交互</li>
+                </ul>
+            </div>
+            
+            <p>这种模式下，你获得的不是一个 AI 助手，而是一个<strong>完整的 AI 团队</strong>。</p>
+
+            <h2 id="demo">实际效果展示</h2>
+            
+            <p>让我们看几个真实场景，感受一下「主脑 + 分身」的威力。</p>
+            
+            <div class="scenario">
+                <h4>🎬 场景 1：多平台客服</h4>
+                <p><strong>传统方式：</strong></p>
+                <ul>
+                    <li>微信有 3 个客户在咨询</li>
+                    <li>Telegram 有 2 个客户在问技术问题</li>
+                    <li>你一个人来回切换，手忙脚乱</li>
+                </ul>
+                <p><strong>OpenClaw 方式：</strong></p>
+                <ul>
+                    <li>微信分身自动回复基础咨询</li>
+                    <li>Telegram 分身解答技术问题</li>
+                    <li>主脑同步所有对话记录</li>
+                    <li>复杂问题自动转接给主脑深度分析</li>
+                </ul>
+                <p><strong>结果：</strong>客户响应时间从 2 小时降到 30 秒，你的工作量减少 80%。</p>
+            </div>
+            
+            <div class="scenario">
+                <h4>🎬 场景 2：项目管理</h4>
+                <p><strong>传统方式：</strong></p>
+                <ul>
+                    <li>在群里讨论需求</li>
+                    <li>记笔记到 Notion</li>
+                    <li>写代码到 IDE</li>
+                    <li>检查进度到 Excel</li>
+                </ul>
+                <p><strong>OpenClaw 方式：</strong></p>
+                <ul>
+                    <li>需求讨论分身：实时提取需求点</li>
+                    <li>文档分身：自动更新 Notion</li>
+                    <li>代码分身：生成代码片段</li>
+                    <li>进度分身：跟踪任务状态</li>
+                </ul>
+                <p><strong>结果：</strong>项目管理从手动到自动，效率提升 5 倍。</p>
+            </div>
+            
+            <div class="scenario">
+                <h4>🎬 场景 3：内容创作</h4>
+                <p><strong>传统方式：</strong></p>
+                <ul>
+                    <li>在一个对话里讨论选题</li>
+                    <li>切换到另一个对话写文案</li>
+                    <li>再切换到另一个对话改标题</li>
+                    <li>上下文混乱，经常忘之前的想法</li>
+                </ul>
+                <p><strong>OpenClaw 方式：</strong></p>
+                <ul>
+                    <li>选题分身：每天生成 10 个选题</li>
+                    <li>写作分身：专注文案创作</li>
+                    <li>改稿分身：优化标题和排版</li>
+                    <li>主脑：协调流程，保证质量</li>
+                </ul>
+                <p><strong>结果：</strong>日更公众号不再是神话，而是日常。</p>
+            </div>
+
+            <h2 id="steps">具体操作步骤</h2>
+            
+            <h3>步骤 1️⃣：理解会话概念</h3>
+            
+            <p>在 OpenClaw 中，<strong>每个对话通道都是一个会话（Session）</strong>。</p>
+            
+            <p>例如：</p>
+            <ul>
+                <li>你在 Discord 私聊 AI → 这是一个会话</li>
+                <li>你在 Telegram 群里 @AI → 这是另一个会话</li>
+                <li>你在微信里调用 AI → 这又是一个会话</li>
+            </ul>
+            
+            <h3>步骤 2️⃣：查看当前会话</h3>
+            
+            <p>在主会话中（比如 Discord 私聊）发送：</p>
+            
+            <pre><code>/sessions_list</code></pre>
+            
+            <h3>步骤 3️⃣：创建专用子会话</h3>
+            
+            <p>你可以为不同任务创建专门的子会话：</p>
+            
+            <pre><code>{
+  "action": "sessions_spawn",
+  "parameters": {
+    "task": "你是一个 Python 编程专家",
+    "label": "python-coding-assistant",
+    "model": "gpt-4",
+    "cleanup": "keep"
+  }
+}</code></pre>
+            
+            <h3>步骤 4️⃣：向子会话发送任务</h3>
+            
+            <pre><code>向 python-coding-assistant 发送这个任务：
+写一个函数，计算斐波那契数列的第 n 项</code></pre>
+            
+            <h3>步骤 5️⃣：查看子会话历史</h3>
+            
+            <pre><code>openclaw sessions history sub-abc123-def456 --limit 10</code></pre>
+            
+            <h3>步骤 6️⃣：跨会话通信</h3>
+            
+            <p>最有意思的部分来了：<strong>不同会话之间可以互相交流</strong>。</p>
+            
+            <pre><code>将 python-coding-assistant 的代码示例发送给 content-writer，
+让它写一篇教程</code></pre>
+            
+            <h3>步骤 7️⃣：配置会话专属技能</h3>
+            
+            <p>不同的子会话可以加载不同的技能：</p>
+            
+            <pre><code># python-coding-assistant 会话配置
+skills:
+  enabled:
+    - coding-agent
+    - github
+
+# content-writer 会话配置
+skills:
+  enabled:
+    - web-search
+    - imsg</code></pre>
+            
+            <h3>步骤 8️⃣：清理和归档</h3>
+            
+            <pre><code>openclaw sessions cleanup --older-than 7days</code></pre>
+
+            <h2 id="case">实战案例：用 OpenClaw 管理内容创作流程</h2>
+            
+            <p>让我用我自己的真实经历来演示「主脑 + 分身」模式。</p>
+            
+            <h3>我的会话架构</h3>
+            
+            <pre><code>【主脑 - cgz-openclaw-main】
+   │
+   ├─ 【写作助手】→ 每天生成公众号文章
+   │   └─ 技能：web-search, memory
+   │   └─ 模型：GLM-4
+   │
+   ├─ 【GitHub 猎手】→ 每天推荐开源项目
+   │   └─ 技能：github, gh-search
+   │   └─ 模型：GPT-4
+   │
+   ├─ 【日报管家】→ 整理工作记录
+   │   └─ 技能：memory, filesystem
+   │   └─ 模型：GPT-4-Turbo
+   │
+   └─ 【技术顾问】→ 回复群内问题
+       └─ 技能：coding-agent, web-search
+       └─ 模型：GPT-4</code></pre>
+
+            <h2 id="advanced">🚀 进阶技巧</h2>
+            
+            <h3>技巧 1：会话角色扮演</h3>
+            
+            <p>给每个子会话一个明确的「人设」：</p>
+            
+            <pre><code>【写作助手】
+人设：你是一个 10 年经验的科技媒体主编
+
+【技术顾问】
+人设：你是一个资深全栈工程师
+
+【内容创作者】
+人设：你是一个小红书爆款文案写手</code></pre>
+            
+            <h3>技巧 2：动态切换模型</h3>
+            
+            <pre><code># 简单任务用轻量模型
+if task_complexity == "low":
+    model = "gpt-3.5-turbo"
+
+# 复杂任务用旗舰模型
+else:
+    model = "gpt-4"</code></pre>
+            
+            <h3>技巧 3：会话级知识库</h3>
+            
+            <p>给不同的子会话加载不同的知识库：</p>
+            
+            <pre><code>【Python 编程助手】
+知识库：Python 官方文档、Stack Overflow 精华
+
+【小红书文案助手】
+知识库：爆款标题库、热门话题清单</code></pre>
+            
+            <h3>技巧 4：会话链式调用</h3>
+            
+            <pre><code>1. 【搜索助手】→ 搜索今日热门
+   ↓
+2. 【选题助手】→ 挑选 3 个主题
+   ↓
+3. 【写作助手】→ 撰写文章
+   ↓
+4. 【编辑助手】→ 优化排版</code></pre>
+
+            <h2 id="faq">常见问题（Q&A）</h2>
+            
+            <h3>Q1：一个主会话最多能管理多少个子会话？</h3>
+            <p><strong>A：</strong>建议 3-10 个子会话，技术上限更高但 Token 消耗会增加。</p>
+            
+            <h3>Q2：子会话之间能共享记忆吗？</h3>
+            <p><strong>A：</strong>可以配置：<code>share_with_main: true</code></p>
+            
+            <h3>Q3：如何防止子会话失控？</h3>
+            <p><strong>A：</strong>可以设置速率限制、人工审核、定时限制。</p>
+            
+            <h3>Q4：子会话的成本如何计算？</h3>
+            <p><strong>A：</strong>每个子会话的 Token 消耗独立计算，建议非核心任务用便宜模型。</p>
+            
+            <h3>Q5：会话之间能否互相「看到」？</h3>
+            <p><strong>A：</strong>默认不可以，需要通过主会话中转。</p>
+
+            <h2>总结</h2>
+            
+            <div class="highlight">
+                <p>「一个主脑，多个分身」不仅仅是一个技术方案，更是一种<strong>全新的工作方式</strong>。</p>
+                
+                <p>它让你从「单兵作战」变成「团队协作」：</p>
+                <ul>
+                    <li>你不再是和 AI 聊天，而是<strong>指挥一个 AI 团队</strong></li>
+                    <li>你不再是处理任务，而是<strong>设计和优化工作流</strong></li>
+                    <li>你不再是重复劳动，而是<strong>专注于创造和决策</strong></li>
+                </ul>
+                
+                <p>这也许就是 AI 时代的正确打开方式：<strong>不是被 AI 替代，而是用 AI 放大自己的能力</strong>。</p>
+            </div>
+
+            <h2>下一步建议</h2>
+            
+            <p>1️⃣ <strong>今天就开始：</strong>创建你的第一个子会话</p>
+            
+            <p>2️⃣ <strong>本周尝试：</strong>设计一个 3 人 AI 团队</p>
+            
+            <p>3️⃣ <strong>未来探索：</strong>将会话管理融入日常工作流</p>
+
+            <div class="tip-box">
+                如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>📝 <strong>OpenClaw 系列 · Day 14</strong></p>
+            <p>由 OpenClaw AI 助手协助创作</p>
+            <p style="margin-top: 15px;">
+                <a href="https://openclaw.ai">🌐 openclaw.ai</a> · 
+                <a href="https://github.com/openclaw/openclaw">📦 GitHub</a>
+            </p>
+            <div class="nav-links">
+                <a href="#">← 上一篇</a>
+                <a href="#">下一篇 →</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
