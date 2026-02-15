@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>让 AI 督促 AI 写代码：OpenClaw 控制 Claude Code 的 5 种方案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        article {
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        h1 {
+            font-size: 1.8em;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .meta {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #999;
+        }
+        
+        .meta span {
+            margin: 0 10px;
+        }
+        
+        h2 {
+            font-size: 1.4em;
+            color: #1a1a1a;
+            margin: 40px 0 20px;
+            padding-left: 12px;
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        h3 {
+            font-size: 1.2em;
+            color: #333;
+            margin: 30px 0 15px;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #ffeaa7 0%, #ffeaa7 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .emoji {
+            font-style: normal;
+        }
+        
+        .box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #4ecdc4;
+        }
+        
+        .box-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .warning {
+            border-left-color: #ff6b6b;
+            background: #fff5f5;
+        }
+        
+        .tip {
+            border-left-color: #51cf66;
+            background: #f4fff4;
+        }
+        
+        blockquote {
+            border-left: 4px solid #ddd;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #666;
+            font-style: italic;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .cta {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .cta h3 {
+            color: #fff;
+            margin: 0 0 10px;
+        }
+        
+        .cta p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 20px 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        
+        .toc h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .toc li {
+            padding: 5px 0;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            article {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            h2 {
+                font-size: 1.2em;
+            }
+            
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <article>
+            <header>
+                <h1>🤖 让 AI 督促 AI 写代码：OpenClaw 控制 Claude Code 的 5 种方案</h1>
+                <p class="subtitle">你说需求，AI 编排 AI 去实现。这才是真正的"躺平式编程"。</p>
+                <div class="meta">
+                    <span>📅 2026-02-15</span>
+                    <span>👤 小J</span>
+                    <span>⏱️ 阅读约 8 分钟</span>
+                </div>
+            </header>
+            
+            <nav class="toc">
+                <h4>📑 目录</h4>
+                <ul>
+                    <li><a href="#pain">痛点：一个人盯着 Claude Code 太累了</a></li>
+                    <li><a href="#compare">5 种控制方式对比</a></li>
+                    <li><a href="#cc-godmode">方案一：cc-godmode</a></li>
+                    <li><a href="#claude-team">方案二：claude-team</a></li>
+                    <li><a href="#codex-orchestration">方案三：codex-orchestration</a></li>
+                    <li><a href="#pitfalls">避坑指南</a></li>
+                    <li><a href="#conclusion">快速上手建议</a></li>
+                </ul>
+            </nav>
+
+            <section id="pain">
+                <h2><span class="emoji">😫</span> 痛点：一个人盯着 Claude Code 太累了</h2>
+                <p>如果你用过 Claude Code，一定遇到过这些情况：</p>
+                <ul>
+                    <li><strong>任务太复杂</strong>，一个 Agent 撑不住，需要多角色协作</li>
+                    <li><strong>想并行开发</strong>，但 Claude Code 只能串行干活</li>
+                    <li><strong>需要监督</strong>，但盯着屏幕看它写代码太累</li>
+                    <li><strong>质量把控</strong>，改完一堆文件，不知道有没有问题</li>
+                </ul>
+                <p>有没有办法让 <strong>OpenClaw 去编排和监督 Claude Code</strong>？</p>
+                <p>答案是：<span class="highlight">有！而且有 5 种方案。</span></p>
+            </section>
+
+            <section id="compare">
+                <h2><span class="emoji">🎯</span> 5 种控制方式对比</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>方案</th>
+                            <th>核心能力</th>
+                            <th>适合场景</th>
+                            <th>复杂度</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>cc-godmode</strong></td>
+                            <td>8 Agent 编排 + 双质量门</td>
+                            <td>严格质量控制</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>claude-team</strong></td>
+                            <td>iTerm2 多窗口 + git worktree</td>
+                            <td>可视化并行开发</td>
+                            <td>⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>codex-orchestration</strong></td>
+                            <td>PTY 后台 + 6 种编排模式</td>
+                            <td>轻量灵活</td>
+                            <td>⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>openclaw-claude-code-skill</strong></td>
+                            <td>MCP 协议 + 多模型代理</td>
+                            <td>深度集成</td>
+                            <td>⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>coding-agent</strong></td>
+                            <td>PTY 后台统一接口</td>
+                            <td>快速启动</td>
+                            <td>⭐</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>下面详细介绍最实用的 3 种。</p>
+            </section>
+
+            <section id="cc-godmode">
+                <h2><span class="emoji">🏆</span> 方案一：cc-godmode —— 最完善的监督体系</h2>
+                
+                <div class="box">
+                    <div class="box-title">✨ 核心亮点</div>
+                    <p><strong>8 个专业化 Agent，各司其职：</strong></p>
+                </div>
+                
+                <pre><code>@researcher  → 技术研究、文档查找
+@architect   → 架构设计、技术决策
+@api-guardian → API 变更影响分析（强制！）
+@builder     → 实现代码
+@validator   → 代码质量检查
+@tester      → UX 质量检查（E2E、性能、A11y）
+@scribe      → 文档更新
+@github-manager → Issue/PR 管理</code></pre>
+
+                <h3>🔄 工作流程</h3>
+                <pre><code>                    ┌──▶ @validator ──┐
+用户 ──▶ @researcher ──▶ @architect ──▶ @builder ──────────┼──▶ @scribe
+                    └──▶ @tester   ──┘
+                          (并行!)</code></pre>
+
+                <div class="box tip">
+                    <div class="box-title">💡 双质量门并行验证</div>
+                    <ul>
+                        <li><strong>@validator</strong>：TypeScript 编译 + 单元测试 + 安全检查</li>
+                        <li><strong>@tester</strong>：E2E 测试 + 截图 + 性能指标 + A11y</li>
+                    </ul>
+                    <p>两个 Agent <strong>同时跑</strong>，比串行快 40%！</p>
+                </div>
+
+                <h3>📦 安装</h3>
+                <pre><code>npx clawhub@latest install cc-godmode</code></pre>
+
+                <h3>🎮 使用示例</h3>
+                <pre><code>你：New Feature: 添加用户登录功能
+
+cc-godmode：
+→ Working on v1.2.0 - 添加用户登录功能
+→ @researcher: 研究最佳登录方案...
+→ @architect: 设计 JWT + Session 双模式...
+→ @builder: 实现登录 API + 前端组件...
+→ @validator + @tester: 并行验证...
+→ @scribe: 更新 CHANGELOG
+→ ✅ 完成！请 review 后 push</code></pre>
+            </section>
+
+            <section id="claude-team">
+                <h2><span class="emoji">👥</span> 方案二：claude-team —— 可视化并行开发</h2>
+                
+                <div class="box">
+                    <div class="box-title">✨ 核心亮点</div>
+                    <p><strong>在 iTerm2 里看着多个 Claude Code 同时干活！</strong></p>
+                </div>
+
+                <pre><code>┌─────────────────────────────────────────────────┐
+│  iTerm2 窗口                                     │
+│  ┌─────────┬─────────┬─────────┬─────────┐      │
+│  │ Groucho │ Harpo   │ Chico   │ Zeppo   │      │
+│  │ 登录模块 │ API路由 │ 单元测试 │ 文档    │      │
+│  └─────────┴─────────┴─────────┴─────────┘      │
+└─────────────────────────────────────────────────┘</code></pre>
+
+                <p>每个 worker：</p>
+                <ul>
+                    <li>独立的终端窗口，可随时介入</li>
+                    <li>独立的 git worktree（不冲突！）</li>
+                    <li>可关联 Issue（自动标记状态）</li>
+                </ul>
+
+                <h3>📦 安装</h3>
+                <pre><code>npx clawhub@latest install claude-team</code></pre>
+
+                <h3>🎮 使用示例</h3>
+                <pre><code># 启动 3 个 worker 并行处理
+mcporter call claude-team.spawn_workers \
+  workers='[
+    {"project_path": "auto", "bead": "issue-123", "annotation": "登录模块"},
+    {"project_path": "auto", "bead": "issue-124", "annotation": "API路由"},
+    {"project_path": "auto", "bead": "issue-125", "annotation": "单元测试"}
+  ]'
+
+# 等待全部完成
+mcporter call claude-team.wait_idle_workers \
+  session_ids='["Groucho","Harpo","Chico"]' \
+  mode="all"</code></pre>
+
+                <div class="box warning">
+                    <div class="box-title">⚠️ 注意</div>
+                    <ul>
+                        <li>只支持 <strong>macOS + iTerm2</strong></li>
+                        <li>需要启用 iTerm2 Python API（Preferences → General → Magic）</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="codex-orchestration">
+                <h2><span class="emoji">⚡</span> 方案三：codex-orchestration —— 轻量灵活编排</h2>
+                
+                <div class="box">
+                    <div class="box-title">✨ 核心亮点</div>
+                    <p><strong>6 种编排模式，按需选用：</strong></p>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>模式</th>
+                            <th>流程</th>
+                            <th>适合</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>三角评审</td>
+                            <td>多 reviewer → 合并</td>
+                            <td>多角度审视代码</td>
+                        </tr>
+                        <tr>
+                            <td>评审→修复</td>
+                            <td>reviewer → implementer → verifier</td>
+                            <td>清理漏斗</td>
+                        </tr>
+                        <tr>
+                            <td>侦察→行动→验证</td>
+                            <td>scout → orchestrator → implementer → verifier</td>
+                            <td>不熟悉的领域</td>
+                        </tr>
+                        <tr>
+                            <td>分片处理</td>
+                            <td>每个 worker 一块 → 合并</td>
+                            <td>可分割的任务</td>
+                        </tr>
+                        <tr>
+                            <td>研究→综合</td>
+                            <td>多 researcher → synthesizer</td>
+                            <td>技术调研</td>
+                        </tr>
+                        <tr>
+                            <td>选项冲刺</td>
+                            <td>多 worker 生成选项 → 选择</td>
+                            <td>方向决策</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>📦 安装</h3>
+                <pre><code>npx clawhub@latest install codex-orchestration</code></pre>
+
+                <h3>🎮 使用示例：三角评审</h3>
+                <pre><code># Worker 1：代码正确性审查
+codex exec --output-last-message /tmp/w1.txt "
+CONTEXT: WORKER
+TASK: Review auth.ts for correctness
+LENS: 正确性、完整性
+"
+
+# Worker 2：安全性审查
+codex exec --output-last-message /tmp/w2.txt "
+CONTEXT: WORKER
+TASK: Review auth.ts for security
+LENS: 安全漏洞、注入风险
+"
+
+# Orchestrator 合并三个视角的结果...</code></pre>
+            </section>
+
+            <section id="pitfalls">
+                <h2><span class="emoji">⚠️</span> 避坑指南</h2>
+                
+                <div class="box warning">
+                    <div class="box-title">1️⃣ cc-godmode 的坑</div>
+                    <ul>
+                        <li><strong>需要 MCP 服务器</strong>：playwright、github 等，配置稍复杂</li>
+                        <li><strong>流程较重</strong>：小任务用这个有点杀鸡用牛刀</li>
+                    </ul>
+                    <p><strong>解决</strong>：简单任务直接用 coding-agent</p>
+                </div>
+
+                <div class="box warning">
+                    <div class="box-title">2️⃣ claude-team 的坑</div>
+                    <ul>
+                        <li><strong>只支持 macOS</strong>：Linux 用户无缘</li>
+                        <li><strong>需要 iTerm2</strong>：其他终端不行</li>
+                    </ul>
+                    <p><strong>解决</strong>：Linux 用户用 codex-orchestration</p>
+                </div>
+
+                <div class="box warning">
+                    <div class="box-title">3️⃣ 并行开发的坑</div>
+                    <p><strong>多人改同一文件会冲突</strong></p>
+                    <p><strong>解决</strong>：用 git worktree 隔离，或遵循"多读者、单写者"原则</p>
+                </div>
+
+                <div class="box warning">
+                    <div class="box-title">4️⃣ 会话丢失的坑</div>
+                    <p><strong>后台任务可能被杀</strong></p>
+                    <p><strong>解决</strong>：用 tmux 或 nohup 保护</p>
+                </div>
+            </section>
+
+            <section id="conclusion">
+                <h2><span class="emoji">🚀</span> 快速上手建议</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>你的情况</th>
+                            <th>推荐方案</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>刚接触，想快速体验</td>
+                            <td><strong>coding-agent</strong>（内置，零配置）</td>
+                        </tr>
+                        <tr>
+                            <td>macOS 用户，想可视化监督</td>
+                            <td><strong>claude-team</strong></td>
+                        </tr>
+                        <tr>
+                            <td>需要严格质量控制</td>
+                            <td><strong>cc-godmode</strong></td>
+                        </tr>
+                        <tr>
+                            <td>想灵活编排，不折腾</td>
+                            <td><strong>codex-orchestration</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <blockquote>
+                    <p><strong>如果你是个人开发者</strong>：<br>
+                    从 <strong>coding-agent</strong> 开始，需要并行时上 <strong>codex-orchestration</strong></p>
+                    
+                    <p><strong>如果你是团队</strong>：<br>
+                    强烈推荐 <strong>cc-godmode</strong>，8 Agent 编排 + 双质量门，出活稳</p>
+                </blockquote>
+            </section>
+
+            <div class="cta">
+                <h3>💬 你会选哪种方案？</h3>
+                <p>评论区告诉我你的使用场景！</p>
+            </div>
+
+            <section>
+                <h2><span class="emoji">🔗</span> 相关链接</h2>
+                <ul>
+                    <li>OpenClaw 官网：<a href="https://openclaw.ai" target="_blank">https://openclaw.ai</a></li>
+                    <li>ClawHub 技能市场：<a href="https://www.clawhub.ai" target="_blank">https://www.clawhub.ai</a></li>
+                    <li>claude-team GitHub：<a href="https://github.com/Martian-Engineering/claude-team" target="_blank">https://github.com/Martian-Engineering/claude-team</a></li>
+                </ul>
+            </section>
+
+            <footer>
+                <p>作者：小J | 发布日期：2026-02-15</p>
+                <p style="margin-top: 10px;">本文由 AI 辅助创作，内容经过人工审核</p>
+            </footer>
+        </article>
+    </div>
+</body>
+</html>
