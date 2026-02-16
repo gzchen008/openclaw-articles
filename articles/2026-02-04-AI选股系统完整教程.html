@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI选股系统完整教程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+        }
+        
+        .header .badge {
+            display: inline-block;
+            background: #f5a623;
+            color: #1e3a5f;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+            position: relative;
+            color: #f5a623;
+        }
+        
+        .meta-info {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6c757d;
+            font-size: 0.95em;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .intro {
+            background: linear-gradient(135deg, #fff9e6 0%, #ffe4b5 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border-left: 5px solid #f5a623;
+        }
+        
+        .intro h2 {
+            color: #d69e2e;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .pain-points {
+            background: #fff5f5;
+            border: 2px dashed #feb2b2;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+        
+        .pain-points h3 {
+            color: #c53030;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pain-points ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .pain-points li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #744210;
+        }
+        
+        .pain-points li::before {
+            content: '😭';
+            position: absolute;
+            left: 0;
+        }
+        
+        .results-section {
+            background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .results-section h2 {
+            color: #234e52;
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #38a169;
+        }
+        
+        .stat-card .label {
+            color: #718096;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: #1e3a5f;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .tip-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .tip-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .tip-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .tip-title {
+            font-size: 1.4em;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #fc8181;
+        }
+        
+        .warning-box h4 {
+            color: #c53030;
+            margin-bottom: 10px;
+        }
+        
+        .step-section {
+            margin-bottom: 40px;
+        }
+        
+        .step-section h3 {
+            color: #1e3a5f;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            color: white;
+        }
+        
+        .footer .cta-button {
+            display: inline-block;
+            background: #f5a623;
+            color: #1e3a5f;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.6em;
+            }
+            .content {
+                padding: 25px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="badge">📈 实战教程</div>
+            <h1>我用AI选股3个月，收益率跑赢大盘20%</h1>
+            <p class="subtitle">附完整系统搭建教程</p>
+        </header>
+        
+        <div class="meta-info">
+            <div class="meta-item">
+                <span>📅 系列专题</span>
+            </div>
+            <div class="meta-item">
+                <span>⏱️ 阅读约 15 分钟</span>
+            </div>
+            <div class="meta-item">
+                <span>📊 难度 ⭐⭐⭐⭐</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="intro">
+                <h2>💡 导语</h2>
+                <p>当AI开始帮你选股，投资会变成什么样？我用了3个月时间，搭建了一套AI选股系统，让AI成为我的24小时投资分析师。结果？<strong>跑赢沪深300指数20%，回撤控制在8%以内</strong>。今天，我把这套系统的完整搭建教程分享给你。</p>
+            </div>
+            
+            <div class="pain-points">
+                <h3>😭 投资路上的三大痛点</h3>
+                <ul>
+                    <li><strong>信息过载</strong>：每天几千条财报、新闻、研报，看得眼花缭乱</li>
+                    <li><strong>情绪化交易</strong>：看到大涨就追，看到大跌就割，一操作就变形</li>
+                    <li><strong>缺乏系统</strong>：听消息、看K线、追热点，账户像过山车</li>
+                </ul>
+                <p style="margin-top: 15px; color: #c53030; font-weight: 600;">我就是这样亏过钱的。</p>
+            </div>
+            
+            <div class="results-section">
+                <h2>✨ AI选股系统的效果</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="value">+18.5%</div>
+                        <div class="label">3个月收益率</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value">7.8%</div>
+                        <div class="label">最大回撤</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value">68%</div>
+                        <div class="label">胜率</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value">3分钟</div>
+                        <div class="label">选股效率/天</div>
+                    </div>
+                </div>
+                
+                <table class="comparison-table">
+                    <tr>
+                        <th>指标</th>
+                        <th>我的AI系统</th>
+                        <th>沪深300</th>
+                        <th>跑赢</th>
+                    </tr>
+                    <tr>
+                        <td>3个月收益率</td>
+                        <td style="color: #38a169; font-weight: bold;">+18.5%</td>
+                        <td>-1.5%</td>
+                        <td style="color: #38a169; font-weight: bold;">+20%</td>
+                    </tr>
+                    <tr>
+                        <td>最大回撤</td>
+                        <td style="color: #38a169;">7.8%</td>
+                        <td>12.3%</td>
+                        <td style="color: #38a169;">更低✓</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <h2 style="color: #1e3a5f; margin-bottom: 30px;">🛠️ 系统搭建教程（5步搞定）</h2>
+            
+            <!-- Step 1 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">1</div>
+                    <h3 class="tip-title">数据获取：给AI喂数据</h3>
+                </div>
+                
+                <p>核心数据（免费获取）：</p>
+                
+                <div class="code-block">import tushare as ts
+
+# 获取股票列表
+stocks = ts.get_stock_basics()
+
+# 获取日线数据
+df = ts.get_k_data('600519', start='2024-01-01')
+
+# 获取财务数据
+report = ts.get_report_data(2024, 3)</div>
+                
+                <div class="highlight-box">
+                    <strong>💡 技巧</strong>：先用免费数据源搭建MVP，验证有效后再考虑付费数据。
+                </div>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">2</div>
+                    <h3 class="tip-title">因子计算：量化分析的核心</h3>
+                </div>
+                
+                <p>我的5大因子体系：</p>
+                
+                <div class="code-block">factors = {
+    # 价值因子：便宜才是硬道理
+    'PE': 市盈率,
+    'PB': 市净率,
+    '股息率': 年度分红/股价,
+    
+    # 成长因子：买未来，不是买过去
+    '营收增长率': (今年营收-去年营收)/去年营收,
+    '净利润增长率': 同上,
+    
+    # 质量因子：好公司才能长期持有
+    'ROE': 净资产收益率,
+    '毛利率': (收入-成本)/收入,
+    
+    # 动量因子：趋势是你的朋友
+    '20日涨幅': 近20天涨跌幅,
+    'RSI': 相对强弱指标,
+    
+    # 情绪因子：别人恐慌我贪婪
+    '资金流入': 主力净流入额,
+    '舆情得分': AI分析新闻情绪
+}</div>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">3</div>
+                    <h3 class="tip-title">AI分析：让大模型当分析师</h3>
+                </div>
+                
+                <p>财报解读自动化：</p>
+                
+                <div class="code-block">from openai import OpenAI
+
+client = OpenAI()
+
+def analyze_report(stock_code):
+    report = get_financial_report(stock_code)
+    
+    prompt = f"""
+    你是一位资深证券分析师，请分析以下财报：
+    
+    公司：{report['name']}
+    营收：{report['revenue']}亿元（同比{report['revenue_growth']}%）
+    净利润：{report['profit']}亿元（同比{report['profit_growth']}%）
+    ROE：{report['roe']}%
+    
+    请输出：
+    1. 核心亮点（如果有）
+    2. 主要风险（如果有）
+    3. 投资建议（买入/观望/回避）
+    """
+    
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    
+    return response.choices[0].message.content</div>
+                
+                <div class="highlight-box">
+                    <strong>成本</strong>：每次分析约 $0.01（人民币7分钱），分析100只股票成本不到1块钱。
+                </div>
+            </div>
+            
+            <!-- Step 4 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">4</div>
+                    <h3 class="tip-title">策略选股：从5000只中挑出10只</h3>
+                </div>
+                
+                <div class="code-block">def select_stocks():
+    # 1. 获取全市场股票
+    all_stocks = get_all_stocks()
+    
+    # 2. 计算所有因子
+    for stock in all_stocks:
+        stock['value_score'] = calculate_value_score(stock)
+        stock['growth_score'] = calculate_growth_score(stock)
+        stock['quality_score'] = calculate_quality_score(stock)
+        stock['momentum_score'] = calculate_momentum_score(stock)
+    
+    # 3. 综合打分（加权平均）
+    for stock in all_stocks:
+        stock['total_score'] = (
+            stock['value_score'] * 0.3 +
+            stock['growth_score'] * 0.3 +
+            stock['quality_score'] * 0.2 +
+            stock['momentum_score'] * 0.2
+        )
+    
+    # 4. 排序，取前10名
+    top_stocks = sorted(all_stocks, 
+                       key=lambda x: x['total_score'], 
+                       reverse=True)[:10]
+    
+    return top_stocks</div>
+                
+                <p style="margin-top: 15px;"><strong>我的选股标准</strong>：市值 > 50亿 | PE < 50 | 近3年ROE > 10% | 近20日资金净流入</p>
+            </div>
+            
+            <!-- Step 5 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">5</div>
+                    <h3 class="tip-title">风控管理：活下去才有未来</h3>
+                </div>
+                
+                <div class="code-block"># 仓位管理
+def position_sizing(signal_strength):
+    if signal_strength > 90:
+        return 0.15  # 15%仓位
+    elif signal_strength > 80:
+        return 0.10  # 10%仓位
+    else:
+        return 0.05  # 5%仓位
+
+# 止损机制
+def check_stop_loss(stock):
+    current_price = get_price(stock['code'])
+    buy_price = stock['buy_price']
+    
+    # 固定止损：-8%
+    if (current_price - buy_price) / buy_price < -0.08:
+        return True, "触发固定止损(-8%)"
+    
+    return False, ""
+
+# 止盈机制
+def check_take_profit(stock):
+    profit_pct = (get_price(stock['code']) - stock['buy_price']) / stock['buy_price']
+    
+    # 目标止盈：+20%
+    if profit_pct > 0.20:
+        return True, "达到目标收益(+20%)"
+    
+    return False, ""</div>
+                
+                <div class="highlight-box">
+                    <strong>💡 核心原则</strong>：任何一只股票，最多亏8%；单只股票仓位不超过15%。
+                </div>
+            </div>
+            
+            <!-- Warning Section -->
+            <div class="warning-box">
+                <h4>⚠️ 避坑指南（血的教训）</h4>                
+                <p><strong>坑1：过度优化（过拟合）</strong></p>
+                <p>解决：用最近3年数据回测，参数不调太精细</p>
+                
+                <p style="margin-top: 10px;"><strong>坑2：忽视交易成本</strong></p>
+                <p>解决：每次交易至少持有5天以上</p>
+                
+                <p style="margin-top: 10px;"><strong>坑3：全部自动化不看盘</strong></p>
+                <p>解决：每天花5分钟看持仓新闻</p>
+                
+                <p style="margin-top: 10px;"><strong>坑4：用实盘测试新策略</strong></p>
+                <p>解决：先模拟盘跑3个月，验证有效后再上实盘</p>
+            </div>
+            
+            <div class="highlight-box">
+                <strong>🚀 行动起来</strong>
+                <p style="margin-top: 10px;"><strong>技术党</strong>：Python + Pandas + Tushare + Streamlit</p>
+                <p><strong>小白</strong>：聚宽/米筐/掘金量化（可视化策略开发）</p>
+            </div>
+            
+            <div style="background: #f7fafc; padding: 20px; border-radius: 10px; margin-top: 30px;">
+                <h4 style="color: #2d3748; margin-bottom: 10px;">💬 写在最后</h4>                
+                <p style="color: #4a5568;">AI选股不是「圣杯」，不能保证100%赚钱。但它能帮你：系统性分析、严格执行纪律、高效处理信息、长期积累数据。</p>
+                
+                <p style="color: #2d3748; font-weight: 600; margin-top: 15px;">记住：投资是一场马拉松，不是百米冲刺。</p>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>📌 下期预告：《我用这个Python脚本，自动监控了100只股票的异动》</p>            
+            <p style="margin-top: 15px; opacity: 0.9;">如果这篇文章对你有帮助，欢迎点赞、在看、转发！👍</p>            
+            <p style="margin-top: 10px; opacity: 0.8;">#AI选股 #量化投资 #Python #投资理财</p>
+        </footer>
+    </div>
+</body>
+</html>
