@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>我把公众号发文自动化了！每天9点自动推文</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.8;
+      color: #333;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #000;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 25px 0 15px;
+      color: #000;
+    }
+    h3 {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 20px 0 10px;
+    }
+    p { margin: 15px 0; }
+    blockquote {
+      border-left: 4px solid #1aad19;
+      padding: 10px 20px;
+      margin: 20px 0;
+      background-color: #f8f8f8;
+      color: #666;
+    }
+    ul, ol { padding-left: 30px; margin: 15px 0; }
+    li { margin: 8px 0; }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 14px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 15px 0;
+    }
+    pre code {
+      padding: 0;
+      background: none;
+    }
+    .tip {
+      background-color: #e6f7ff;
+      border-left: 4px solid #1890ff;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .warning {
+      background-color: #fff2e8;
+      border-left: 4px solid #fa8c16;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .success {
+      background-color: #f6ffed;
+      border-left: 4px solid #52c41a;
+      padding: 15px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+<p>每天写公众号文章，还要手动登录后台、上传图片、排版、发布……</p>
+
+<p>太累了！</p>
+
+<p>我把这套流程全部自动化了：<strong>每天早上9点，AI自动生成文章 → 自动上传封面 → 自动发布到公众号</strong>。</p>
+
+<p>今天就把这个方法分享给你～</p>
+
+<h2>一、效果展示</h2>
+
+<p>我搭建了一套自动化系统：</p>
+
+<ul>
+<li>🕐 <strong>每天 9:00</strong> - AI 自动生成当天文章</li>
+<li>📤 <strong>自动上传</strong> - 封面图、文章内容自动上传到微信服务器</li>
+<li>🚀 <strong>自动发布</strong> - 草稿创建后立即发布</li>
+<li>📱 <strong>Discord 通知</strong> - 发布成功后推送到我的手机</li>
+</ul>
+
+<p>我只需要早上看一眼手机，确认文章已发布就行。全程不需要打开电脑！</p>
+
+<h2>二、前置条件</h2>
+
+<p>要实现这个功能，你需要：</p>
+
+<ol>
+<li><strong>已认证的公众号</strong>（订阅号或服务号都可以）</li>
+<li>一台 <strong>24小时运行的电脑</strong>（我用的是 Mac mini）</li>
+<li><strong>OpenClaw</strong> - 一个 AI 助手框架（后面会介绍）</li>
+</ol>
+
+<div class="tip">
+💡 <strong>为什么需要已认证？</strong><br>
+微信的发布接口只对已认证账号开放。未认证的账号只能创建草稿，需要手动发布。
+</div>
+
+<h2>三、核心原理</h2>
+
+<p>整个流程分4步：</p>
+
+<pre><code>1. 获取 access_token（API 调用凭证）
+2. 上传封面图 → 获得 media_id
+3. 新建草稿（HTML 内容 + 封面 ID）
+4. 发布草稿
+</code></pre>
+
+<p>微信公众号提供了完整的 API 接口，我们只需要按顺序调用就行。</p>
+
+<h2>四、具体实现步骤</h2>
+
+<h3>步骤 1：获取公众号凭证</h3>
+
+<ol>
+<li>登录 <a href="https://mp.weixin.qq.com">微信公众平台</a></li>
+<li>进入「设置与开发」→「基本配置」</li>
+<li>复制 <strong>AppID</strong> 和 <strong>AppSecret</strong></li>
+<li>在同一页面配置 <strong>IP 白名单</strong>（添加你服务器的公网 IP）</li>
+</ol>
+
+<p>获取公网 IP 的方法：</p>
+
+<pre><code class="language-bash">curl ifconfig.me
+</code></pre>
+
+<h3>步骤 2：安装 OpenClaw</h3>
+
+<p>OpenClaw 是一个 AI 助手框架，可以理解为一个"可以调用各种工具的 ChatGPT"。</p>
+
+<pre><code class="language-bash">npm install -g openclaw
+openclaw configure
+</code></pre>
+
+<h3>步骤 3：配置公众号凭证</h3>
+
+<p>在 OpenClaw 配置文件中添加环境变量：</p>
+
+<pre><code class="language-json">{
+  "env": {
+    "WECHAT_APPID": "YOUR_APPID_HERE",
+    "WECHAT_SECRET": "YOUR_SECRET_HERE"
+  }
+}
+</code></pre>
+
+<div class="warning">
+⚠️ <strong>安全提醒</strong><br>
+AppID 和 Secret 是敏感信息，千万不要泄露！更不要写在公开的文章或代码里。
+</div>
+
+<h3>步骤 4：创建发布脚本</h3>
+
+<p>创建一个 Python 脚本来调用微信 API：</p>
+
+<pre><code class="language-python">import requests
+import os
+
+class WeChatPublisher:
+    def __init__(self):
+        self.appid = os.environ["WECHAT_APPID"]
+        self.secret = os.environ["WECHAT_SECRET"]
+        self.token = None
+    
+    def get_token(self):
+        url = f"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={self.appid}&secret={self.secret}"
+        self.token = requests.get(url).json()["access_token"]
+        return self.token
+    
+    def upload_thumb(self, image_path):
+        url = f"https://api.weixin.qq.com/cgi-bin/material/add_material?access_token={self.token}&type=thumb"
+        with open(image_path, "rb") as f:
+            return requests.post(url, files={"media": f}).json()["media_id"]
+    
+    def create_draft(self, title, content, thumb_id):
+        url = f"https://api.weixin.qq.com/cgi-bin/draft/add?access_token={self.token}"
+        data = {
+            "articles": [{
+                "title": title,
+                "content": content,
+                "thumb_media_id": thumb_id
+            }]
+        }
+        return requests.post(url, json=data).json()["media_id"]
+    
+    def publish(self, media_id):
+        url = f"https://api.weixin.qq.com/cgi-bin/freepublish/submit?access_token={self.token}"
+        return requests.post(url, json={"media_id": media_id}).json()
+
+# 使用
+publisher = WeChatPublisher()
+publisher.get_token()
+thumb_id = publisher.upload_thumb("cover.jpg")
+draft_id = publisher.create_draft("标题", "&lt;p&gt;内容&lt;/p&gt;", thumb_id)
+result = publisher.publish(draft_id)
+print(result)
+</code></pre>
+
+<h3>步骤 5：设置定时任务</h3>
+
+<p>在 OpenClaw 中创建一个 cron 任务：</p>
+
+<pre><code class="language-json">{
+  "name": "daily-wechat-publish",
+  "schedule": {"kind": "cron", "expr": "0 9 * * *"},
+  "payload": {
+    "kind": "agentTurn",
+    "message": "生成今天的公众号文章并发布..."
+  }
+}
+</code></pre>
+
+<p>这样每天早上 9 点，AI 就会自动：</p>
+
+<ol>
+<li>根据内容计划生成文章</li>
+<li>转换为 HTML 格式</li>
+<li>上传封面图</li>
+<li>创建草稿并发布</li>
+<li>发送 Discord 通知</li>
+</ol>
+
+<h2>五、常见问题</h2>
+
+<h3>Q1：图片显示不出来怎么办？</h3>
+
+<p>文章中的图片 URL 必须来自微信服务器。需要先调用上传接口：</p>
+
+<pre><code class="language-bash">POST https://api.weixin.qq.com/cgi-bin/media/uploadimg
+</code></pre>
+
+<p>外部图片 URL 会被微信过滤掉。</p>
+
+<h3>Q2：发布后没看到文章？</h3>
+
+<p>发布是异步的，可能需要几秒钟。建议配置回调 URL 接收发布结果通知。</p>
+
+<h3>Q3：每天能发多少篇？</h3>
+
+<ul>
+<li><strong>订阅号</strong>：每天 1 条群发，发布无限制</li>
+<li><strong>服务号</strong>：每月 4 条群发，发布无限制</li>
+</ul>
+
+<p><strong>发布 vs 群发</strong>：发布只出现在历史消息，不推送到粉丝聊天列表。</p>
+
+<h2>六、总结</h2>
+
+<p>通过这套自动化系统，我实现了：</p>
+
+<div class="success">
+✅ <strong>每天节省 1 小时</strong> - 不用手动排版发布<br>
+✅ <strong>内容稳定输出</strong> - 每天 9 点准时发布<br>
+✅ <strong>随时随地查看</strong> - Discord 推送发布状态
+</div>
+
+<p>如果你也有公众号，强烈建议试试自动化！</p>
+
+<h2>行动建议</h2>
+
+<ol>
+<li>确认你的公众号已认证</li>
+<li>获取 AppID 和 Secret，配置 IP 白名单</li>
+<li>安装 OpenClaw，配置环境变量</li>
+<li>先用测试文章验证流程</li>
+<li>确认无误后设置定时任务</li>
+</ol>
+
+<p>有任何问题欢迎评论区讨论～</p>
+
+<hr>
+
+<p><strong>相关阅读</strong>：</p>
+<ul>
+<li><a href="#">OpenClaw 入门指南</a></li>
+<li><a href="#">如何用 AI 自动生成文章</a></li>
+</ul>
+
+</body>
+</html>
