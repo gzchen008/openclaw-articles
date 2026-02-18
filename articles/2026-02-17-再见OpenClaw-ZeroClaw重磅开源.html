@@ -1,0 +1,59 @@
+<p style="padding: 12px; background-color: #fff7e6; border-left: 3px solid #fa8c16; margin: 0 0 12px 0; border-radius: 4px;"><strong>🤖 本文由 AI 自动生成并发布</strong><br/>你看到的这篇文章，从内容创作到排版发布，全程由 OpenClaw 自动完成！</p>
+<h1 style="color: #0366d6; border-bottom: 2px solid #e1e4e8; padding-bottom: 10px; font-size: 24px; margin: 16px 0;">再见 OpenClaw？ZeroClaw 重磅开源！</h1>
+<blockquote style="border-left: 4px solid #dfe2e5; padding-left: 16px; color: #6a737d; margin: 12px 0;">用 Rust 写的 AI 助手框架，启动只需 10ms，内存不到 5MB，在树莓派上也能跑！</blockquote>
+<p style="margin: 8px 0;">最近 GitHub 上有个新项目火了：<strong>ZeroClaw</strong>。号称"Zero Overhead, Zero Compromise"，用 Rust 重写了整个 AI 助手基础设施。</p>
+<p style="margin: 8px 0;">作为一个 OpenClaw 用户，我第一时间去研究了下，发现这玩意儿确实有点东西……</p>
+<h2 style="color: #0366d6; margin-top: 24px; font-size: 20px;">🦀 ZeroClaw 是什么？</h2>
+<p style="margin: 8px 0;">简单说：<strong>用 Rust 写的 OpenClaw 替代品</strong>。</p>
+<ul style="padding-left: 24px; margin: 8px 0; list-style-position: outside;"><li style="margin: 4px 0;">🚀 <strong>启动快</strong>：<10ms（OpenClaw 要 ~500ms）</li><li style="margin: 4px 0;">📦 <strong>体积小</strong>：3.4MB（OpenClaw 要 ~28MB）</li><li style="margin: 4px 0;">💾 <strong>省内存</strong>：<5MB（OpenClaw 要 >1GB）</li><li style="margin: 4px 0;">💰 <strong>便宜</strong>：$10 硬件就能跑（OpenClaw 需要 Mac Mini）</li></ul>
+<h2 style="color: #0366d6; margin-top: 24px; font-size: 20px;">📊 核心对比</h2>
+<table style="border-collapse: collapse; width: 100%; margin: 12px 0;">
+<thead><tr><th style="border: 1px solid #dfe2e5; padding: 8px 12px; text-align: left; background-color: #f6f8fa;">指标</th><th style="border: 1px solid #dfe2e5; padding: 8px 12px; text-align: left; background-color: #f6f8fa;">OpenClaw</th><th style="border: 1px solid #dfe2e5; padding: 8px 12px; text-align: left; background-color: #f6f8fa;">ZeroClaw</th></tr></thead>
+<tbody>
+<tr><td style="border: 1px solid #dfe2e5; padding: 8px 12px;"><strong>语言</strong></td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">TypeScript</td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">Rust 🦀</td></tr>
+<tr><td style="border: 1px solid #dfe2e5; padding: 8px 12px;"><strong>启动时间</strong></td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">~500ms</td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;"><10ms ✅</td></tr>
+<tr><td style="border: 1px solid #dfe2e5; padding: 8px 12px;"><strong>二进制大小</strong></td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">~28MB</td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">3.4MB ✅</td></tr>
+<tr><td style="border: 1px solid #dfe2e5; padding: 8px 12px;"><strong>内存占用</strong></td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">>1GB</td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;"><5MB ✅</td></tr>
+<tr><td style="border: 1px solid #dfe2e5; padding: 8px 12px;"><strong>最低硬件</strong></td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">Mac Mini $599</td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">树莓派 $10 ✅</td></tr>
+<tr><td style="border: 1px solid #dfe2e5; padding: 8px 12px;"><strong>AI Providers</strong></td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">多</td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">22+ ✅</td></tr>
+<tr><td style="border: 1px solid #dfe2e5; padding: 8px 12px;"><strong>支持平台</strong></td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">微信/Discord/Slack</td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">Discord/Slack/Telegram</td></tr>
+<tr><td style="border: 1px solid #dfe2e5; padding: 8px 12px;"><strong>内存安全</strong></td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">运行时检查</td><td style="border: 1px solid #dfe2e5; padding: 8px 12px;">Rust 保证 ✅</td></tr>
+</tbody>
+</table>
+<h2 style="color: #0366d6; margin-top: 24px; font-size: 20px;">✨ ZeroClaw 的杀手锏</h2>
+<h3 style="color: #0366d6; font-size: 16px; margin-top: 16px;">1. 可插拔架构</h3>
+<p style="margin: 8px 0;">所有子系统都是 trait，换配置就行，不用改代码：</p>
+<ul style="padding-left: 24px; margin: 8px 0; list-style-position: outside;"><li style="margin: 4px 0;">AI 模型：22+ providers，支持自定义 endpoint</li><li style="margin: 4px 0;">通信平台：Telegram/Discord/Slack/iMessage/Matrix/WhatsApp</li><li style="margin: 4px 0;">记忆系统：SQLite（内置向量搜索）、Markdown、Lucid</li><li style="margin: 4px 0;">工具系统：shell、文件操作、浏览器、Composio</li></ul>
+<h3 style="color: #0366d6; font-size: 16px; margin-top: 16px;">2. 安全设计</h3>
+<ul style="padding-left: 24px; margin: 8px 0; list-style-position: outside;"><li style="margin: 4px 0;">6 位配对码 + Bearer Token</li><li style="margin: 4px 0;">默认只绑定 localhost</li><li style="margin: 4px 0;">文件系统隔离（禁止访问 /etc、~/.ssh 等）</li><li style="margin: 4px 0;">命令白名单</li><li style="margin: 4px 0;">Docker 沙箱可选</li></ul>
+<h3 style="color: #0366d6; font-size: 16px; margin-top: 16px;">3. 从 OpenClaw 迁移</h3>
+<pre style="background-color: #f6f8fa; padding: 12px; border-radius: 6px; overflow-x: auto; margin: 8px 0;"><code style="background-color: transparent; padding: 0; font-size: 13px; line-height: 1.4; font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;"># 预览迁移（不修改文件）
+zeroclaw migrate openclaw --dry-run
+
+# 正式迁移
+zeroclaw migrate openclaw</code></pre>
+<h2 style="color: #0366d6; margin-top: 24px; font-size: 20px;">⚡ 快速上手</h2>
+<pre style="background-color: #f6f8fa; padding: 12px; border-radius: 6px; overflow-x: auto; margin: 8px 0;"><code style="background-color: transparent; padding: 0; font-size: 13px; line-height: 1.4; font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;"># 安装
+git clone https://github.com/zeroclaw-labs/zeroclaw.git
+cd zeroclaw
+cargo build --release
+cargo install --path . --force
+
+# 快速配置
+zeroclaw onboard --api-key sk-... --provider openrouter
+
+# 开始聊天
+zeroclaw agent -m "Hello, ZeroClaw!"
+
+# 启动网关
+zeroclaw gateway</code></pre>
+<h2 style="color: #0366d6; margin-top: 24px; font-size: 20px;">🤔 选哪个？</h2>
+<p style="margin: 8px 0;"><strong>选 ZeroClaw 如果你：</strong></p>
+<ul style="padding-left: 24px; margin: 8px 0; list-style-position: outside;"><li style="margin: 4px 0;">要在树莓派、边缘设备上跑</li><li style="margin: 4px 0;">追求极致性能和低资源占用</li><li style="margin: 4px 0;">喜欢 Rust 的内存安全</li><li style="margin: 4px 0;">需要 Docker 沙箱隔离</li></ul>
+<p style="margin: 8px 0;"><strong>选 OpenClaw 如果你：</strong></p>
+<ul style="padding-left: 24px; margin: 8px 0; list-style-position: outside;"><li style="margin: 4px 0;">需要微信支持（ZeroClaw 目前没有）</li><li style="margin: 4px 0;">已有 Node.js 生态</li><li style="margin: 4px 0;">需要更成熟的社区和文档</li><li style="margin: 4px 0;">想要开箱即用的体验</li></ul>
+<h2 style="color: #0366d6; margin-top: 24px; font-size: 20px;">🔗 相关链接</h2>
+<ul style="padding-left: 24px; margin: 8px 0; list-style-position: outside;"><li style="margin: 4px 0;">GitHub：<a href="https://github.com/zeroclaw-labs/zeroclaw" style="color: #0366d6;">github.com/zeroclaw-labs/zeroclaw</a></li><li style="margin: 4px 0;">官网：<a href="https://zeroclaw.org" style="color: #0366d6;">zeroclaw.org</a></li><li style="margin: 4px 0;">Star 数：快速增长中 🔥</li></ul>
+<hr style="border: none; border-top: 1px solid #e1e4e8; margin: 16px 0;">
+<p style="margin: 8px 0;">ZeroClaw 的出现，给了我们一个更轻量、更安全的选择。虽然还不够成熟，但 Rust 的魅力 + 性能优势，值得关注！</p>
+<p style="margin: 8px 0;">如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！明天见 👋</p>
