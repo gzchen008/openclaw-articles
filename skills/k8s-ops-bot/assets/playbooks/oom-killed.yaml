@@ -1,0 +1,66 @@
+# OOM Killed Remediation Playbook
+# Handles containers killed due to out-of-memory conditions
+
+name: "OOM Killed Recovery"
+description: "Analyze and remediate OOMKilled containers"
+version: "1.0"
+
+# Triggers - when this playbook should be used
+triggers:
+  - reason: "OOMKilled"
+  - issue_type: "oom_killed"
+  - resource_type: "Container"
+
+# Conditions that must be met
+conditions:
+  - "container.restart_count > 0"
+  - "container.last_termination_reason == 'OOMKilled'"
+
+# Remediation actions (executed in order)
+actions:
+  # Step 1: Analyze current memory usage
+  - type: analyze
+    name: analyze_memory
+    description: "Analyze memory usage patterns"
+    handler: get_memory_metrics
+    requires_confirm: false
+    
+  # Step 2: Suggest memory increase
+  - type: suggest
+    name: suggest_memory_increase
+    description: "Suggest memory limit increase based on usage patterns"
+    message: "Container {{ container.name }} was OOMKilled. Consider increasing memory limit from {{ current_limit }} to {{ suggested_limit }}."
+    requires_confirm: false
+    
+  # Step 3: Offer to apply fix
+  - type: confirm
+    name: apply_memory_fix
+    description: "Apply memory limit increase"
+    cmd: patch_deployment
+    params:
+      resource_type: "deployment"
+      resource_name: "{{ deployment.name }}"
+      path: "/spec/template/spec/containers/{{ container_index }}/resources/limits/memory"
+      value: "{{ suggested_limit }}"
+    requires_confirm: true
+    
+  # Step 4: Monitor after fix
+  - type: analyze
+    name: monitor_after_fix
+    description: "Monitor container for 5 minutes after fix"
+    handler: monitor_container
+    delay: "5m"
+    requires_confirm: false
+
+# Post-conditions to verify fix
+verify:
+  - "container.state.running == true"
+  - "container.restart_count_stable_for > 5m"
+
+# Rollback if fix fails
+rollback:
+  enabled: true
+  action: patch_deployment
+  params:
+    path: "/spec/template/spec/containers/{{ container_index }}/resources/limits/memory"
+    value: "{{ previous_limit }}"

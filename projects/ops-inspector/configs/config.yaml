@@ -1,0 +1,67 @@
+# OpsInspector 配置文件
+
+server:
+  name: opsinspector-api
+  host: 0.0.0.0
+  port: 8080
+  grpc_port: 9090
+  metrics_port: 9091
+  read_timeout: 30s
+  write_timeout: 30s
+  mode: debug  # debug/release
+
+database:
+  driver: mysql
+  # 使用 kubectl run 启动的 MySQL
+  dsn: "root:opsinspector@tcp(mysql.default.svc.cluster.local:3306)/opsinspector?charset=utf8mb4&parseTime=True&loc=Local"
+  max_open_conns: 25
+  max_idle_conns: 5
+  conn_max_lifetime: 1h
+  conn_max_idle_time: 30m
+
+redis:
+  addr: "redis:6379"
+  password: ""
+  db: 0
+  pool_size: 10
+
+queue:
+  driver: redis  # redis/memory
+  max_retries: 3
+  retry_backoff: 5s
+  visibility_timeout: 5m
+
+scheduler:
+  enabled: true
+  max_concurrent: 100
+  check_interval: 10s
+
+worker:
+  enabled: true
+  concurrency: 10
+  queues:
+    - default
+    - high
+    - low
+
+notification:
+  default_channels:
+    - webhook
+  dedup_window: 5m
+  batch_size: 100
+  batch_interval: 1s
+
+observability:
+  metrics:
+    enabled: true
+    path: /metrics
+  tracing:
+    enabled: false
+    endpoint: http://jaeger:14268/api/traces
+  logging:
+    level: info
+    format: json
+
+plugins:
+  dir: ./plugins
+  auto_load: true

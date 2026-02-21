@@ -1,0 +1,22 @@
+{
+  "name": "openclaw-intro",
+  "version": "1.0.0",
+  "description": "OpenClaw 产品介绍视频",
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion render src/index.tsx OpenClawIntro out/video.mp4",
+    "render": "remotion render src/index.tsx",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "remotion": "^4.0.0",
+    "@remotion/cli": "^4.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/web": "^0.0.61",
+    "typescript": "^5.0.0"
+  }
+}

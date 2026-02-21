@@ -1,0 +1,444 @@
+#!/usr/bin/env node
+
+/**
+ * CLI Logo Tool - 带旋转动画的命令行工具
+ * 类似 OpenAI Codex CLI 的交互体验
+ */
+
+const readline = require('readline');
+const { spawn, exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+// ANSI 颜色码
+const colors = {
+    reset: '\x1b[0m',
+    bright: '\x1b[1m',
+    dim: '\x1b[2m',
+    underscore: '\x1b[4m',
+    blink: '\x1b[5m',
+    reverse: '\x1b[7m',
+    hidden: '\x1b[8m',
+    
+    fg: {
+        black: '\x1b[30m',
+        red: '\x1b[31m',
+        green: '\x1b[32m',
+        yellow: '\x1b[33m',
+        blue: '\x1b[34m',
+        magenta: '\x1b[35m',
+        cyan: '\x1b[36m',
+        white: '\x1b[37m',
+        crimson: '\x1b[38m'
+    },
+    bg: {
+        black: '\x1b[40m',
+        red: '\x1b[41m',
+        green: '\x1b[42m',
+        yellow: '\x1b[43m',
+        blue: '\x1b[44m',
+        magenta: '\x1b[45m',
+        cyan: '\x1b[46m',
+        white: '\x1b[47m',
+        crimson: '\x1b[48m'
+    }
+};
+
+// 清屏
+const clearScreen = () => {
+    process.stdout.write('\x1b[2J\x1b[0f');
+};
+
+// 移动光标
+const moveCursor = (x, y) => {
+    process.stdout.write(`\x1b[${y};${x}H`);
+};
+
+// 隐藏/显示光标
+const hideCursor = () => process.stdout.write('\x1b[?25l');
+const showCursor = () => process.stdout.write('\x1b[?25h');
+
+// 获取终端尺寸
+const getTerminalSize = () => {
+    return {
+        width: process.stdout.columns || 80,
+        height: process.stdout.rows || 24
+    };
+};
+
+// 生成螺旋图案的一帧
+const generateSpiralFrame = (frame, width, height) => {
+    const chars = '@#%*+=-:. ';
+    const angle = frame * 0.15;
+    const result = [];
+    
+    const centerX = Math.floor(width / 2);
+    const centerY = Math.floor(height / 2) - 3;
+    const radius = Math.min(width, height) / 4;
+    
+    for (let y = 0; y < height; y++) {
+        let line = '';
+        for (let x = 0; x < width; x++) {
+            const dx = (x - centerX) / radius * 10;
+            const dy = (y - centerY) / radius * 10;
+            const r = Math.sqrt(dx * dx + dy * dy);
+            const theta = Math.atan2(dy, dx) + angle;
+            
+            const spiral = Math.sin(theta * 3 + r * 0.3) * Math.cos(r * 0.1);
+            
+            if (r < 12 && spiral > 0.3) {
+                const idx = Math.floor((spiral + 1) * (chars.length - 1) / 2);
+                line += chars[Math.max(0, Math.min(chars.length - 1, idx))];
+            } else {
+                line += ' ';
+            }
+        }
+        result.push(line);
+    }
+    
+    return result;
+};
+
+// 在指定位置绘制文本
+const drawText = (text, x, y, color = '') => {
+    moveCursor(x, y);
+    process.stdout.write(color + text + colors.reset);
+};
+
+// 绘制居中文本
+const drawCenteredText = (text, y, color = '') => {
+    const { width } = getTerminalSize();
+    const x = Math.floor((width - text.length) / 2);
+    drawText(text, x, y, color);
+};
+
+// 动画控制器
+class LogoAnimator {
+    constructor(options = {}) {
+        this.isRunning = false;
+        this.frame = 0;
+        this.speed = options.speed || 80;
+        this.duration = options.duration || 3000;
+        this.onComplete = options.onComplete || (() => {});
+        this.title = options.title || 'CLI TOOL';
+        this.subtitle = options.subtitle || 'Interactive Command Line';
+    }
+    
+    start() {
+        this.isRunning = true;
+        hideCursor();
+        clearScreen();
+        
+        const startTime = Date.now();
+        const { width, height } = getTerminalSize();
+        
+        const animate = () => {
+            if (!this.isRunning) return;
+            
+            // 检查是否超时
+            if (Date.now() - startTime > this.duration) {
+                this.stop();
+                return;
+            }
+            
+            // 清屏
+            clearScreen();
+            
+            // 绘制螺旋
+            const spiral = generateSpiralFrame(this.frame, width, height - 6);
+            spiral.forEach((line, i) => {
+                moveCursor(1, i + 1);
+                process.stdout.write(colors.fg.cyan + line + colors.reset);
+            });
+            
+            // 绘制标题
+            const titleY = Math.floor(height / 2) + 2;
+            drawCenteredText(this.title, titleY, colors.bright + colors.fg.yellow);
+            drawCenteredText(this.subtitle, titleY + 1, colors.fg.gray);
+            
+            // 绘制加载提示
+            const dots = '.'.repeat((this.frame % 4));
+            drawCenteredText(`Loading${dots}`, titleY + 3, colors.fg.green);
+            
+            this.frame++;
+            setTimeout(animate, this.speed);
+        };
+        
+        animate();
+    }
+    
+    stop() {
+        this.isRunning = false;
+        clearScreen();
+        showCursor();
+        this.onComplete();
+    }
+}
+
+// 命令处理器
+class CommandHandler {
+    constructor() {
+        this.commands = {
+            'help': this.showHelp.bind(this),
+            'h': this.showHelp.bind(this),
+            'clear': this.clear.bind(this),
+            'cls': this.clear.bind(this),
+            'exit': this.exit.bind(this),
+            'quit': this.exit.bind(this),
+            'q': this.exit.bind(this),
+            'status': this.showStatus.bind(this),
+            'pwd': this.showPwd.bind(this),
+            'ls': this.listFiles.bind(this),
+            'date': this.showDate.bind(this),
+            'whoami': this.showUser.bind(this),
+            'echo': this.echo.bind(this),
+            'calc': this.calculate.bind(this),
+            'time': this.showTime.bind(this),
+            'banner': this.showBanner.bind(this),
+        };
+    }
+    
+    showHelp() {
+        console.log(`
+${colors.bright + colors.fg.cyan}╔════════════════════════════════════════════════════════════╗
+║                     AVAILABLE COMMANDS                     ║
+╚════════════════════════════════════════════════════════════╝${colors.reset}
+
+  ${colors.fg.yellow}General:${colors.reset}
+    help, h       - Show this help message
+    clear, cls    - Clear the screen
+    exit, quit, q - Exit the CLI
+    banner        - Show welcome banner
+    
+  ${colors.fg.yellow}System:${colors.reset}
+    status        - Show system status
+    pwd           - Show current directory
+    ls            - List files in current directory
+    date          - Show current date
+    time          - Show current time
+    whoami        - Show current user
+    
+  ${colors.fg.yellow}Utilities:${colors.reset}
+    echo <text>   - Print text
+    calc <expr>   - Calculate expression (e.g., calc 2+2)
+    
+  ${colors.fg.yellow}Any other input:${colors.reset}
+    Will be executed as a system command
+
+${colors.dim}Type a command and press Enter...${colors.reset}
+`);
+    }
+    
+    clear() {
+        clearScreen();
+    }
+    
+    exit() {
+        console.log(`\n${colors.fg.green}👋 Goodbye!${colors.reset}\n`);
+        process.exit(0);
+    }
+    
+    showStatus() {
+        const mem = process.memoryUsage();
+        console.log(`
+${colors.fg.cyan}System Status:${colors.reset}
+  Node Version: ${process.version}
+  Platform: ${process.platform}
+  PID: ${process.pid}
+  Uptime: ${Math.floor(process.uptime())}s
+  Memory: ${(mem.heapUsed / 1024 / 1024).toFixed(2)} MB
+`);
+    }
+    
+    showPwd() {
+        console.log(colors.fg.green + process.cwd() + colors.reset);
+    }
+    
+    listFiles() {
+        try {
+            const files = fs.readdirSync(process.cwd());
+            files.forEach(file => {
+                const stat = fs.statSync(file);
+                const isDir = stat.isDirectory();
+                const prefix = isDir ? colors.fg.blue + '📁 ' : colors.fg.white + '📄 ';
+                console.log(prefix + file + colors.reset);
+            });
+        } catch (err) {
+            console.log(colors.fg.red + 'Error: ' + err.message + colors.reset);
+        }
+    }
+    
+    showDate() {
+        console.log(colors.fg.green + new Date().toLocaleDateString() + colors.reset);
+    }
+    
+    showTime() {
+        console.log(colors.fg.green + new Date().toLocaleTimeString() + colors.reset);
+    }
+    
+    showUser() {
+        console.log(colors.fg.green + (process.env.USER || process.env.USERNAME || 'unknown') + colors.reset);
+    }
+    
+    echo(args) {
+        console.log(colors.fg.white + args.join(' ') + colors.reset);
+    }
+    
+    calculate(args) {
+        try {
+            const expr = args.join(' ');
+            // 安全计算 - 只允许数字和基本运算符
+            if (!/^[\d\s\+\-\*\/\(\)\.]+$/.test(expr)) {
+                console.log(colors.fg.red + 'Invalid expression' + colors.reset);
+                return;
+            }
+            const result = eval(expr);
+            console.log(`${colors.fg.cyan}${expr} = ${colors.fg.green}${result}${colors.reset}`);
+        } catch (err) {
+            console.log(colors.fg.red + 'Calculation error' + colors.reset);
+        }
+    }
+    
+    showBanner() {
+        console.log(`
+${colors.fg.cyan}
+   ██████╗██╗     ██╗    ████████╗ ██████╗  ██████╗ ██╗     
+  ██╔════╝██║     ██║    ╚══██╔══╝██╔═══██╗██╔═══██╗██║     
+  ██║     ██║     ██║       ██║   ██║   ██║██║   ██║██║     
+  ██║     ██║     ██║       ██║   ██║   ██║██║   ██║██║     
+  ╚██████╗███████╗██║       ██║   ╚██████╔╝╚██████╔╝███████╗
+   ╚═════╝╚══════╝╚═╝       ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝
+${colors.reset}
+${colors.fg.yellow}           Interactive CLI Tool v1.0.0${colors.reset}
+`);
+    }
+    
+    executeSystemCommand(cmd) {
+        return new Promise((resolve) => {
+            exec(cmd, { timeout: 30000 }, (error, stdout, stderr) => {
+                if (error) {
+                    console.log(colors.fg.red + `Error: ${error.message}` + colors.reset);
+                } else if (stderr) {
+                    console.log(colors.fg.yellow + stderr + colors.reset);
+                } else {
+                    console.log(stdout);
+                }
+                resolve();
+            });
+        });
+    }
+    
+    async process(input) {
+        const args = input.trim().split(/\s+/);
+        const cmd = args[0].toLowerCase();
+        const cmdArgs = args.slice(1);
+        
+        if (!cmd) return;
+        
+        if (this.commands[cmd]) {
+            try {
+                await this.commands[cmd](cmdArgs);
+            } catch (err) {
+                console.log(colors.fg.red + `Error executing command: ${err.message}` + colors.reset);
+            }
+        } else {
+            // 尝试作为系统命令执行
+            console.log(colors.dim + `Executing: ${input}` + colors.reset);
+            await this.executeSystemCommand(input);
+        }
+    }
+}
+
+// 主 CLI 类
+class CLI {
+    constructor(options = {}) {
+        this.animator = new LogoAnimator({
+            title: options.title || 'CLI TOOL',
+            subtitle: options.subtitle || 'Interactive Command Line',
+            duration: options.skipAnimation ? 0 : (options.duration || 3000),
+            onComplete: () => this.startInteractiveMode()
+        });
+        this.handler = new CommandHandler();
+        this.rl = null;
+    }
+    
+    start() {
+        if (this.animator.duration === 0) {
+            this.startInteractiveMode();
+        } else {
+            this.animator.start();
+        }
+    }
+    
+    startInteractiveMode() {
+        clearScreen();
+        this.handler.showBanner();
+        this.handler.showHelp();
+        
+        this.rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+            prompt: `${colors.fg.green}➜ ${colors.reset}`,
+            completer: (line) => {
+                const commands = Object.keys(this.handler.commands);
+                const hits = commands.filter(c => c.startsWith(line.toLowerCase()));
+                return [hits.length ? hits : commands, line];
+            }
+        });
+        
+        this.rl.prompt();
+        
+        this.rl.on('line', async (input) => {
+            await this.handler.process(input);
+            this.rl.prompt();
+        });
+        
+        this.rl.on('close', () => {
+            this.handler.exit();
+        });
+        
+        // 处理 Ctrl+C
+        process.on('SIGINT', () => {
+            console.log('');
+            this.handler.exit();
+        });
+    }
+}
+
+// 命令行参数解析
+const args = process.argv.slice(2);
+const options = {
+    skipAnimation: args.includes('--no-anim') || args.includes('-n'),
+    duration: parseInt(args.find(a => !a.startsWith('-'))) || 3000,
+    title: 'CLI TOOL',
+    subtitle: 'Interactive Command Line'
+};
+
+// 显示帮助
+if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+CLI Tool with Animated Logo
+
+Usage: cli-logo [options]
+
+Options:
+  -h, --help      Show this help message
+  -n, --no-anim   Skip startup animation
+  <number>        Animation duration in ms (default: 3000)
+
+Examples:
+  cli-logo              # Run with default 3s animation
+  cli-logo 5000         # Run with 5s animation
+  cli-logo --no-anim    # Skip animation, start immediately
+`);
+    process.exit(0);
+}
+
+// 启动 CLI
+const cli = new CLI(options);
+cli.start();
+
+// 优雅退出
+process.on('exit', () => {
+    showCursor();
+});

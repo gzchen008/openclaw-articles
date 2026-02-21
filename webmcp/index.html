@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebMCP 示例</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 { color: #333; }
+    h2 { color: #666; margin-top: 0; }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+    .status.ok { background: #d4edda; color: #155724; }
+    .status.error { background: #f8d7da; color: #721c24; }
+    code {
+      background: #f1f1f1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Consolas', monospace;
+    }
+    pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    .tool {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 12px 16px;
+      margin: 10px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .tool-name { font-weight: bold; color: #1976d2; }
+    .todo-list { list-style: none; padding: 0; }
+    .todo-item {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+    }
+    .todo-item:last-child { border-bottom: none; }
+    .priority-high { color: #d32f2f; }
+    .priority-medium { color: #f57c00; }
+    .priority-low { color: #388e3c; }
+    #notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #333;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🤖 WebMCP 示例 <span class="status ok" id="serverStatus">运行中</span></h1>
+    <p>这个页面展示了如何使用 WebMCP 暴露工具给 AI 代理。</p>
+    <p>安装 <a href="https://chromewebstore.google.com/detail/mcp-b/daohopfhkdelnpemnhlekblhnikhdhfa" target="_blank">MCP-B Chrome 扩展</a> 后，AI 可以调用以下工具：</p>
+    
+    <div class="tool">
+      <div class="tool-name">getPageInfo</div>
+      <div>获取当前页面的标题和 URL</div>
+    </div>
+    
+    <div class="tool">
+      <div class="tool-name">showNotification</div>
+      <div>在页面上显示一条通知消息</div>
+    </div>
+    
+    <div class="tool">
+      <div class="tool-name">addTodo</div>
+      <div>添加一个待办事项（支持优先级）</div>
+    </div>
+    
+    <div class="tool">
+      <div class="tool-name">getTodos</div>
+      <div>获取所有待办事项列表</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>📋 待办事项列表</h2>
+    <ul class="todo-list" id="todoList">
+      <li class="todo-item" style="color: #999;">暂无待办事项</li>
+    </ul>
+  </div>
+  
+  <div class="card">
+    <h2>📖 使用方法</h2>
+    <pre>
+// 1. 安装依赖
+npm install @mcp-b/transports @modelcontextprotocol/sdk zod
+
+// 2. 启动 Native Server（可选，用于本地 MCP 客户端）
+@mcp-b/native-server
+
+// 3. 在 Claude/Cursor 配置中添加：
+{
+  "type": "streamable-http",
+  "url": "http://127.0.0.1:12306/mcp"
+}
+    </pre>
+  </div>
+  
+  <div id="notification"></div>
+  
+  <script type="module">
+    import { TabServerTransport } from "./node_modules/@mcp-b/transports/dist/index.js";
+    import { McpServer } from "./node_modules/@modelcontextprotocol/sdk/server/mcp.js";
+    import { z } from "./node_modules/zod/lib/index.js";
+    
+    // 待办事项数据
+    const todos = [];
+    
+    // 创建 MCP 服务器
+    const server = new McpServer({
+      name: "webmcp-demo",
+      version: "1.0.0",
+    });
+    
+    // 工具 1: 获取页面信息
+    server.tool("getPageInfo", "获取当前页面的标题和 URL", {}, async () => {
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            title: document.title,
+            url: window.location.href,
+          }),
+        }],
+      };
+    });
+    
+    // 工具 2: 显示通知
+    server.tool(
+      "showNotification",
+      "在页面上显示一条通知消息",
+      { message: z.string().describe("通知内容") },
+      async ({ message }) => {
+        showNotification(message);
+        return {
+          content: [{ type: "text", text: `已显示通知: ${message}` }],
+        };
+      }
+    );
+    
+    // 工具 3: 添加待办
+    server.tool(
+      "addTodo",
+      "添加一个待办事项",
+      {
+        title: z.string().describe("待办标题"),
+        priority: z.enum(["low", "medium", "high"]).optional().describe("优先级"),
+      },
+      async ({ title, priority = "medium" }) => {
+        const todo = {
+          id: Date.now(),
+          title,
+          priority,
+          completed: false,
+        };
+        todos.push(todo);
+        renderTodos();
+        showNotification(`新增待办: ${title}`);
+        return {
+          content: [{ type: "text", text: JSON.stringify(todo) }],
+        };
+      }
+    );
+    
+    // 工具 4: 获取待办列表
+    server.tool("getTodos", "获取所有待办事项", {}, async () => {
+      return {
+        content: [{ type: "text", text: JSON.stringify(todos) }],
+      };
+    });
+    
+    // 连接
+    await server.connect(new TabServerTransport({ allowedOrigins: ["*"] }));
+    console.log("✅ WebMCP 服务器已启动");
+    
+    // 辅助函数
+    function showNotification(message) {
+      const el = document.getElementById("notification");
+      el.textContent = message;
+      el.style.display = "block";
+      setTimeout(() => el.style.display = "none", 3000);
+    }
+    
+    function renderTodos() {
+      const list = document.getElementById("todoList");
+      if (todos.length === 0) {
+        list.innerHTML = '<li class="todo-item" style="color: #999;">暂无待办事项</li>';
+        return;
+      }
+      list.innerHTML = todos.map(todo => `
+        <li class="todo-item">
+          <span>${todo.title}</span>
+          <span class="priority-${todo.priority}">${todo.priority.toUpperCase()}</span>
+        </li>
+      `).join("");
+    }
+  </script>
+</body>
+</html>

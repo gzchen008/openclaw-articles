@@ -1,0 +1,366 @@
+<section style="padding: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; color: #24292e; line-height: 1.6;">
+
+<p style="font-size: 22px; font-weight: 600; color: #24292e; margin: 0 0 16px 0; padding-bottom: 12px; border-bottom: 1px solid #eaecef;">⚙️ OpenClaw Gateway 配置全攻略 | 从入门到精通</p>
+
+<p style="margin: 8px 0;">OpenClaw Gateway 是整个系统的<strong style="font-weight: 600;">大脑中枢</strong>，所有模型、工具、Agent、通道的配置都在这里。</p>
+
+<p style="margin: 8px 0;">今天带你<strong style="font-weight: 600;">逐一解锁</strong>每个配置模块，看完你就能完全掌控自己的 AI 助手！</p>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">📁 配置文件在哪里？</p>
+
+<p style="margin: 8px 0;">配置文件路径：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">~/.openclaw/openclaw.json</p>
+</section>
+
+<p style="margin: 8px 0;">查看当前配置：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw gateway config</p>
+</section>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">🗺️ 配置结构总览</p>
+
+<p style="margin: 8px 0;">OpenClaw Gateway 配置包含<strong style="font-weight: 600;">11 大模块</strong>：</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px;">
+<tr style="background: #f6f8fa;">
+<th style="padding: 8px; text-align: left; border-bottom: 2px solid #d1d5da; font-weight: 600;">模块</th>
+<th style="padding: 8px; text-align: left; border-bottom: 2px solid #d1d5da; font-weight: 600;">功能</th>
+<th style="padding: 8px; text-align: left; border-bottom: 2px solid #d1d5da; font-weight: 600;">重要性</th>
+</tr>
+<tr>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">models</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">AI 模型配置（Provider、API）</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #d73a49; font-weight: bold;">核心</td>
+</tr>
+<tr style="background: #f6f8fa;">
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">agents</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">Agent 行为、记忆、工具权限</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #d73a49; font-weight: bold;">核心</td>
+</tr>
+<tr>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">auth</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">认证方式（API Key / OAuth）</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #d73a49; font-weight: bold;">核心</td>
+</tr>
+<tr style="background: #f6f8fa;">
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">tools</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">工具权限、沙箱、安全策略</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #d73a49; font-weight: bold;">核心</td>
+</tr>
+<tr>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">bindings</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">通道 → Agent 绑定关系</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #d73a49; font-weight: bold;">核心</td>
+</tr>
+<tr style="background: #f6f8fa;">
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">browser</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">浏览器自动化配置</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #0366d6;">高级</td>
+</tr>
+<tr>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">env</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">环境变量（密钥、API Secret）</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #0366d6;">高级</td>
+</tr>
+<tr style="background: #f6f8fa;">
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">messages</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">消息队列、防抖、TTS</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #0366d6;">高级</td>
+</tr>
+<tr>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">logging</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">日志级别、输出格式</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #6a737d;">调试</td>
+</tr>
+<tr style="background: #f6f8fa;">
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">diagnostics</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">诊断追踪、OpenTelemetry</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #6a737d;">调试</td>
+</tr>
+<tr>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">ui</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8;">UI 主题、助手名称</td>
+<td style="padding: 8px; border-bottom: 1px solid #e1e4e8; color: #6a737d;">外观</td>
+</tr>
+</table>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">🤖 1. models - 模型配置</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>配置 AI 模型 Provider（OpenAI、Claude、GLM 等）</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">常用配置项：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">providers</strong>：定义模型提供商</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">baseUrl</strong>：API 端点</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">apiKey</strong>：API 密钥（建议用 env.vars 代替）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">models</strong>：模型列表（id、name、contextWindow）</p>
+
+<p style="margin: 12px 0 4px 0; font-weight: 600;">示例配置：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  "models": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "providers": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "zai": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">        "baseUrl": "https://api.zukijourney.com/v2",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">        "apiKey": "${ZAI_API_KEY}",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">        "models": [</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">          { "id": "glm-5", "name": "GLM-5" }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">        ]</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">}</p>
+</section>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">🧠 2. agents - Agent 配置</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>定义 AI 助手的行为、记忆、权限</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">核心配置项：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">defaults.model</strong>：默认模型（primary + fallbacks）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">defaults.workspace</strong>：工作目录</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">defaults.memorySearch</strong>：记忆检索配置</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">defaults.thinkingDefault</strong>：思考深度（off/minimal/low/medium/high）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">defaults.heartbeat</strong>：主动轮询配置</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">list</strong>：Agent 列表（id、name、workspace）</p>
+
+<p style="margin: 12px 0 4px 0; font-weight: 600;">示例：配置默认模型</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  "agents": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "model": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">        "primary": "zai/glm-5",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">        "fallbacks": ["zai/glm-4.7", "kimi-coding/k2p5"]</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      },</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "workspace": "~/.openclaw/workspace",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "thinkingDefault": "low"</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">}</p>
+</section>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">🔐 3. auth - 认证配置</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>配置 API 认证方式</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">认证方式：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">api_key</strong>：直接用 API Key</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">oauth</strong>：OAuth 授权（如 GitHub Copilot）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">token</strong>：Bearer Token</p>
+
+<p style="margin: 12px 0 4px 0; font-weight: 600;">示例：配置认证</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  "auth": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "profiles": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "my-openai": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">        "provider": "openai",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">        "mode": "api_key"</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">}</p>
+</section>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">🛠️ 4. tools - 工具权限配置</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>控制 AI 能用哪些工具</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">预设 Profile：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">minimal</strong>：最小权限（只读）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">coding</strong>：编码权限（读写文件）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">messaging</strong>：消息权限（发消息）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">full</strong>：全部权限</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">关键配置：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">allow</strong>：允许的工具列表</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">deny</strong>：禁止的工具列表</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">exec</strong>：Shell 命令权限</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">web.search</strong>：网络搜索配置</p>
+
+<p style="margin: 12px 0 4px 0; font-weight: 600;">示例：配置工具权限</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  "tools": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "profile": "full",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "exec": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "host": "gateway",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "security": "allowlist"</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    },</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "web": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "search": { "enabled": true }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">}</p>
+</section>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">🔗 5. bindings - 通道绑定</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>把消息通道（Discord、Telegram）绑定到 Agent</p>
+
+<p style="margin: 12px 0 4px 0; font-weight: 600;">示例：绑定 Discord 通道</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  "bindings": [</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "agentId": "main",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "match": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">        "channel": "discord",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">        "peer": { "kind": "direct", "id": "YOUR_USER_ID" }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  ]</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">}</p>
+</section>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">🌐 6. browser - 浏览器配置</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>配置浏览器自动化</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">关键配置：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">enabled</strong>：是否启用</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">profiles</strong>：浏览器配置文件</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">cdpUrl</strong>：Chrome DevTools Protocol 地址</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">headless</strong>：无头模式</p>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">🔐 7. env - 环境变量</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>存储密钥、API Secret（不要硬编码在配置里！）</p>
+
+<p style="margin: 12px 0 4px 0; font-weight: 600;">示例：配置环境变量</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  "env": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "vars": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "OPENAI_API_KEY": "sk-xxx",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "ZAI_API_KEY": "zai-xxx"</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">}</p>
+</section>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">💬 8. messages - 消息配置</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>控制消息队列、防抖、TTS</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">消息队列模式：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">steer</strong>：新消息打断旧回复</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">queue</strong>：排队处理</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">collect</strong>：收集后批量处理</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">TTS 配置：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">tts.enabled</strong>：启用语音</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">tts.provider</strong>：elevenlabs / openai / edge</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">tts.auto</strong>：自动朗读（off / always / inbound）</p>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">📝 9. logging - 日志配置</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>控制日志输出</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">日志级别：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">silent → fatal → error → warn → info → debug → trace</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  "logging": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "level": "info",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "consoleLevel": "warn",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "consoleStyle": "pretty"</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">}</p>
+</section>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">🎨 10. ui - UI 配置</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>自定义助手外观</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  "ui": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    "assistant": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "name": "小J",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">      "avatar": "https://example.com/avatar.png"</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">    }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 13px; color: #24292e;">}</p>
+</section>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">🔄 11. diagnostics - 诊断配置</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">作用：</strong>调试、追踪、OpenTelemetry</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">关键配置：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">cacheTrace</strong>：缓存追踪日志</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">otel</strong>：OpenTelemetry 集成</p>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">💡 实用技巧</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">1. 使用 config.patch 而非 config.apply</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">错误做法：</strong>每次都重写整个配置文件</p>
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">正确做法：</strong>只更新需要的字段</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw gateway config.patch '{ "agents": { "defaults": { "thinkingDefault": "high" } } }'</p>
+</section>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">2. 模型 Fallback 机制</p>
+
+<p style="margin: 8px 0;">配置多个备用模型，主模型失败时自动切换：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">"model": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "primary": "zai/glm-5",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "fallbacks": ["kimi-coding/k2p5", "openai/gpt-4o"]</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">3. 安全存储密钥</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">不要</strong>在 models.providers.apiKey 里直接写密钥！</p>
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">应该</strong>用 env.vars 存储密钥，然后用 ${VAR_NAME} 引用。</p>
+
+<p style="margin: 20px 0 4px 0; font-size: 16px; font-weight: 600; color: #0366d6;">4. 查看配置 Schema</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw gateway config.schema</p>
+</section>
+
+<p style="font-size: 18px; font-weight: 600; color: #24292e; margin: 24px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #eaecef;">⚠️ 常见问题</p>
+
+<section style="background: #fff8e6; border-left: 4px solid #f66; padding: 12px 16px; margin: 12px 0; border-radius: 4px;">
+<p style="margin: 4px 0;"><strong style="font-weight: 600;">Q: 配置修改后没生效？</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">A: 配置修改后会自动重启 Gateway，等待几秒后再试。</p>
+
+<p style="margin: 12px 0 4px 0;"><strong style="font-weight: 600;">Q: 模型调用失败？</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">A: 检查 auth.profiles 和 env.vars 是否配置正确。</p>
+
+<p style="margin: 12px 0 4px 0;"><strong style="font-weight: 600;">Q: 工具执行被拒绝？</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">A: 检查 tools.profile 和 tools.exec.security 配置。</p>
+</section>
+
+<section style="background: #e6ffed; border-left: 4px solid #28a745; padding: 12px 16px; margin: 24px 0 12px 0; border-radius: 4px;">
+<p style="margin: 0;"><strong style="font-weight: 600;">💬 你的配置问题？</strong></p>
+<p style="margin: 4px 0 0 0;">在配置 OpenClaw 时遇到什么问题？欢迎评论区分享，我来帮你解答！</p>
+</section>
+
+</section>

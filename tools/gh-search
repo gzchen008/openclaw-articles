@@ -1,0 +1,53 @@
+#!/bin/bash
+# gh-search - GitHub 仓库搜索工具
+# 用法: gh-search <关键词> [数量]
+
+KEYWORD="${1:-}"
+LIMIT="${2:-10}"
+
+if [ -z "$KEYWORD" ]; then
+    echo "🔍 GitHub 仓库搜索工具"
+    echo ""
+    echo "用法:"
+    echo "  gh-search <关键词> [数量]"
+    echo ""
+    echo "示例:"
+    echo "  gh-search agent-browser      # 搜索 agent-browser"
+    echo "  gh-search python 5           # 搜索 python，显示5个结果"
+    echo "  gh-search "ai agent" 20      # 搜索带空格的词，显示20个结果"
+    exit 1
+fi
+
+echo "🔍 搜索: $KEYWORD (前 $LIMIT 个结果)"
+echo "────────────────────────────────────────"
+
+# 使用 GitHub API 搜索
+URL="https://api.github.com/search/repositories?q=$(echo "$KEYWORD" | sed 's/ /+/g')&sort=stars&order=desc&per_page=$LIMIT"
+
+# 获取并格式化结果
+curl -s "$URL" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+items = data.get('items', [])
+
+if not items:
+    print('未找到结果')
+    sys.exit(0)
+
+for i, repo in enumerate(items, 1):
+    stars = repo.get('stargazers_count', 0)
+    lang = repo.get('language') or 'Unknown'
+    desc = repo.get('description') or '无描述'
+    
+    # 格式化数字
+    if stars >= 1000:
+        stars_str = f'{stars/1000:.1f}k'
+    else:
+        stars_str = str(stars)
+    
+    print(f'{i}. {repo[\"full_name\"]}')
+    print(f'   ⭐ {stars_str} | 📝 {lang}')
+    print(f'   {desc[:60]}{\"...\" if len(desc) > 60 else \"\"}')
+    print(f'   🔗 {repo[\"html_url\"]}')
+    print()
+"

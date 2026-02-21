@@ -1,0 +1,69 @@
+# Pending Pod Remediation Playbook
+# Handles pods stuck in Pending state
+
+name: "Pending Pod Recovery"
+description: "Diagnose and resolve scheduling failures"
+version: "1.0"
+
+triggers:
+  - reason: "FailedScheduling"
+  - issue_type: "pod_pending"
+  - pod_phase: "Pending"
+
+conditions:
+  - "pod.status.phase == 'Pending'"
+  - "pod_age > 5m"
+
+actions:
+  # Step 1: Analyze scheduling constraints
+  - type: analyze
+    name: analyze_scheduling
+    description: "Analyze why pod cannot be scheduled"
+    handler: analyze_scheduling_failure
+    check:
+      - node_resources
+      - node_selectors
+      - affinity_rules
+      - taints_tolerations
+      - persistent_volume_claims
+    requires_confirm: false
+    
+  # Step 2: Suggest resolution
+  - type: suggest
+    name: suggest_resolution
+    description: "Suggest fix for scheduling issue"
+    suggestions:
+      - condition: "insufficient_cpu"
+        message: "Insufficient CPU. Consider scaling cluster or reducing resource requests."
+        action: suggest_node_scaling
+      - condition: "insufficient_memory"
+        message: "Insufficient memory. Consider scaling cluster or reducing memory requests."
+        action: suggest_node_scaling
+      - condition: "pvc_pending"
+        message: "PersistentVolumeClaim not bound. Check storage class and PVC status."
+        action: check_pvc_status
+      - condition: "node_selector"
+        message: "No nodes match nodeSelector constraints. Verify node labels."
+        action: check_node_labels
+      - condition: "taints"
+        message: "Pod cannot tolerate node taints. Add appropriate tolerations."
+        action: suggest_tolerations
+    requires_confirm: false
+    
+  # Step 3: Optional: Scale cluster
+  - type: confirm
+    name: scale_cluster
+    description: "Scale cluster to accommodate pending pods"
+    cmd: scale_node_group
+    warning: "This will add nodes to the cluster and incur additional costs"
+    requires_confirm: true
+
+# Resource optimization suggestions
+optimization:
+  - check: "resource_requests_vs_usage"
+    action: suggest_right-sizing
+    description: "Compare resource requests with actual usage"
+    
+  - check: "pod_disruption_budget"
+    action: verify_pdb
+    description: "Check if PodDisruptionBudget is blocking eviction"

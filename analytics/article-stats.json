@@ -1,0 +1,25 @@
+{
+  "articles": [
+    {
+      "date": "2026-02-16",
+      "title": "用 OpenClaw 把公众号发文自动化了",
+      "topics": ["OpenClaw", "自动化", "公众号", "API"],
+      "title_style": "陈述式+数字",
+      "content_type": "教程+代码",
+      "status": "draft"
+    }
+  ],
+  "topic_scores": {
+    "OpenClaw": 0,
+    "自动化": 0,
+    "公众号": 0,
+    "API": 0
+  },
+  "title_style_stats": {
+    "问句式": {"count": 0, "avg_reads": 0},
+    "陈述式": {"count": 0, "avg_reads": 0},
+    "数字开头": {"count": 0, "avg_reads": 0}
+  },
+  "best_publish_hour": 9,
+  "last_updated": "2026-02-16"
+}

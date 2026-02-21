@@ -1,0 +1,52 @@
+apiVersion: opsinspector.io/v1
+kind: SOP
+metadata:
+  name: restart-crashloop-pod
+  description: 自动处理 CrashLoopBackOff 状态的 Pod
+  version: "1.0.0"
+
+spec:
+  timeout: 10m
+  retries: 0
+  onFailure: abort
+  
+  variables:
+    namespace:
+      type: string
+      required: true
+      default: "default"
+    max_restarts:
+      type: integer
+      default: 3
+
+  steps:
+    - id: get-pod-info
+      name: 获取 Pod 信息
+      action: k8s:get
+      input:
+        resource: pod
+        namespace: "${namespace}"
+      timeout: 30s
+
+    - id: check-restarts
+      name: 检查重启次数
+      action: expr:evaluate
+      condition: "restartCount > ${max_restarts}"
+      input:
+        expression: "restartCount > ${max_restarts}"
+
+    - id: delete-pod
+      name: 删除 Pod 触发重建
+      action: k8s:delete
+      input:
+        resource: pod
+        namespace: "${namespace}"
+      timeout: 60s
+
+    - id: notify-success
+      name: 发送成功通知
+      action: notify:send
+      input:
+        channels: ["dingtalk"]
+        title: "Pod 自动恢复成功"
+        message: "Pod 在 ${namespace} 命名空间已重启"

@@ -1,0 +1,144 @@
+# K8s Ops Bot Configuration
+# Copy this file to ~/.openclaw/k8s-ops-bot.yaml and customize
+
+# Required: Path to kubeconfig file
+kubeconfig: "/Users/YOUR_USERNAME/.kube/config"
+
+# Required: Namespace to monitor (use "all" for cluster-wide)
+namespace: "default"
+
+# Cluster identifier (auto-detected if not set)
+cluster_name: "production"
+
+# ============================================================================
+# Messaging Configuration (OpenClaw Integration)
+# ============================================================================
+
+messaging:
+  # Channel for alerts (Discord, Telegram, etc.)
+  alert_channel: "discord://k8s-alerts"
+  
+  # Channel to listen for commands
+  command_channel: "discord://ops-channel"
+  
+  # Format options
+  compact: false           # Compact message format
+  mention_on_critical: true  # Mention users on critical alerts
+
+# ============================================================================
+# Watcher Configuration (Real-time Event Monitoring)
+# ============================================================================
+
+watcher:
+  enabled: true
+  
+  # Resources to watch
+  watch_resources:
+    - "events"       # Kubernetes Events API
+    - "pods"         # Pod status changes
+  
+  # Event severity filter
+  severity_filter:
+    - "Warning"
+    - "Error"
+  
+  # Alerting settings
+  alerting:
+    # Cooldown periods (seconds)
+    cooldowns:
+      critical: 300    # 5 minutes
+      high: 600        # 10 minutes
+      warning: 1800    # 30 minutes
+      info: 86400      # 24 hours
+    
+    # Alert grouping
+    grouping:
+      enabled: true
+      window_seconds: 60     # Group alerts within this window
+      max_batch_size: 10     # Max alerts per batch
+
+# ============================================================================
+# Inspector Configuration (Periodic Health Checks)
+# ============================================================================
+
+inspector:
+  enabled: true
+  
+  # Inspection interval (for documentation, actual interval via cron)
+  interval_minutes: 30
+  
+  # Checks to perform
+  checks:
+    pod_status: true        # Check for CrashLoopBackOff, Pending, Failed
+    restart_count: true     # Flag containers with >5 restarts
+    deployment_health: true # Check deployment replica status
+    node_health: true       # Check node Ready status
+    resource_usage: false   # Requires metrics-server
+    probe_health: false     # Check probe failures
+
+# ============================================================================
+# Commander Configuration (Interactive Commands)
+# ============================================================================
+
+commander:
+  enabled: true
+  
+  # Authorization (optional)
+  authorization:
+    # List of users allowed to run commands
+    allowed_users:
+      - "admin"
+      - "ops-team"
+    
+    # Admin users who can run restricted commands
+    admin_users:
+      - "admin"
+    
+    # Commands requiring admin access
+    restricted_commands:
+      - "restart"
+      - "scale"
+      - "delete"
+
+# ============================================================================
+# Remediator Configuration (Auto-Remediation)
+# ============================================================================
+
+remediator:
+  enabled: false           # Enable with caution
+  
+  # Auto-fix settings
+  auto_fix: false          # Automatically fix issues without confirmation
+  auto_fix_severity:       # Only auto-fix these severities
+    - "critical"
+  
+  # Confirmation settings
+  require_confirm_for:
+    - "restart"
+    - "scale"
+    - "delete"
+    - "patch"
+  
+  # Playbook directory
+  playbooks_dir: "./assets/playbooks"
+
+# ============================================================================
+# Advanced Settings
+# ============================================================================
+
+advanced:
+  # API request timeout
+  api_timeout: 30
+  
+  # Retry settings
+  retries: 3
+  retry_delay: 5
+  
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  log_level: "INFO"
+  
+  # Data retention
+  max_history_entries: 1000
+  
+  # Resource limits for the bot itself
+  max_concurrent_requests: 10

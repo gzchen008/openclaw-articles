@@ -1,0 +1,50 @@
+# Required - Path to your kubeconfig file
+kubeconfig: "/path/to/kubeconfig"
+
+# Required - Namespace to monitor (use "all" for cluster-wide)
+namespace: "default"
+
+# Event Watch Mode - Real-time monitoring via Informer API
+events:
+  enabled: true
+  
+  # Resources to watch
+  watch_resources:
+    - "events"       # Kubernetes Events API
+    - "pods"         # Pod status changes
+    - "deployments"  # Deployment replica issues
+  
+  # Event severity filter
+  severity:
+    - "Warning"
+    - "Error"
+
+# Inspection Mode - Periodic health checks
+inspection:
+  enabled: true
+  
+  # Run interval (for documentation, actual interval set in cron)
+  interval_minutes: 30
+  
+  # Checks to perform
+  checks:
+    pod_status: true        # Check for CrashLoopBackOff, Pending, Failed, OOMKilled
+    restart_count: true     # Flag containers with >5 restarts
+    deployment_health: true # Check deployment replica status
+    resource_usage: false   # Check CPU/Memory utilization (requires metrics-server)
+    probe_health: false     # Check liveness/readiness probe failures
+
+# Notification Settings
+notifications:
+  # Message format options
+  compact: false           # Send compact summary instead of full details
+  include_yaml: false      # Attach resource YAML (can be verbose)
+  max_events_per_batch: 10 # Limit events per notification batch
+  
+  # Cooldown to prevent spam (seconds)
+  cooldown_seconds: 300    # 5 minutes between similar alerts
+  
+  # Grouping options
+  group_by:
+    - "namespace"          # Group alerts by namespace
+    - "severity"           # Group by severity level

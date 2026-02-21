@@ -1,0 +1,153 @@
+# SearXNG 配置文件 - 针对中文用户优化
+# 保存为: searxng/settings.yml
+
+use_default_settings: true
+
+server:
+  # 基础配置
+  port: 8080
+  bind_address: "0.0.0.0"
+  secret_key: "YOUR_SECRET_KEY_HERE"  # 首次运行后会自动生成
+  
+  # 限制设置
+  limiter: true  # 启用速率限制防止滥用
+  
+  # 隐私设置
+  image_proxy: true  # 图片代理，保护隐私
+  method: "POST"  # 使用 POST 防止搜索词泄露在 URL
+
+search:
+  # 搜索设置
+  safe_search: 0  # 0=关闭, 1=中等, 2=严格
+  autocomplete: "duckduckgo"  # 自动补全来源
+  
+  # 默认搜索引擎偏好
+  default_lang: "zh-CN"  # 默认中文
+  
+  # 结果设置
+  formats:
+    - html
+    - json  # 启用 JSON 输出，便于 API 调用
+    - csv
+    - rss
+
+# 启用的搜索引擎（针对中文优化）
+engines:
+  # 通用搜索
+  - name: google
+    engine: google
+    shortcut: go
+    disabled: false
+    
+  - name: bing
+    engine: bing
+    shortcut: bi
+    disabled: false
+    
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    disabled: false
+    
+  # 中文搜索
+  - name: baidu
+    engine: baidu
+    shortcut: bd
+    disabled: false
+    
+  - name: 360search
+    engine: 360search
+    shortcut: 360
+    disabled: false
+    
+  # 技术搜索
+  - name: github
+    engine: github
+    shortcut: gh
+    disabled: false
+    
+  - name: stackoverflow
+    engine: stackoverflow
+    shortcut: so
+    disabled: false
+    
+  # 百科
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+    disabled: false
+    
+  # 图片搜索
+  - name: bing images
+    engine: bing_images
+    shortcut: bii
+    disabled: false
+    
+  - name: google images
+    engine: google_images
+    shortcut: goi
+    disabled: false
+    
+  # 视频搜索
+  - name: bing videos
+    engine: bing_videos
+    shortcut: biv
+    disabled: false
+
+# 界面设置
+ui:
+  # 主题
+  theme_args:
+    oscar_style: logicodev-dark  # 深色主题
+    
+  # 默认搜索类别
+general:
+  debug: false
+  instance_name: "My SearXNG"
+  contact_url: false
+  privacypolicy_url: false
+  donation_url: false
+  
+# 插件设置
+plugins:
+  - plugin1
+
+enabled_plugins:
+  - "Open Access DOI rewrite"
+  - "Vim-like hotkeys"
+  - "Self Informations"
+  - "Hostnames plugin"
+
+# 外部接口
+# 允许 JSON API 访问（用于 OpenClaw 等工具）
+result_proxy:
+  url: ""
+  
+# 搜索引擎特定设置
+outgoing:
+  # 请求超时
+  request_timeout: 3.0
+  
+  # 最大重试
+  max_request_timeout: 10.0
+  
+  # 连接池
+  pool_connections: 100
+  pool_maxsize: 100
+  
+  # 启用 HTTP/2
+  enable_http2: true
+  
+  # 代理设置（如果需要）
+  proxies:
+    all://:
+      - http://proxy1:8080
+      - http://proxy2:8080
+
+# 品牌设置
+brand:
+  issue_url: https://github.com/searxng/searxng/issues
+  new_issue_url: https://github.com/searxng/searxng/issues/new
+  docs_url: https://docs.searxng.org/
+  public_instances: https://searx.space
+  wiki_url: https://github.com/searxng/searxng/wiki

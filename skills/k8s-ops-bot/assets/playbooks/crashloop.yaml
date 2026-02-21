@@ -1,0 +1,74 @@
+# CrashLoopBackOff Remediation Playbook
+# Handles containers stuck in CrashLoopBackOff
+
+name: "CrashLoopBackOff Recovery"
+description: "Diagnose and remediate CrashLoopBackOff containers"
+version: "1.0"
+
+triggers:
+  - reason: "CrashLoopBackOff"
+  - issue_type: "container_crashloopbackoff"
+  - message_pattern: "*CrashLoopBackOff*"
+
+conditions:
+  - "container.state.waiting.reason == 'CrashLoopBackOff'"
+  - "container.restart_count > 3"
+
+actions:
+  # Step 1: Collect diagnostic info
+  - type: analyze
+    name: collect_logs
+    description: "Collect recent container logs"
+    handler: get_container_logs
+    params:
+      lines: 50
+    requires_confirm: false
+    
+  # Step 2: Analyze error patterns
+  - type: analyze
+    name: analyze_error
+    description: "Analyze error patterns in logs"
+    handler: analyze_logs
+    patterns:
+      - name: "OOM"
+        pattern: "*out of memory*"
+        action: escalate_to_oom_playbook
+      - name: "ConfigError"
+        pattern: "*config*error*"
+        suggestion: "Check ConfigMap and environment variables"
+      - name: "Dependency"
+        pattern: "*connection refused*"
+        suggestion: "Check dependent services are running"
+    requires_confirm: false
+    
+  # Step 3: Suggest actions based on analysis
+  - type: suggest
+    name: suggest_fix
+    description: "Suggest appropriate fix based on error analysis"
+    requires_confirm: false
+    
+  # Step 4: Option to force restart
+  - type: confirm
+    name: force_restart
+    description: "Force delete pod to trigger recreation"
+    cmd: delete_pod
+    params:
+      name: "{{ pod.name }}"
+      namespace: "{{ pod.namespace }}"
+      grace_period: 0
+    warning: "This will immediately terminate the pod"
+    requires_confirm: true
+
+# Common root causes and quick fixes
+quick_fixes:
+  - pattern: "ImagePullBackOff"
+    action: check_image
+    description: "Verify image tag exists and registry is accessible"
+    
+  - pattern: "ConfigMap"
+    action: validate_config
+    description: "Validate ConfigMap keys and values"
+    
+  - pattern: "Permission"
+    action: check_rbac
+    description: "Check RBAC permissions for the pod"

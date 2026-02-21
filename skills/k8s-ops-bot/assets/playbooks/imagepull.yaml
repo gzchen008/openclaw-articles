@@ -1,0 +1,57 @@
+# ImagePullBackOff Remediation Playbook
+# Handles container image pull failures
+
+name: "ImagePullBackOff Recovery"
+description: "Diagnose and fix image pull failures"
+version: "1.0"
+
+triggers:
+  - reason: "ImagePullBackOff"
+  - reason: "ErrImagePull"
+  - issue_type: "container_imagepullbackoff"
+
+conditions:
+  - "container.state.waiting.reason in ['ImagePullBackOff', 'ErrImagePull']"
+
+actions:
+  # Step 1: Analyze image reference
+  - type: analyze
+    name: analyze_image
+    description: "Analyze image reference and registry"
+    handler: analyze_image_ref
+    check:
+      - image_tag_valid
+      - registry_accessible
+      - pull_secret_present
+    requires_confirm: false
+    
+  # Step 2: Check registry connectivity
+  - type: analyze
+    name: check_registry
+    description: "Check connectivity to image registry"
+    handler: check_registry_connectivity
+    requires_confirm: false
+    
+  # Step 3: Suggest fix
+  - type: suggest
+    name: suggest_image_fix
+    description: "Suggest fix for image pull issue"
+    suggestions:
+      - condition: "tag_not_found"
+        message: "Image tag not found. Verify the tag exists or use 'latest'."
+      - condition: "registry_unauthorized"
+        message: "Registry authentication failed. Check imagePullSecrets."
+      - condition: "registry_unreachable"
+        message: "Cannot reach registry. Check network connectivity and firewall rules."
+    requires_confirm: false
+
+# Registry troubleshooting
+diagnostic_steps:
+  - name: "Verify image exists"
+    command: "crane manifest {{ image }}"
+    
+  - name: "Check node image cache"
+    command: "kubectl describe node {{ node }} | grep -A10 'Allocated resources'"
+    
+  - name: "Verify pull secrets"
+    command: "kubectl get secret -n {{ namespace }} | grep dockercfg"

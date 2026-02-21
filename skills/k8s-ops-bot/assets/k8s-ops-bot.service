@@ -1,0 +1,35 @@
+[Unit]
+Description=K8s Ops Bot - Kubernetes Operations Robot
+Documentation=https://github.com/your-org/k8s-ops-bot
+After=network.target
+
+[Service]
+Type=simple
+User=k8s-ops-bot
+Group=k8s-ops-bot
+WorkingDirectory=/opt/k8s-ops-bot
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+Environment=K8S_OPS_BOT_CONFIG=/etc/k8s-ops-bot/config.yaml
+
+# Main command
+ExecStart=/usr/bin/python3 /opt/k8s-ops-bot/scripts/bot.py --config /etc/k8s-ops-bot/config.yaml --daemon
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Resource limits
+LimitNOFILE=65536
+MemoryMax=512M
+CPUQuota=50%
+
+# Security
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/k8s-ops-bot
+
+[Install]
+WantedBy=multi-user.target

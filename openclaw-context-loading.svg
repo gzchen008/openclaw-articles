@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&amp;display=swap');
+      .title { font-family: 'Comic Sans MS', cursive; font-size: 32px; font-weight: bold; }
+      .subtitle { font-family: 'Comic Sans MS', cursive; font-size: 20px; font-weight: bold; }
+      .file-text { font-family: 'Comic Sans MS', cursive; font-size: 16px; font-weight: bold; }
+      .desc-text { font-family: 'Comic Sans MS', cursive; font-size: 12px; }
+      .note-text { font-family: 'Comic Sans MS', cursive; font-size: 16px; }
+    </style>
+    <filter id="sketchy">
+      <feTurbulence type="turbulence" baseFrequency="0.05" numOctaves="2" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="1200" height="900" fill="#fefefe"/>
+  
+  <!-- 标题 -->
+  <text x="600" y="45" class="title" text-anchor="middle" fill="#2c3e50">OpenClaw 上下文加载顺序 📋</text>
+  
+  <!-- 中间分隔线 -->
+  <line x1="600" y1="80" x2="600" y2="820" stroke="#bdc3c7" stroke-width="2" stroke-dasharray="10,5"/>
+  
+  <!-- ========== 左侧：主智能体 ========== -->
+  <text x="300" y="90" class="subtitle" text-anchor="middle" fill="#3498db">主智能体 👤</text>
+  
+  <!-- 左侧简笔画小人 -->
+  <g transform="translate(300, 160)">
+    <!-- 头 -->
+    <circle cx="0" cy="0" r="20" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- 眼睛 -->
+    <circle cx="-7" cy="-5" r="3" fill="#333"/>
+    <circle cx="7" cy="-5" r="3" fill="#333"/>
+    <!-- 嘴巴 -->
+    <path d="M -8 5 Q 0 12 8 5" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- 身体 -->
+    <line x1="0" y1="20" x2="0" y2="60" stroke="#333" stroke-width="2"/>
+    <!-- 手臂 -->
+    <line x1="-25" y1="35" x2="25" y2="35" stroke="#333" stroke-width="2"/>
+    <!-- 腿 -->
+    <line x1="0" y1="60" x2="-15" y2="90" stroke="#333" stroke-width="2"/>
+    <line x1="0" y1="60" x2="15" y2="90" stroke="#333" stroke-width="2"/>
+  </g>
+  
+  <!-- 左侧文件列表 -->
+  <!-- AGENTS.md - 绿色 -->
+  <rect x="200" y="270" width="200" height="45" rx="5" fill="#d5f4e6" stroke="#27ae60" stroke-width="3"/>
+  <text x="300" y="298" class="file-text" text-anchor="middle" fill="#333">AGENTS.md</text>
+  <text x="410" y="298" class="desc-text" fill="#666">(全体通用指令)</text>
+  
+  <!-- 箭头1 -->
+  <path d="M 300 315 L 300 340" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+  <polygon points="300,350 295,340 305,340" fill="#666"/>
+  
+  <!-- SOUL.md - 蓝色 -->
+  <rect x="200" y="345" width="200" height="45" rx="5" fill="#d6eaf8" stroke="#3498db" stroke-width="3"/>
+  <text x="300" y="373" class="file-text" text-anchor="middle" fill="#333">SOUL.md</text>
+  <text x="410" y="373" class="desc-text" fill="#666">(人格·规则·关系)</text>
+  
+  <!-- 箭头2 -->
+  <path d="M 300 390 L 300 415" stroke="#666" stroke-width="2"/>
+  <polygon points="300,425 295,415 305,415" fill="#666"/>
+  
+  <!-- TOOLS.md - 绿色 -->
+  <rect x="200" y="420" width="200" height="45" rx="5" fill="#d5f4e6" stroke="#27ae60" stroke-width="3"/>
+  <text x="300" y="448" class="file-text" text-anchor="middle" fill="#333">TOOLS.md</text>
+  <text x="410" y="448" class="desc-text" fill="#666">(工具定义)</text>
+  
+  <!-- 箭头3 -->
+  <path d="M 300 465 L 300 490" stroke="#666" stroke-width="2"/>
+  <polygon points="300,500 295,490 305,490" fill="#666"/>
+  
+  <!-- IDENTITY.md - 黄色 -->
+  <rect x="200" y="495" width="200" height="45" rx="5" fill="#fdebd0" stroke="#f39c12" stroke-width="3"/>
+  <text x="300" y="523" class="file-text" text-anchor="middle" fill="#333">IDENTITY.md</text>
+  <text x="410" y="523" class="desc-text" fill="#666">(自我介绍)</text>
+  
+  <!-- 箭头4 -->
+  <path d="M 300 540 L 300 565" stroke="#666" stroke-width="2"/>
+  <polygon points="300,575 295,565 305,565" fill="#666"/>
+  
+  <!-- USER.md - 黄色 -->
+  <rect x="200" y="570" width="200" height="45" rx="5" fill="#fdebd0" stroke="#f39c12" stroke-width="3"/>
+  <text x="300" y="598" class="file-text" text-anchor="middle" fill="#333">USER.md</text>
+  <text x="410" y="598" class="desc-text" fill="#666">(用户信息)</text>
+  
+  <!-- 箭头5 -->
+  <path d="M 300 615 L 300 640" stroke="#666" stroke-width="2"/>
+  <polygon points="300,650 295,640 305,640" fill="#666"/>
+  
+  <!-- HEARTBEAT.md - 灰色 -->
+  <rect x="200" y="645" width="200" height="45" rx="5" fill="#ecf0f1" stroke="#95a5a6" stroke-width="3"/>
+  <text x="300" y="673" class="file-text" text-anchor="middle" fill="#333">HEARTBEAT.md</text>
+  <text x="410" y="673" class="desc-text" fill="#666">(定期检查)</text>
+  
+  <!-- 箭头6 -->
+  <path d="M 300 690 L 300 715" stroke="#666" stroke-width="2"/>
+  <polygon points="300,725 295,715 305,715" fill="#666"/>
+  
+  <!-- memory/*.md - 橙色 -->
+  <rect x="200" y="720" width="200" height="45" rx="5" fill="#fdebd0" stroke="#e67e22" stroke-width="3"/>
+  <text x="300" y="748" class="file-text" text-anchor="middle" fill="#333">memory/*.md</text>
+  <text x="410" y="748" class="desc-text" fill="#666">(记忆)</text>
+  
+  <!-- ========== 右侧：子智能体 ========== -->
+  <text x="900" y="90" class="subtitle" text-anchor="middle" fill="#e74c3c">子智能体 🤖</text>
+  
+  <!-- 右侧简笔画小人 -->
+  <g transform="translate(900, 160)">
+    <!-- 头 -->
+    <rect x="-20" y="-20" width="40" height="40" rx="5" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- 眼睛 -->
+    <circle cx="-7" cy="-5" r="3" fill="#333"/>
+    <circle cx="7" cy="-5" r="3" fill="#333"/>
+    <!-- 嘴巴 -->
+    <line x1="-8" y1="8" x2="8" y2="8" stroke="#333" stroke-width="2"/>
+    <!-- 天线 -->
+    <line x1="0" y1="-20" x2="0" y2="-35" stroke="#333" stroke-width="2"/>
+    <circle cx="0" cy="-38" r="5" fill="#e74c3c"/>
+    <!-- 身体 -->
+    <rect x="-15" y="25" width="30" height="40" fill="none" stroke="#333" stroke-width="2"/>
+    <!-- 手臂 -->
+    <line x1="-30" y1="35" x2="-15" y2="35" stroke="#333" stroke-width="2"/>
+    <line x1="15" y1="35" x2="30" y2="35" stroke="#333" stroke-width="2"/>
+    <!-- 腿 -->
+    <rect x="-12" y="65" width="8" height="25" fill="none" stroke="#333" stroke-width="2"/>
+    <rect x="4" y="65" width="8" height="25" fill="none" stroke="#333" stroke-width="2"/>
+  </g>
+  
+  <!-- 右侧文件列表 -->
+  <!-- AGENTS.md - 绿色 + 对勾 -->
+  <rect x="800" y="270" width="200" height="45" rx="5" fill="#d5f4e6" stroke="#27ae60" stroke-width="3"/>
+  <text x="900" y="298" class="file-text" text-anchor="middle" fill="#333">AGENTS.md</text>
+  <!-- 绿色对勾 -->
+  <path d="M 1020 285 L 1030 300 L 1050 275" stroke="#27ae60" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- 箭头 -->
+  <path d="M 900 315 L 900 340" stroke="#666" stroke-width="2"/>
+  <polygon points="900,350 895,340 905,340" fill="#666"/>
+  
+  <!-- TOOLS.md - 绿色 + 对勾 -->
+  <rect x="800" y="345" width="200" height="45" rx="5" fill="#d5f4e6" stroke="#27ae60" stroke-width="3"/>
+  <text x="900" y="373" class="file-text" text-anchor="middle" fill="#333">TOOLS.md</text>
+  <!-- 绿色对勾 -->
+  <path d="M 1020 360 L 1030 375 L 1050 350" stroke="#27ae60" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- 不加载部分 -->
+  <text x="800" y="440" class="note-text" fill="#e74c3c" font-weight="bold">❌ 不加载:</text>
+  
+  <!-- SOUL.md - 划掉 -->
+  <text x="820" y="480" class="file-text" fill="#bdc3c7">SOUL.md</text>
+  <line x1="815" y1="475" x2="920" y2="475" stroke="#e74c3c" stroke-width="2"/>
+  <!-- 红色叉号 -->
+  <path d="M 950 467 L 970 487 M 970 467 L 950 487" stroke="#e74c3c" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- IDENTITY.md - 划掉 -->
+  <text x="820" y="520" class="file-text" fill="#bdc3c7">IDENTITY.md</text>
+  <line x1="815" y1="515" x2="950" y2="515" stroke="#e74c3c" stroke-width="2"/>
+  <!-- 红色叉号 -->
+  <path d="M 980 507 L 1000 527 M 1000 507 L 980 527" stroke="#e74c3c" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- memory/ - 划掉 -->
+  <text x="820" y="560" class="file-text" fill="#bdc3c7">memory/</text>
+  <line x1="815" y1="555" x2="920" y2="555" stroke="#e74c3c" stroke-width="2"/>
+  <!-- 红色叉号 -->
+  <path d="M 950 547 L 970 567 M 970 547 L 950 567" stroke="#e74c3c" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- 底部说明 -->
+  <rect x="350" y="800" width="500" height="50" rx="25" fill="#ffebee" stroke="#e74c3c" stroke-width="3"/>
+  <text x="600" y="832" class="note-text" text-anchor="middle" fill="#c0392b" font-weight="bold">💡 子智能体不注入人格(SOUL)</text>
+</svg>

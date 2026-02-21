@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-ops-bot
+  namespace: monitoring
+  labels:
+    app: k8s-ops-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-ops-bot
+  template:
+    metadata:
+      labels:
+        app: k8s-ops-bot
+    spec:
+      serviceAccountName: k8s-ops-bot
+      containers:
+      - name: bot
+        image: python:3.11-slim
+        command: ["python3", "/app/scripts/bot.py", "--config", "/app/config.yaml", "--daemon"]
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: bot-scripts
+          mountPath: /app/scripts
+        - name: bot-config
+          mountPath: /app/config.yaml
+          subPath: config.yaml
+        - name: playbooks
+          mountPath: /app/assets/playbooks
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "1"
+      volumes:
+      - name: bot-scripts
+        configMap:
+          name: k8s-ops-bot-scripts
+      - name: bot-config
+        secret:
+          secretName: k8s-ops-bot-config
+      - name: playbooks
+        configMap:
+          name: k8s-ops-bot-playbooks
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: k8s-ops-bot
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k8s-ops-bot
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log", "services", "events", "nodes", "configmaps"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments/scale"]
+  verbs: ["patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: k8s-ops-bot
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: k8s-ops-bot
+subjects:
+- kind: ServiceAccount
+  name: k8s-ops-bot
+  namespace: monitoring
