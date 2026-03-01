@@ -1,0 +1,116 @@
+<p style="margin: 8px 0;">你有没有经历过这种场景：开了一个小时会，讲了十几个要点，会后老板问你「刚才说了啥」，你翻遍笔记本只找到几个零散的关键词？</p>
+<p style="margin: 8px 0;">或者更惨 —— 你是会议记录员，边听边记还要边理解，最后整理出来的纪要逻辑混乱，自己都看不懂。</p>
+<p style="margin: 8px 0;">今天教你用 OpenClaw 打造一个 AI 会议助手，让它在会议中自动记录、整理、生成结构化纪要。开会 1 小时，整理只需要 5 分钟。</p>
+
+<p style="margin-top: 16px; font-size: 18px; font-weight: 600; color: #0366d6;">🎯 最终效果</p>
+<p style="margin: 8px 0;">配置完成后，你可以：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">实时转写</strong>：会议中的语音自动转成文字</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">智能整理</strong>：AI 自动提取关键信息、决策、待办事项</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">格式输出</strong>：生成结构化的会议纪要，可直接发送团队</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">多端同步</strong>：纪要自动同步到微信、Telegram、Discord</p>
+
+<p style="margin-top: 16px; font-size: 18px; font-weight: 600; color: #0366d6;">📋 前置条件</p>
+<p style="margin: 8px 0;">在开始之前，请确保：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 已安装 OpenClaw（没有的话看上一篇安装指南）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 有一个可用的 ASR 服务（语音转文字）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 有一点耐心（配置大约 15 分钟）</p>
+
+<p style="margin-top: 16px; font-size: 18px; font-weight: 600; color: #0366d6;">🔧 第一步：配置语音转文字</p>
+<p style="margin: 8px 0;">OpenClaw 本身不做语音识别，但可以对接各种 ASR 服务。推荐几个方案：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">OpenAI Whisper</strong>：免费、效果好，本地运行</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">阿里云 ASR</strong>：中文效果好，有免费额度</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">讯飞听见</strong>：中文最准，需要付费</p>
+<p style="margin: 8px 0;">这里以 Whisper 为例，配置一个简单的转写服务：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">pip install openai-whisper</p>
+</section>
+<p style="margin: 8px 0;">然后在 OpenClaw 中添加一个技能来调用它：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># skills/transcribe/SKILL.md</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">name: transcribe</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">description: 转写音频文件为文字</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">exec: python scripts/transcribe.py $audio_path</p>
+</section>
+
+<p style="margin-top: 16px; font-size: 18px; font-weight: 600; color: #0366d6;">🤖 第二步：创建会议纪要模板</p>
+<p style="margin: 8px 0;">AI 整理会议纪要需要明确的格式要求。在 OpenClaw 的记忆文件中添加模板：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 会议纪要模板</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">## 会议信息</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">- 时间：[自动填充]</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">- 参与人：[从对话中提取]</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">- 主题：[总结]</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">## 关键决策</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">[列出所有确定的决策]</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">## 待办事项</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">- [ ] 任务1 @负责人 截止时间</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">- [ ] 任务2 @负责人 截止时间</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">## 下次会议</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">[时间和议题]</p>
+</section>
+<p style="margin: 8px 0;">这样 AI 就知道该按什么结构来整理了。</p>
+
+<p style="margin-top: 16px; font-size: 18px; font-weight: 600; color: #0366d6;">⏰ 第三步：配置自动化流程</p>
+<p style="margin: 8px 0;">最理想的方式是：会议开始时发一条消息，AI 自动开始记录；会议结束时再发一条，AI 自动生成纪要。</p>
+<p style="margin: 8px 0;">用 OpenClaw 的 Cron 功能可以实现：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 每周五下午 3 点提醒生成周会纪要</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">cron:</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  - name: weekly-meeting-summary</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    schedule: "0 15 * * 5"</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    task: "读取本周会议记录，生成周会纪要"</p>
+</section>
+<p style="margin: 8px 0;">也可以在对话中直接说：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 「帮我整理今天的会议内容」</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 「生成周会纪要」</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 「提取刚才说的待办事项」</p>
+
+<p style="margin-top: 16px; font-size: 18px; font-weight: 600; color: #0366d6;">💡 实战技巧</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 1️⃣ 会前准备 ━</p>
+<p style="margin: 8px 0;">开会前，把议程发给 OpenClaw：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">今天的周会议程：</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">1. 上周数据回顾</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">2. 项目进度同步</p>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">3. 本周重点讨论</p>
+</section>
+<p style="margin: 8px 0;">AI 会根据议程来组织纪要结构。</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 2️⃣ 会中实时辅助 ━</p>
+<p style="margin: 8px 0;">如果会议在 Discord 或 Telegram 进行，OpenClaw 可以实时参与：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 自动记录关键发言</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 提醒跑题（「当前讨论偏离议程第 2 项」）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 追踪时间（「讨论还有 5 分钟」）</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 3️⃣ 会后自动分发 ━</p>
+<p style="margin: 8px 0;">纪要生成后，可以自动发送到指定渠道：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 发到团队微信群</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 发到 Slack 频道</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 发到 Notion 页面</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 发邮件给参会人</p>
+
+<p style="margin-top: 16px; font-size: 18px; font-weight: 600; color: #f66;">⚠️ 注意事项</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">隐私保护</strong>：敏感会议建议关闭自动转写，手动整理</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">准确率</strong>：ASR 可能有识别错误，重要内容需要人工复核</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">存储空间</strong>：音频文件会占用空间，定期清理</p>
+
+<p style="margin-top: 16px; font-size: 18px; font-weight: 600; color: #0366d6;">🎁 额外福利</p>
+<p style="margin: 8px 0;">除了会议纪要，这套配置还可以用来：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">采访整理</strong>：记者访谈、用户调研</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">课堂笔记</strong>：网课、培训、讲座</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">播客转录</strong>：把音频内容变成文字</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">语音日记</strong>：说的比写的快</p>
+
+<p style="margin-top: 16px; font-size: 18px; font-weight: 600; color: #0366d6;">📝 总结</p>
+<p style="margin: 8px 0;">今天学了如何用 OpenClaw 打造 AI 会议助手：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 配置语音转文字服务</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 创建会议纪要模板</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 设置自动化流程</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 掌握实战技巧</p>
+<p style="margin: 8px 0;">开会再也不是负担，AI 帮你记、帮你整理、帮你分发。你要做的只是专注讨论。</p>
+
+<hr style="margin: 24px 0; border: none; border-top: 1px solid #e1e4e8;">
+<p style="margin: 8px 0;">如果这篇文章对你有帮助，欢迎 <strong style="font-weight: 600;">点赞、在看、转发</strong> 三连支持！</p>
+<p style="margin: 8px 0;">有任何问题，欢迎在评论区留言，我会一一回复。</p>
+<p style="margin: 8px 0;">明天见 👋</p>
