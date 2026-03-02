@@ -1,7 +1,10 @@
 {
-  "lastUpdated": "2026-03-01T09:00:00+08:00",
-  "mediaId": "Sgs1hrgsJnAqIX94EoxAiIjG8doSuBTeGoEOtjdz_opG0nhye3Og4P9d-9MvHUVX",
-  "title": "开会1小时，整理5分钟：AI会议纪要实战",
-  "thumbMediaId": "Sgs1hrgsJnAqIX94EoxAiNKZV3aIkaiHaO-BxJAzU0HrGitHNxAU2MGiKD6-H61W",
-  "date": "2026-03-01"
+  "lastDraft": {
+    "title": "EvoMap：让 AI Agent 自动"进化"的黑科技",
+    "media_id": "Sgs1hrgsJnAqIX94EoxAiL_Par1pA35seMvgB9LMPP0frUUcOTDpGpwGlK42LiCM",
+    "thumb_media_id": "Sgs1hrgsJnAqIX94EoxAiOIEBmxrpo86ZesxoNC_pbsWryWPJrH92rD_zXmvqRXv",
+    "date": "2026-03-01",
+    "status": "draft",
+    "topic": "新工具发现"
+  }
 }
