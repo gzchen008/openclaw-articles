@@ -1,0 +1,229 @@
+<p style="margin: 0;"><strong style="font-weight: 600;">Telegram + AI 机器人：自动回复、群组管理全搞定</strong></p>
+
+<p style="margin: 8px 0; font-size: 13px; color: #586069;">本文由 OpenClaw AI 助手协助整理</p>
+
+<p style="margin: 8px 0; padding: 8px; background: #1890ff; color: #fff; border-radius: 4px; font-size: 13px;">【快速导航】<br>• 本文适合：想用 Telegram 做 AI Bot 的用户<br>• 预计阅读：5 分钟<br>• 难度等级：⭐⭐</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">🎯 最终效果</p>
+
+<p style="margin: 8px 0;">搭建完成后，你的 Telegram Bot 可以：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">自动回复私聊</strong>：用户私信机器人，AI 自动回答</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">群组智能对话</strong>：在群里 @机器人，AI 回答问题</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">管理功能</strong>：自动踢广告、欢迎新成员</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">定时公告</strong>：每天自动发送群公告</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">多群同步</strong>：一条消息同时推送到多个群</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">📋 前置条件</p>
+
+<p style="margin: 8px 0;">在开始之前，你需要：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 一台能访问互联网的电脑（本地或服务器）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 已安装 OpenClaw（还没安装？看 <a href="https://docs.openclaw.ai" style="color: #0366d6;">这篇教程</a>）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 一个 Telegram 账号</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">🔧 第一步：创建 Telegram Bot</p>
+
+<p style="margin: 8px 0;">Telegram Bot 需要通过 BotFather 创建。</p>
+
+<p style="margin: 8px 0; font-weight: 600;">操作步骤：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. 在 Telegram 搜索 <strong style="font-weight: 600;">@BotFather</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">2. 发送 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">/newbot</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">3. 按提示输入机器人名称（如：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">OpenClaw AI Assistant</code>）</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. 输入机器人用户名（如：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">openclaw_ai_bot</code>，必须以 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">_bot</code> 结尾）</p>
+<p style="margin: 4px 0; padding-left: 20px;">5. <strong style="font-weight: 600;">复制 API Token</strong>（格式：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">123456789:ABCdefGHIjklMNOpqrsTUVwxyz</code>）</p>
+
+<p style="margin: 8px 0; padding: 8px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;"><strong style="font-weight: 600;">⚠️ 重要：Token 只显示一次，务必保存好！</strong></p>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">⚙️ 第二步：配置 OpenClaw</p>
+
+<p style="margin: 8px 0;">拿到 Token 后，配置 OpenClaw。</p>
+
+<p style="margin: 8px 0; font-weight: 600;">编辑配置文件：</p>
+
+<p style="margin: 8px 0;">打开 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">~/.openclaw/openclaw.json</code>，添加 Telegram 配置：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "telegram": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "enabled": true,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "token": "YOUR_BOT_TOKEN_HERE"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 8px 0; padding: 8px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;"><strong style="font-weight: 600;">⚠️ 安全提示：</strong><br>• Token 不要提交到 GitHub<br>• 不要在公开场合泄露 Token<br>• 如果泄露，立即去 BotFather 重新生成</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">🤖 第三步：启动机器人</p>
+
+<p style="margin: 8px 0;">配置好后，启动 OpenClaw：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw start</p>
+</section>
+
+<p style="margin: 8px 0;">或者直接运行：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">npx openclaw start</p>
+</section>
+
+<p style="margin: 8px 0;">启动成功后，你会看到类似日志：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">[telegram] Bot started: @openclaw_ai_bot</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">[telegram] Webhook set successfully</p>
+</section>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">💬 第四步：测试机器人</p>
+
+<p style="margin: 8px 0;">现在去 Telegram 测试一下。</p>
+
+<p style="margin: 8px 0; font-weight: 600;">私聊测试：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. 在 Telegram 搜索你的机器人用户名</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. 点击 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">Start</code> 或发送 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">/start</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">3. 发送任意消息，AI 会自动回复</p>
+
+<p style="margin: 8px 0; font-weight: 600;">群组测试：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. 把机器人拉进群组</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. 在群里 @机器人（如：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">@openclaw_ai_bot 你好</code>）</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. AI 会回复你的消息</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">🎨 进阶功能</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 1️⃣ 自动欢迎新成员 ━</p>
+
+<p style="margin: 8px 0;">当有人进群，机器人自动发欢迎消息。</p>
+
+<p style="margin: 8px 0; font-weight: 600;">配置方法：</p>
+
+<p style="margin: 8px 0;">在 OpenClaw 的 Skills 中添加：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">// 当检测到新成员加入</p>
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">if (message.new_chat_members) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">  const welcomeMsg = `欢迎 @${message.from.username} 加入！</p>
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">我是 AI 助手，有问题随时 @我`;</p>
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">  sendMessage(welcomeMsg);</p>
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 2️⃣ 自动踢广告 ━</p>
+
+<p style="margin: 8px 0;">检测到广告关键词，自动删除消息并踢人。</p>
+
+<p style="margin: 8px 0; font-weight: 600;">配置方法：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">const adKeywords = ['加微信', '代购', '兼职', '赚钱'];</p>
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">if (adKeywords.some(kw => message.text.includes(kw))) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">  deleteMessage(message.message_id);</p>
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">  kickUser(message.from.id);</p>
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 3️⃣ 定时公告 ━</p>
+
+<p style="margin: 8px 0;">每天早上 9 点自动发群公告。</p>
+
+<p style="margin: 8px 0; font-weight: 600;">使用 OpenClaw Cron：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw cron add "0 9 * * *" "telegram broadcast '早安！今天是新的一天'"</p>
+</section>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 4️⃣ 多群同步 ━</p>
+
+<p style="margin: 8px 0;">一条消息推送到所有群。</p>
+
+<p style="margin: 8px 0; font-weight: 600;">配置方法：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "telegram": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "broadcastGroups": ["-100123456789", "-100987654321"]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 8px 0;">然后使用：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw telegram broadcast "重要通知：服务器维护"</p>
+</section>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">❓ 常见问题</p>
+
+<p style="margin: 12px 0 4px 0; font-weight: 600; color: #24292e;">Q: 机器人不回复消息？</p>
+
+<p style="margin: 8px 0;">检查以下几点：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Token 是否正确配置</p>
+<p style="margin: 4px 0; padding-left: 20px;">• OpenClaw 是否正常启动</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 机器人是否被群组禁言</p>
+
+<p style="margin: 12px 0 4px 0; font-weight: 600; color: #24292e;">Q: 群里 @机器人 没反应？</p>
+
+<p style="margin: 8px 0;">确保：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 机器人有读取消息的权限</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 群组隐私模式已关闭（BotFather 中设置）</p>
+
+<p style="margin: 12px 0 4px 0; font-weight: 600; color: #24292e;">Q: 如何获取群组 ID？</p>
+
+<p style="margin: 8px 0;">把机器人拉进群，发送一条消息，然后访问：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 13px; color: #24292e;">https://api.telegram.org/botYOUR_TOKEN/getUpdates</p>
+</section>
+
+<p style="margin: 8px 0;">在返回的 JSON 中找到 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">chat.id</code>。</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">💡 实用技巧</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">1. 设置机器人命令</strong></p>
+
+<p style="margin: 8px 0;">在 BotFather 中发送 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">/setcommands</code>，然后输入：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">start - 开始对话</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">help - 获取帮助</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">status - 查看状态</p>
+</section>
+
+<p style="margin: 8px 0;">用户输入 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">/</code> 时会自动提示这些命令。</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">2. 设置机器人头像</strong></p>
+
+<p style="margin: 8px 0;">在 BotFather 中发送 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">/setuserpic</code>，然后上传图片。</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">3. 设置机器人描述</strong></p>
+
+<p style="margin: 8px 0;">在 BotFather 中发送 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">/setdescription</code>，输入机器人简介。</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">📊 效果对比</p>
+
+<p style="margin: 8px 0; padding: 8px; background: #f6f8fa; border-radius: 4px; font-size: 14px;"><strong style="font-weight: 600;">场景 | 手动管理 | AI Bot 管理</strong></p>
+<p style="margin: 4px 0; padding: 8px; background: #f6f8fa; border-radius: 4px; font-size: 14px;">回复新人问题 | 1-5 分钟 | <strong style="font-weight: 600; color: #28a745;">即时</strong></p>
+<p style="margin: 4px 0; padding: 8px; background: #f6f8fa; border-radius: 4px; font-size: 14px;">踢广告机器人 | 需要在线 | <strong style="font-weight: 600; color: #28a745;">自动</strong></p>
+<p style="margin: 4px 0; padding: 8px; background: #f6f8fa; border-radius: 4px; font-size: 14px;">发送群公告 | 手动复制粘贴 | <strong style="font-weight: 600; color: #28a745;">一键推送</strong></p>
+<p style="margin: 4px 0; padding: 8px; background: #f6f8fa; border-radius: 4px; font-size: 14px;">多群同步 | 逐个发送 | <strong style="font-weight: 600; color: #28a745;">同时推送</strong></p>
+
+<p style="margin: 16px 0 8px 0; font-size: 18px; font-weight: 600; color: #0366d6;">🚀 下一步</p>
+
+<p style="margin: 8px 0;">现在你已经拥有了一个 Telegram AI Bot，可以：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">接入更多模型</strong>：切换到 Claude、GPT-4 获得更好效果</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">添加自定义 Skills</strong>：写脚本扩展功能</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">对接其他平台</strong>：同时接入微信、Discord</p>
+
+<p style="margin: 8px 0;">明天教你如何在 Slack 里搭建 AI 编程助手，让你的团队协作效率翻倍！</p>
+
+<hr style="margin: 24px 0; border: none; border-top: 1px solid #e1e4e8;">
+
+<p style="margin: 8px 0;">如果这篇文章对你有帮助，欢迎 <strong style="font-weight: 600;">点赞、在看、转发</strong> 三连支持！</p>
+
+<p style="margin: 8px 0;">有任何问题，欢迎在评论区留言，我会一一回复。</p>
+
+<p style="margin: 8px 0;">明天见 👋</p>
