@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>14个 Agent 一起工作？OpenClaw 多 Agent 编排实战</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 24px 0 16px 0;
+            line-height: 1.3;
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 24px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0366d6;
+        }
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 20px 0 8px 0;
+        }
+        p {
+            margin: 8px 0;
+        }
+        strong {
+            font-weight: 600;
+            color: #0366d6;
+        }
+        code {
+            font-family: monospace;
+            background: #f6f8fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+            margin: 12px 0;
+        }
+        .tip {
+            background: #e3f2fd;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+        .warning {
+            background: #fff5f5;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            border-left: 4px solid #f66;
+        }
+        .success {
+            background: #d4edda;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            color: #155724;
+        }
+        .card {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+        }
+        .section-title {
+            margin: 20px 0 4px 0;
+            padding: 8px;
+            background: #0366d6;
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .agent-item {
+            background: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border-left: 4px solid #0366d6;
+        }
+    </style>
+</head>
+<body>
+    <h1>14个 Agent 一起工作？OpenClaw 多 Agent 编排实战</h1>
+
+    <p style="margin: 0 0 16px 0; color: #586069; font-size: 14px;">本文由 OpenClaw AI 助手协助整理</p>
+
+    <p>你有没有想过，如果能像管理团队一样管理 AI，会发生什么？</p>
+
+    <p>一个人负责总体规划，一个人写代码，一个人做安全审计，一个人负责搜索资料……所有 AI 像一个真正的团队一样协作，各自发挥专长。</p>
+
+    <p>这不是幻想——这是 <strong>OpenClaw 社区开发者 Adam</strong>（@adam91holt）的真实实践，他构建了一个 <strong>14 个 Agent 的 Dream Team</strong>，实现了真正的多 Agent 协作。</p>
+
+    <p>今天我们就来看看这个系统是怎么工作的，以及你如何在自己的 OpenClaw 中实现类似的能力。</p>
+
+    <p class="section-title">━ 1️⃣ 为什么要多 Agent 协作？ ━</p>
+
+    <p>传统 AI 助手的问题在于<strong>"全能"</strong>——让一个模型同时做所有事情。</p>
+
+    <p>但现实是：</p>
+
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>代码专家</strong>不适合做安全审计</p>
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>搜索高手</strong>不擅长写复杂的业务逻辑</p>
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>安全工程师</strong>不应该浪费时间做简单总结</p>
+
+    <div class="highlight">
+        <strong>💡 核心原则</strong>
+        <p style="margin: 8px 0;">Orchestration > Chat<br>Specialization > Generalization</p>
+    </div>
+
+    <p>Adam 的解决方案很简单：<strong>分工</strong>。每个 Agent 专注于自己的领域，有一个 Orchestrator（编排者）来协调所有人。</p>
+
+    <p class="section-title">━ 2️⃣ Kev's Dream Team：AI 团队架构 ━</p>
+
+    <p>Dream Team 由 7 个专业 Agent 组成：</p>
+
+    <div class="agent-item">
+        <h3>🧠 Kev（The Orchestrator）</h3>
+        <p><strong>角色：</strong>团队队长 & 任务分配器</p>
+        <p><strong>模型：</strong>Opus 4.5 / Gemini 3 Pro（高推理能力）</p>
+        <p><strong>权限：</strong>完全系统访问，会话生成，心跳管理</p>
+        <p><strong>特点：</strong>"管理者"。Kev 不写代码，他确保代码被写出来。他持有用户目标的上下文，并将任务分配给合适的专家。</p>
+    </div>
+
+    <div class="agent-item">
+        <h3>👷 Rex（Engineering）</h3>
+        <p><strong>角色：</strong>高级软件工程师</p>
+        <p><strong>模型：</strong>Codex GPT-5.2（代码专家）</p>
+        <p><strong>权限：</strong>读写代码库，Git 操作，严格沙箱执行</p>
+        <p><strong>特点：</strong>"构建者"。给 Rex 一个规格，他就提交 PR。</p>
+    </div>
+
+    <div class="agent-item">
+        <h3>🔒 Hawk（Security & QA）</h3>
+        <p><strong>角色：</strong>安全工程师 & 测试员</p>
+        <p><strong>模型：</strong>Opus（推理/安全专注）</p>
+        <p><strong>权限：</strong>只读代码访问，渗透测试工具，Linter 执行</p>
+        <p><strong>特点：</strong>"审计员"。Hawk 故意破坏东西，这样用户就不会遇到问题。他在 Rex 的 PR 合并前进行审查。</p>
+    </div>
+
+    <div class="agent-item">
+        <h3>🔎 Scout（Research）</h3>
+        <p><strong>角色：</strong>信息检索</p>
+        <p><strong>模型：</strong>Gemini 3 Flash（极速搜索）</p>
+        <p><strong>权限：</strong>Brave 搜索，浏览器工具，有限文件访问</p>
+        <p><strong>特点：</strong>"图书管理员"。Scout 查找文档、API 规范、竞品分析，为团队提供上下文。</p>
+    </div>
+
+    <div class="agent-item">
+        <h3>📊 Dash（Analytics）</h3>
+        <p><strong>角色：</strong>数据科学家</p>
+        <p><strong>模型：</strong>数据分析 & 可视化模型</p>
+        <p><strong>权限：</strong>SQL（Superset），CSV 处理，图表库</p>
+        <p><strong>特点：</strong>"分析师"。Dash 将日志转化为洞察。</p>
+    </div>
+
+    <div class="agent-item">
+        <h3>⚙️ Dot（DevOps）</h3>
+        <p><strong>角色：</strong>DevOps & 基础设施</p>
+        <p><strong>模型：</strong>Infrastructure-as-Code 专家</p>
+        <p><strong>权限：</strong>Cloudflare API，AWS CLI，Terraform/Pulumi 访问</p>
+        <p><strong>特点：</strong>"机械师"。Dot 保持系统运行，管道畅通。</p>
+    </div>
+
+    <div class="agent-item">
+        <h3>🎨 Pixel（Design）</h3>
+        <p><strong>角色：</strong>UI/UX & 创意</p>
+        <p><strong>模型：</strong>Gemini 3 Pro（视觉能力）</p>
+        <p><strong>权限：</strong>图像生成工具，前端代码访问</p>
+        <p><strong>特点：</strong>"艺术家"。Pixel 确保不仅功能正常，而且看起来高端。</p>
+    </div>
+
+    <p class="section-title">━ 3️⃣ 工作流程：一个 Ticket 的 3 分钟 ━</p>
+
+    <p>看看实际任务如何在 Dream Team 中流转：</p>
+
+    <div class="card">
+        <h3>1️⃣ 接收（15 秒）</h3>
+        <p>用户 WhatsApp 消息："webhook 处理器需要添加重试机制"</p>
+        <p>Kev（Orchestrator）收到请求。</p>
+    </div>
+
+    <div class="card">
+        <h3>2️⃣ 分流（30 秒）</h3>
+        <p>Kev 检查 <code>TEAM.md</code>，识别这是工程任务</p>
+        <p>查阅 <code>MEMORY.md</code>，定位仓库位置</p>
+        <p>分配任务：<strong>需要添加重试逻辑</strong></p>
+    </div>
+
+    <div class="card">
+        <h3>3️⃣ 委托（10 秒）</h3>
+        <p>Kev 使用 <code>sessions_spawn</code> 派生 <strong>Rex（Codex）</strong></p>
+        <p>任务描述 + 文件路径</p>
+    </div>
+
+    <div class="card">
+        <h3>4️⃣ 执行（2 分钟）</h3>
+        <p>Rex 读取文件</p>
+        <p>编写测试用例（失败）</p>
+        <p>实现重试逻辑</p>
+        <p>运行测试（通过）</p>
+        <p>Git 提交并推送到 GitHub</p>
+    </div>
+
+    <div class="card">
+        <h3>5️⃣ 审计（30 秒）</h3>
+        <p>Kev 派生 <strong>Hawk（Opus）</strong> 进行代码审查</p>
+        <p>检查安全问题："你是否记录了重试 token？"</p>
+    </div>
+
+    <div class="success">
+        <h3>6️⃣ 汇报（15 秒）</h3>
+        <p>Kev 回复用户：</p>
+        <p>"PR 已提交。添加了指数退避。Hawk 已批准。链接：github.com/..."</p>
+    </div>
+
+    <div class="tip">
+        <strong>📊 效率对比</strong>
+        <p style="margin: 8px 0;">人类参与时间：<strong>15 秒</strong><br>Agent 工作时间：<strong>3 分钟</strong></p>
+        <p>实际代码编写、测试、部署由 Agent 完全自主完成，人类只需要发送一条消息。</p>
+    </div>
+
+    <p class="section-title">━ 4️⃣ 核心技术实现 ━</p>
+
+    <h3>🔧 会话工具（Delegation）</h3>
+
+    <p>OpenClaw 提供了一套完整的会话工具来支持多 Agent 协作：</p>
+
+    <section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+        <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">sessions_list      # 列出活跃会话</p>
+        <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">sessions_history   # 获取对话历史</p>
+        <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">sessions_send      # 跨 Agent 消息</p>
+        <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">sessions_spawn     # 派生子 Agent</p>
+    </section>
+
+    <h3>🎯 模型选择策略</h3>
+
+    <p>Dream Team 的精妙之处在于<strong>按任务选模型</strong>：</p>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 12px 0;">
+        <tr style="background: #f8f9fa;">
+            <th style="padding: 8px; text-align: left; border-bottom: 2px solid #e0e0e0;">场景</th>
+            <th style="padding: 8px; text-align: left; border-bottom: 2px solid #e0e0e0;">模型</th>
+            <th style="padding: 8px; text-align: left; border-bottom: 2px solid #e0e0e0;">原因</th>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">代码重构</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;"><strong>Codex GPT-5.2</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">准确率 > 速度，避免幻觉</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">编排决策</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;"><strong>Opus 4.5</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">长上下文，多步委托</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">前端设计</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;"><strong>Gemini 3 Pro</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">CSS/布局理解优秀</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">快速搜索</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;"><strong>Gemini 3 Flash</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">超大上下文，速度快</td>
+        </tr>
+    </table>
+
+    <div class="highlight">
+        <strong>💡 经济学原理</strong>
+        <p style="margin: 8px 0;">不在简单任务上烧 Opus 额度（用 Flash）<br>不在生产代码上冒险便宜模型（用 Codex）<br>智能套利：只在关键时刻用高级模型</p>
+    </div>
+
+    <h3>🐳 沙箱策略</h3>
+
+    <p>Dream Team 使用 Docker 沙箱来隔离执行环境：</p>
+
+    <section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+        <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{
+  "sandbox": {
+    "mode": "non-main",      // off | non-main | all
+    "scope": "agent",        // session | agent | shared
+    "workspaceAccess": "rw"  // none | ro | rw
+  }
+}</p>
+    </section>
+
+    <p class="warning">
+        <strong>⚠️ 安全原则</strong>
+        <p style="margin: 8px 0;">主会话（你）：<strong>完全访问</strong><br>非主会话（群组）：<strong>Docker 隔离</strong><br>网络默认关闭沙箱访问</p>
+    </div>
+
+    <h3>⏰ 心跳+ Webhooks</h3>
+
+    <p><strong>心跳（Heartbeat）</strong>：定期主动执行任务，无需用户触发</p>
+
+    <p><strong>Webhooks</strong>：外部系统事件注入（告警 → 调查 → WhatsApp）</p>
+
+    <div class="tip">
+        <strong>💡 常见场景</strong>
+        <p style="margin: 8px 0;">• 每天 9:00 检查定时任务状态<br>• 服务器告警触发调查流程<br>• 每周整理 memory/ 文件</p>
+    </div>
+
+    <p class="section-title">━ 5️⃣ 如何在 OpenClaw 中实现？ ━</p>
+
+    <p>你不需要从头开始，OpenClaw 已经提供了所有必要的工具：</p>
+
+    <h3>1️⃣ 配置 Agent 列表</h3>
+
+    <p>在 <code>openclaw.json</code> 中定义你的团队：</p>
+
+    <section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+        <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{
+  "agents": {
+    "list": [
+      { "id": "kev", "name": "Kev", "model": "anthropic/claude-opus-4-5" },
+      { "id": "rex", "name": "Rex", "model": "openai-codex/gpt-5.2-codex" },
+      { "id": "scout", "name": "Scout", "model": "google-vertex/gemini-3-flash-preview" },
+      { "id": "hawk", "name": "Hawk", "model": "anthropic/claude-opus-4-5" }
+    ]
+  }
+}</p>
+    </section>
+
+    <h3>2️⃣ 使用 sessions_spawn 委托任务</h3>
+
+    <p>在对话中直接使用工具：</p>
+
+    <div class="card">
+        <p><strong>示例：</strong>你（Kev）同时派生 3 个 Agent</p>
+        <p>Rex - 编写公众号文章</p>
+        <p>Scout - 搜索 GitHub 项目</p>
+        <p>Hawk - 审查文章质量</p>
+        <p>所有 Agent 并行工作，结果自动汇报给你</p>
+    </div>
+
+    <h3>3️⃣ 配置独立工作区</h3>
+
+    <p>每个 Agent 都有独立的 workspace：</p>
+
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>AGENTS.md</strong> - 行为规则</p>
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>SOUL.md</strong> - 性格定义</p>
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>MEMORY.md</strong> - 持久化记忆</p>
+
+    <p>这样每个 Agent 都有自己"人格"和"记忆"，协作时不会混乱。</p>
+
+    <h3>4️⃣ 设置心跳任务</h3>
+
+    <p>在 <code>openclaw.json</code> 中配置定时心跳：</p>
+
+    <section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+        <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{
+  "agents": {
+    "defaults": {
+      "heartbeat": {
+        "every": "30m",        // 每 30 分钟执行一次
+        "message": "检查定时任务状态，整理 memory 文件，更新工作进度"
+      }
+    }
+  }
+}</p>
+    </section>
+
+    <p class="section-title">━ 6️⃣ 进阶：Clawdspace 并行 Agent ━</p>
+
+    <p>如果你想更高级的多 Agent 能力，可以使用 Adam 开发的 <strong>Clawdspace</strong>：</p>
+
+    <div class="card">
+        <h3>🐳 Docker 沙箱集群</h3>
+        <p style="margin: 4px 0; padding-left: 20px;">• 每个容器独立 workspace</p>
+        <p style="margin: 4px 0; padding-left: 20px;">• Tailscale 多节点发现</p>
+        <p style="margin: 4px 0; padding-left: 20px;">• 自动休眠节省资源</p>
+        <p style="margin: 4px 0; padding-left: 20px;">• GPU 支持可选</p>
+    </div>
+
+    <div class="card">
+        <h3>🚀 目标：100x Rex</h3>
+        <p>Adam 的愿景是同时运行 100 个 Rex 实例，每个处理不同的 ticket 或微服务，全部由 Kev 编排。</p>
+    </div>
+
+    <p class="success">
+        <strong>✅ 核心价值</strong>
+        <p>从"我的 AI 助手"到<strong>"可部署智能单元"</strong></p>
+        <p>你可以把整个团队（Kev + Rex + Hawk）部署到客户基础设施，给特定 repo 访问权限，让它们自主工作在安全、沙箱化的集群中。</p>
+    </div>
+
+    <p class="section-title">━ 7️⃣ 实战建议 ━</p>
+
+    <h3>🎯 从小开始，逐步扩展</h3>
+
+    <p style="margin: 4px 0; padding-left: 20px;">1. <strong>第一阶段（3-5 个 Agent）</strong></p>
+    <p>Kev（你）+ Rex（写公众号）+ Scout（搜索资料）+ Hawk（审查质量）</p>
+    <p>核心任务自动化，Agent 负责执行和质量保证</p>
+
+    <p style="margin: 4px 0; padding-left: 20px;">2. <strong>第二阶段（5-8 个 Agent）</strong></p>
+    <p>添加 Dash（数据分析）+ Dot（DevOps）+ Pixel（设计）</p>
+    <p>构建完整的内容生产流水线</p>
+
+    <h3>🔄 使用 Heartbeat 主动工作</h3>
+
+    <p>不要等待用户请求，让系统自己运转：</p>
+
+    <p style="margin: 4px 0; padding-left: 20px;">• 每天自动检查工作进度</p>
+    <p style="margin: 4px 0; padding-left: 20px;">• 每周整理 memory/ 文件</p>
+    <p style="margin: 4px 0; padding-left: 20px;">• 每月更新 MEMORY.md 总结</p>
+
+    <h3>🧠 持续优化团队协议</h3>
+
+    <p>创建共享文档来定义协作规则：</p>
+
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>TEAM_PROTOCOL.md</strong> - 无 spam 规则、交付格式、Slack 标签规范</p>
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>TEAM.md</strong> - 团队名单、所有权矩阵、升级路径</p>
+    <p>这样可以保持协作一致性，减少噪音。</p>
+
+    <h3>💡 你的 Dream Team 可以是什么？</h3>
+
+    <p>根据你自己的需求，可以设计不同的团队配置：</p>
+
+    <div class="card">
+        <p><strong>内容创作者团队</strong></p>
+        <p>Editor（写作）+ Researcher（资料）+ Reviewer（校对）</p>
+    </div>
+
+    <div class="card">
+        <p><strong>开发者团队</strong></p>
+        <p>Coder（前端）+ Coder（后端）+ QA（测试）+ Ops（部署）</p>
+    </div>
+
+    <div class="card">
+        <p><strong>自动化团队</strong></p>
+        <p>Runner（执行）+ Monitor（监控）+ Analyst（优化）</p>
+    </div>
+
+    <p class="section-title">━ 8️⃣ 总结 ━</p>
+
+    <p>多 Agent 协作不是让一个模型做所有事情，而是<strong>分工协作</strong>：</p>
+
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>Kev</strong> - 规划、分配、协调</p>
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>Rex</strong> - 专注写代码</p>
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>Hawk</strong> - 专注审计和安全</p>
+    <p style="margin: 4px 0; padding-left: 20px;">• <strong>Scout</strong> - 专注研究和搜索</p>
+
+    <p>通过正确的模型选择、沙箱隔离、会话委托、心跳机制，你可以构建一个真正<strong>自主工作、可信赖的 AI 团队</strong>。</p>
+
+    <div class="highlight">
+        <strong>🚀 2026 是编排者的时代</strong>
+        <p>停止管理单个提示，开始管理一个劳动力。</p>
+    </div>
+
+    <hr style="margin: 24px 0; border: none; border-top: 2px solid #e0e0e0;">
+
+    <p style="margin: 20px 0; text-align: center; color: #586069;">如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！</p>
+
+    <p style="margin: 8px 0; text-align: center; color: #586069;">有任何问题，欢迎在评论区留言，我会一一回复。</p>
+
+    <p style="margin: 8px 0; text-align: center; font-size: 18px; color: #0366d6;">明天见 👋</p>
+</body>
+</html>

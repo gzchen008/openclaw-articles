@@ -1,0 +1,300 @@
+<p style="margin: 0 0 12px 0; padding: 12px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;"><strong>💡 本文要点：</strong>IronClaw 是用 Rust 重写的 OpenClaw，专注安全性——多层防御、凭证保护、提示注入防御。如果你用 AI 处理敏感信息（加密货币、API 密钥），这篇必读。</p>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">你的 AI 助手，真的安全吗？</h2>
+
+<p style="margin: 8px 0;">想象一下：你让 AI 助手帮你管理加密货币钱包，结果第二天发现资产不翼而飞。或者你让它处理工作邮件，结果 API 密钥被泄露到公网。</p>
+
+<p style="margin: 8px 0;">这不是科幻小说，而是<strong style="font-weight: 600;">真实发生的安全事件</strong>。</p>
+
+<p style="margin: 8px 0;">最近，一位 Meta AI 安全研究员发现，她的 OpenClaw 助手在处理邮件时"失控"了——发送了不该发的消息，访问了不该访问的内容。Reddit 上也有用户报告，因为凭证泄露问题，他们<strong style="font-weight: 600;">完全停止使用 OpenClaw</strong>。</p>
+
+<p style="margin: 8px 0;">这些事件暴露了一个核心问题：<strong style="font-weight: 600;">现有 AI 助手在安全性上存在严重缺陷</strong>。</p>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">IronClaw：安全优先的 OpenClaw 替代品</h2>
+
+<p style="margin: 8px 0;">就在 2 天前（2026 年 3 月初），NEAR AI 团队发布了 <strong style="font-weight: 600;">IronClaw</strong>——一个用 Rust 重写的 OpenClaw 替代品，专门解决这些安全问题。</p>
+
+<p style="margin: 8px 0;">NEAR 联合创始人 Illia Polosukhin 表示，他们开发 IronClaw 的原因很简单：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0; border-left: 4px solid #0366d6;">
+  <p style="margin: 0; font-style: italic; color: #24292e;">"不是'可能'发生安全问题——而是<strong style="font-weight: 600;">已经发生得足够多</strong>，以至于用户不再信任 OpenClaw 处理私密信息。"</p>
+</section>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">🛡️ 核心安全特性：6 层防护体系</h2>
+
+<p style="margin: 8px 0;">IronClaw 的安全设计堪称"军工级"，让我用通俗的语言解释：</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">1️⃣ WASM 沙箱隔离</h3>
+
+<p style="margin: 8px 0;">所有第三方工具都在 <strong style="font-weight: 600;">WebAssembly 沙箱</strong>中运行，就像把工具关在"透明盒子"里：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">✅ 需要明确授权才能访问网络、文件、密钥</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 无法直接读取你的系统文件</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 无法访问其他工具的数据</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">对比</strong>：OpenClaw 的 Docker 沙箱更重，而且某些工具仍有宿主机访问权限。</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">2️⃣ 凭证保护（最关键！）</h3>
+
+<p style="margin: 8px 0;">这是 IronClaw 最大的卖点：</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">问题</strong>：在 OpenClaw 中，你的 API 密钥、密码可能被恶意工具读取并发送到外部服务器。</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">解决方案</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">🔐 凭证存储在<strong style="font-weight: 600;">加密保险库</strong>中（AES-256-GCM 加密）</p>
+<p style="margin: 4px 0; padding-left: 20px;">🔐 使用 <strong style="font-weight: 600;">TEE（可信执行环境）</strong>保护</p>
+<p style="margin: 4px 0; padding-left: 20px;">🔐 凭证<strong style="font-weight: 600;">从不暴露给工具代码</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">🔐 只在<strong style="font-weight: 600;">网络边界</strong>动态注入，且仅限<strong style="font-weight: 600;">白名单端点</strong></p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">通俗理解</strong>：就像你的信用卡——工具"使用"它付款，但永远看不到卡号。</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">3️⃣ 提示注入防御</h3>
+
+<p style="margin: 8px 0;">AI 领域最隐蔽的攻击：恶意网页/邮件中藏有指令，诱导 AI 泄露你的数据。</p>
+
+<p style="margin: 8px 0;">IronClaw 的多层防御：</p>
+<p style="margin: 4px 0; padding-left: 20px;">🛡️ <strong style="font-weight: 600;">模式检测</strong>：识别常见注入模式</p>
+<p style="margin: 4px 0; padding-left: 20px;">🛡️ <strong style="font-weight: 600;">内容过滤</strong>：自动转义危险字符</p>
+<p style="margin: 4px 0; padding-left: 20px;">🛡️ <strong style="font-weight: 600;">策略引擎</strong>：Block/Warn/Review/Sanitize 四级响应</p>
+<p style="margin: 4px 0; padding-left: 20px;">🛡️ <strong style="font-weight: 600;">输出包装</strong>：工具输出经过安全处理后再传给 AI</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">4️⃣ 端点白名单</h3>
+
+<p style="margin: 8px 0;">默认情况下，IronClaw <strong style="font-weight: 600;">禁止所有外部 HTTP 请求</strong>。</p>
+
+<p style="margin: 8px 0;">你需要明确配置：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{<br>
+  &nbsp;&nbsp;"allowed_endpoints": [<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;"api.openai.com/v1/*",<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;"api.github.com/*"<br>
+  &nbsp;&nbsp;]<br>
+  }</p>
+</section>
+
+<p style="margin: 8px 0;">未在白名单的请求会被直接拦截。</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">5️⃣ 泄露检测</h3>
+
+<p style="margin: 8px 0;">即使有以上防护，IronClaw 还会<strong style="font-weight: 600;">扫描所有请求和响应</strong>：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">🔍 检测是否包含 API 密钥格式</p>
+<p style="margin: 4px 0; padding-left: 20px;">🔍 检测是否包含邮箱/手机号</p>
+<p style="margin: 4px 0; padding-left: 20px;">🔍 检测是否包含私钥/助记词</p>
+<p style="margin: 4px 0; padding-left: 20px;">🔍 一旦发现，立即拦截并告警</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">6️⃣ 资源限制</h3>
+
+<p style="margin: 8px 0;">防止单个工具占用过多资源：</p>
+<p style="margin: 4px 0; padding-left: 20px;">⏱️ 执行时间限制</p>
+<p style="margin: 4px 0; padding-left: 20px;">💾 内存上限</p>
+<p style="margin: 4px 0; padding-left: 20px;">🌐 请求频率限制</p>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">📊 技术架构对比：OpenClaw vs IronClaw</h2>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0 0 8px 0; font-weight: 600; color: #0366d6;">对比表格</p>
+  <p style="margin: 4px 0; padding-left: 0;"><strong>特性</strong> | <strong>OpenClaw</strong> | <strong>IronClaw</strong></p>
+  <hr style="border: none; border-top: 1px solid #d0d7de; margin: 8px 0;">
+  <p style="margin: 4px 0; padding-left: 0;"><strong>开发语言</strong> | TypeScript | Rust</p>
+  <p style="margin: 4px 0; padding-left: 0;"><strong>沙箱技术</strong> | Docker 容器 | WASM 轻量沙箱</p>
+  <p style="margin: 4px 0; padding-left: 0;"><strong>数据库</strong> | SQLite | PostgreSQL + pgvector</p>
+  <p style="margin: 4px 0; padding-left: 0;"><strong>启动时间</strong> | ~6 秒 | &lt;1 秒（原生二进制）</p>
+  <p style="margin: 4px 0; padding-left: 0;"><strong>内存占用</strong> | ~1.5 GB | 更小（Rust 内存安全）</p>
+  <p style="margin: 4px 0; padding-left: 0;"><strong>安全设计</strong> | 基础防护 | 多层防御 + TEE</p>
+  <p style="margin: 4px 0; padding-left: 0;"><strong>代码量</strong> | 430,000+ 行 | 更精简</p>
+  <p style="margin: 4px 0; padding-left: 0;"><strong>凭证保护</strong> | 可能泄露 | 加密保险库 + 动态注入</p>
+</section>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">关键差异</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">性能</strong>：Rust 原生编译，单二进制文件，无需 Node.js 运行时</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">安全</strong>：从架构层面设计，而非事后补丁</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">可审计</strong>：代码量更小，更容易安全审计</p>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">🚀 快速上手指南</h2>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">1️⃣ 安装（3 种方式）</h3>
+
+<p style="margin: 8px 0; font-weight: 600; color: #0366d6;">方式一：一键安装（推荐）</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># macOS / Linux<br>
+  curl --proto '=https' --tlsv1.2 -LsSf \<br>
+  &nbsp;&nbsp;https://github.com/nearai/ironclaw/releases/latest/download/ironclaw-installer.sh | sh<br><br>
+  # Windows (PowerShell)<br>
+  irm https://github.com/nearai/ironclaw/releases/latest/download/ironclaw-installer.ps1 | iex</p>
+</section>
+
+<p style="margin: 8px 0; font-weight: 600; color: #0366d6;">方式二：Homebrew（macOS/Linux）</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">brew install ironclaw</p>
+</section>
+
+<p style="margin: 8px 0; font-weight: 600; color: #0366d6;">方式三：从源码编译</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">git clone https://github.com/nearai/ironclaw.git<br>
+  cd ironclaw<br>
+  cargo build --release</p>
+</section>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">2️⃣ 初始化配置</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 创建数据库<br>
+  createdb ironclaw<br><br>
+  # 启用 pgvector 扩展<br>
+  psql ironclaw -c "CREATE EXTENSION IF NOT EXISTS vector;"<br><br>
+  # 运行配置向导<br>
+  ironclaw onboard</p>
+</section>
+
+<p style="margin: 8px 0;">配置向导会自动：</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 检测数据库连接</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 通过浏览器 OAuth 完成 NEAR AI 认证</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 使用系统密钥链加密凭证</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">3️⃣ 启动使用</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 启动 REPL 交互模式<br>
+  ironclaw run<br><br>
+  # 或启动 Web UI<br>
+  ironclaw run --ui</p>
+</section>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">4️⃣ 配置 LLM 提供商</h3>
+
+<p style="margin: 8px 0;">IronClaw 默认使用 NEAR AI，但也支持任何 OpenAI 兼容的 API：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 使用 OpenRouter（300+ 模型）<br>
+  export LLM_BACKEND=openai_compatible<br>
+  export LLM_BASE_URL=https://openrouter.ai/api/v1<br>
+  export LLM_API_KEY=YOUR_API_KEY_HERE<br>
+  export LLM_MODEL=anthropic/claude-sonnet-4</p>
+</section>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">支持的提供商</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• OpenRouter</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Together AI</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Fireworks AI</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Ollama（本地）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• vLLM / LiteLLM（自托管）</p>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">🎯 适用场景：谁应该用 IronClaw？</h2>
+
+<h3 style="margin: 20px 0 8px 0; color: #28a745; font-size: 18px;">🔥 强烈推荐</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">加密货币用户</strong></p>
+<p style="margin: 4px 0; padding-left: 40px;">• 管理钱包、交易</p>
+<p style="margin: 4px 0; padding-left: 40px;">• 需要保护私钥和助记词</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">企业/团队使用</strong></p>
+<p style="margin: 4px 0; padding-left: 40px;">• 处理敏感商业数据</p>
+<p style="margin: 4px 0; padding-left: 40px;">• 需要审计日志和权限控制</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">开发者</strong></p>
+<p style="margin: 4px 0; padding-left: 40px;">• 管理 API 密钥</p>
+<p style="margin: 4px 0; padding-left: 40px;">• 自动化部署流程</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">4. <strong style="font-weight: 600;">隐私关注者</strong></p>
+<p style="margin: 4px 0; padding-left: 40px;">• 不信任云服务</p>
+<p style="margin: 4px 0; padding-left: 40px;">• 要求本地数据处理</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #f66; font-size: 18px;">⚠️ 可能不需要</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 只用 AI 聊天、写作（无敏感数据）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 对性能要求不高</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 已有成熟的安全方案</p>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">🔍 我的观点：IronClaw 的意义</h2>
+
+<h3 style="margin: 20px 0 8px 0; color: #28a745; font-size: 18px;">✅ 优势</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">安全设计从第一天开始</strong>，而非事后补丁</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">Rust 语言优势</strong>：内存安全 + 高性能</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">NEAR AI 团队背景</strong>：区块链安全经验丰富</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. <strong style="font-weight: 600;">开源透明</strong>：可审计，无隐藏后门</p>
+<p style="margin: 4px 0; padding-left: 20px;">5. <strong style="font-weight: 600;">兼容性好</strong>：支持 OpenAI API 生态</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #f66; font-size: 18px;">⚠️ 挑战</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">新项目</strong>：发布仅 2 天，社区生态待建设</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">学习曲线</strong>：Rust 配置比 Node.js 复杂</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">功能完整性</strong>：可能不如 OpenClaw 成熟</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. <strong style="font-weight: 600;">社区规模</strong>：文档和教程较少</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">🔮 未来展望</h3>
+
+<p style="margin: 8px 0;">IronClaw 代表了 AI 助手的一个新方向：<strong style="font-weight: 600;">安全优先</strong>。</p>
+
+<p style="margin: 8px 0;">随着 AI 助手越来越多地处理敏感任务（财务、医疗、法律），安全性将成为核心竞争力。IronClaw 可能成为"安全 AI 助手"的标杆。</p>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">📌 总结：该不该切换到 IronClaw？</h2>
+
+<h3 style="margin: 20px 0 8px 0; color: #28a745; font-size: 18px;">切换场景：</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">✅ 你处理加密货币、API 密钥等敏感信息</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 你担心凭证泄露问题</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 你需要审计日志和权限控制</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 你愿意尝试新技术（Rust）</p>
+
+<h3 style="margin: 20px 0 8px 0; color: #0366d6; font-size: 18px;">继续使用 OpenClaw 的场景：</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">✅ 你的使用场景不涉及敏感信息</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 你依赖 OpenClaw 的特定插件/生态</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 你不想折腾配置</p>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">🚀 行动建议</h2>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">1. 先在测试环境试用 IronClaw</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 使用测试数据库<br>
+  createdb ironclaw_test<br>
+  ironclaw onboard  # 选择测试配置</p>
+</section>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">2. 对比功能完整性</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 检查 <a href="https://github.com/nearai/ironclaw/blob/main/FEATURE_PARITY.md" style="color: #0366d6;">FEATURE_PARITY.md</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 确认你常用的功能都已支持</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">3. 逐步迁移</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 从非敏感任务开始</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 观察稳定性和性能</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 满意后再迁移敏感任务</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">4. 关注社区动态</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• GitHub: https://github.com/nearai/ironclaw</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Telegram: https://t.me/ironclawAI</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Reddit: r/ironclawAI</p>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">💬 最后的话</h2>
+
+<p style="margin: 8px 0;">IronClaw 的出现，标志着 AI 助手从"功能优先"进入"安全优先"的新阶段。</p>
+
+<p style="margin: 8px 0;">无论你是否切换，至少应该了解：<strong style="font-weight: 600;">你的 AI 助手，需要更好的安全保护</strong>。</p>
+
+<h2 style="margin: 24px 0 8px 0; padding-bottom: 8px; border-bottom: 2px solid #0366d6; color: #0366d6; font-size: 20px;">🔗 相关资源</h2>
+
+<p style="margin: 4px 0; padding-left: 20px;">🔗 <strong style="font-weight: 600;">IronClaw 官网</strong>：https://github.com/nearai/ironclaw</p>
+<p style="margin: 4px 0; padding-left: 20px;">📖 <strong style="font-weight: 600;">文档</strong>：https://github.com/nearai/ironclaw/blob/main/README.md</p>
+<p style="margin: 4px 0; padding-left: 20px;">🐛 <strong style="font-weight: 600;">问题反馈</strong>：https://github.com/nearai/ironclaw/issues</p>
+<p style="margin: 4px 0; padding-left: 20px;">💬 <strong style="font-weight: 600;">社区</strong>：Telegram @ironclawAI / Reddit r/ironclawAI</p>
+
+<hr style="border: none; border-top: 2px solid #0366d6; margin: 24px 0 12px 0;">
+
+<p style="margin: 4px 0; font-size: 13px; color: #586069;">📅 <strong>发布日期</strong>：2026-03-06</p>
+<p style="margin: 4px 0; font-size: 13px; color: #586069;">🏷️ <strong>标签</strong>：#AI助手 #安全 #IronClaw #OpenClaw #Rust</p>
+<p style="margin: 4px 0; font-size: 13px; color: #586069;">📊 <strong>字数</strong>：约 2800 字</p>
+<p style="margin: 4px 0; font-size: 13px; color: #586069;">⏱️ <strong>阅读时间</strong>：8 分钟</p>
+
+<hr style="border: none; border-top: 1px solid #d0d7de; margin: 16px 0 8px 0;">
+
+<p style="margin: 0; font-size: 12px; color: #6a737d; font-style: italic;">本文由 AI 自动生成，内容基于公开资料整理。如有错误，欢迎指正。</p>
