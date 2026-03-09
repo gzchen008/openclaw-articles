@@ -1,0 +1,272 @@
+<p style="margin: 8px 0;"><strong>【快速导航】</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 本文适合：所有 OpenClaw 用户、关注 AI 工具更新的你</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 预计阅读：5 分钟</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 难度等级：⭐⭐</p>
+
+<p style="margin: 16px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🔥 又双叒叕更新了！ ━</p>
+
+<p style="margin: 12px 0;">3月8日，OpenClaw 发布了 <strong>v2026.3.7</strong> 版本。</p>
+
+<p style="margin: 12px 0;">这次更新堪称"史诗级"，带来了 <strong>5 个重磅新功能</strong> + <strong>100+ 项优化修复</strong>。</p>
+
+<p style="margin: 12px 0;">但最让我兴奋的是：<strong>Context Engine 插件接口</strong>。</p>
+
+<p style="margin: 12px 0;">这个功能让你的 AI 可以拥有<strong>无损记忆</strong>，再也不会因为上下文压缩而丢失重要信息了！</p>
+
+<p style="margin: 12px 0;">今天就来详细解读这次更新的核心亮点。</p>
+
+<p style="margin: 16px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🧠 1. Context Engine 插件接口（最重磅！） ━</p>
+
+<p style="margin: 12px 0;"><strong>它解决了什么痛点？</strong></p>
+
+<p style="margin: 12px 0;">你有没有遇到过这种情况：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 长对话后，AI 忘记了之前的约定</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 上下文压缩时，关键信息被丢弃</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 不同会话之间无法共享记忆</p>
+
+<p style="margin: 12px 0;"><strong>Context Engine 就是为了解决这个问题而生的。</strong></p>
+
+<p style="margin: 12px 0;"><strong>它能做什么？</strong></p>
+
+<p style="margin: 12px 0;">现在，第三方插件可以提供<strong>自定义的上下文管理策略</strong>。</p>
+
+<p style="margin: 12px 0;">例如：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>lossless-claw</strong> 插件：提供无损记忆，永不丢失信息</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>smart-summarizer</strong> 插件：智能摘要，保留关键决策</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>cross-session-memory</strong> 插件：跨会话记忆共享</p>
+
+<p style="margin: 12px 0;"><strong>完整生命周期钩子</strong></p>
+
+<p style="margin: 12px 0;">Context Engine 提供了完整的生命周期钩子：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 🔧 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">bootstrap</code> - 启动时初始化</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 📥 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">ingest</code> - 接收新消息</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🧩 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">assemble</code> - 组装上下文</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🗜️ <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">compact</code> - 压缩上下文</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">afterTurn</code> - 对话后处理</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🤖 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">prepareSubagentSpawn</code> - 子代理启动前</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🏁 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">onSubagentEnded</code> - 子代理结束后</p>
+
+<p style="margin: 12px 0;"><strong>这意味着你可以完全控制 AI 的"记忆方式"。</strong></p>
+
+<p style="margin: 12px 0;"><strong>怎么用？</strong></p>
+
+<p style="margin: 12px 0;">安装支持 Context Engine 的插件：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">clawhub install lossless-claw</p>
+</section>
+
+<p style="margin: 12px 0;">然后在配置中启用：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "plugins": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "contextEngine": "lossless-claw"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 12px 0;"><strong>零行为改变</strong>：如果没有配置 Context Engine 插件，OpenClaw 会使用原有的压缩逻辑。</p>
+
+<p style="margin: 16px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🔗 2. ACP 持久化频道绑定 ━</p>
+
+<p style="margin: 12px 0;"><strong>它解决了什么痛点？</strong></p>
+
+<p style="margin: 12px 0;">如果你用过 ACP（Agent Communication Protocol）在 Discord 或 Telegram 上绑定线程，你一定遇到过：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 重启 Gateway 后，绑定丢失</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 每次都要重新绑定线程</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 多账号管理混乱</p>
+
+<p style="margin: 12px 0;"><strong>现在，这些绑定会持久化保存！</strong></p>
+
+<p style="margin: 12px 0;"><strong>新功能</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Discord 频道绑定重启后保留</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Telegram 话题绑定重启后保留</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ CLI 和文档完整支持</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 路由解析一致性保证</p>
+
+<p style="margin: 12px 0;"><strong>怎么用？</strong></p>
+
+<p style="margin: 12px 0;">在 Telegram 话题中：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">/acp spawn --thread here</p>
+</section>
+
+<p style="margin: 12px 0;">绑定会自动保存，重启后仍然有效。</p>
+
+<p style="margin: 16px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 📱 3. Telegram 话题路由增强 ━</p>
+
+<p style="margin: 12px 0;"><strong>它解决了什么痛点？</strong></p>
+
+<p style="margin: 12px 0;">如果你在 Telegram 群组中使用话题（Topics）功能：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 所有话题都用同一个 Agent</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 无法为不同话题设置不同的"人格"</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 原生命令授权混乱</p>
+
+<p style="margin: 12px 0;"><strong>现在，每个话题可以绑定不同的 Agent！</strong></p>
+
+<p style="margin: 12px 0;"><strong>新功能</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 话题级 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">agentId</code> 覆盖</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 支持 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">--thread here|auto</code> 参数</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 原生命令 Mac Unicode 破折号兼容</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 可操作的审批按钮</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 成功绑定后自动置顶确认</p>
+
+<p style="margin: 12px 0;"><strong>使用场景</strong></p>
+
+<p style="margin: 12px 0;"><strong>场景1：技术讨论区</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 话题：<code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">#技术问答</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">• Agent：<code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">coding-expert</code>（专注代码）</p>
+
+<p style="margin: 12px 0;"><strong>场景2：闲聊区</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 话题：<code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">#闲聊</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">• Agent：<code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">friendly-assistant</code>（轻松对话）</p>
+
+<p style="margin: 12px 0;"><strong>场景3：工作区</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 话题：<code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">#工作</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">• Agent：<code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">task-manager</code>（任务管理）</p>
+
+<p style="margin: 12px 0;"><strong>每个话题都有专属的 AI 助手！</strong></p>
+
+<p style="margin: 16px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🌍 4. Web UI 国际化（西班牙语） ━</p>
+
+<p style="margin: 12px 0;"><strong>新功能</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 新增西班牙语（es）支持</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 自动语言检测</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 懒加载语言包</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 语言切换器</p>
+
+<p style="margin: 12px 0;"><strong>支持的语言</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 🇺🇸 English（英语）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🇨🇳 中文</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🇪🇸 Español（西班牙语）</p>
+
+<p style="margin: 12px 0;"><strong>未来会支持更多语言！</strong></p>
+
+<p style="margin: 16px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🔍 5. Web Search 增强 ━</p>
+
+<p style="margin: 12px 0;"><strong>新功能</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Perplexity 切换到 Search API（结构化结果）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 语言/地区/时间过滤</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 配置向导支持提供商选择</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ SecretRef 引用模式支持</p>
+
+<p style="margin: 12px 0;"><strong>怎么用？</strong></p>
+
+<p style="margin: 12px 0;">在配置向导中，现在可以选择 Web Search 提供商：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• Brave Search</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Perplexity</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Tavily</p>
+<p style="margin: 4px 0; padding-left: 20px;">• SerpAPI</p>
+
+<p style="margin: 12px 0;"><strong>每个提供商都有完整的参数配置！</strong></p>
+
+<p style="margin: 16px 0; padding: 8px; background: #f66; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ ⚠️ 重要：Breaking Change！ ━</p>
+
+<p style="margin: 12px 0;"><strong>Gateway 认证现在需要显式指定 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">gateway.auth.mode</code></strong></p>
+
+<p style="margin: 12px 0;">如果你同时配置了 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">gateway.auth.token</code> 和 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">gateway.auth.password</code>，<strong>必须</strong>指定使用哪个：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "gateway": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "auth": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "mode": "token",  // 或 "password"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "token": "YOUR_TOKEN"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 12px 0;"><strong>不设置会导致启动/配对/TUI 失败！</strong></p>
+
+<p style="margin: 16px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🛠️ 其他重要改进 ━</p>
+
+<p style="margin: 12px 0;"><strong>Docker 优化</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 多阶段构建，镜像更小</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">OPENCLAW_VARIANT=slim</code> 选项</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 扩展依赖预烘焙</p>
+
+<p style="margin: 12px 0;"><strong>插件系统</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">prependSystemContext</code> / <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">appendSystemContext</code> - 降低 token 成本</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Hook 策略增强 - <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">allowPromptInjection</code> 控制</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 压缩生命周期事件 - <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">session:compact:before/after</code></p>
+
+<p style="margin: 12px 0;"><strong>新模型支持</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Google Gemini 3.1 Flash-Lite Preview</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 完整的模型别名和媒体理解支持</p>
+
+<p style="margin: 12px 0;"><strong>TTS 增强</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ OpenAI 兼容端点支持</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 自定义 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; color: #d73a49;">baseUrl</code> 配置</p>
+
+<p style="margin: 12px 0;"><strong>Slack 改进</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ DM 打字反馈（Socket Mode）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 机器人消息提及门控</p>
+
+<p style="margin: 16px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 📦 如何升级？ ━</p>
+
+<p style="margin: 12px 0;"><strong>方法1：NPM</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">npm install -g openclaw@latest</p>
+</section>
+
+<p style="margin: 12px 0;"><strong>方法2：Bun</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">bun install -g openclaw@latest</p>
+</section>
+
+<p style="margin: 12px 0;"><strong>方法3：Docker</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">docker pull openclaw/openclaw:latest</p>
+</section>
+
+<p style="margin: 12px 0;"><strong>升级后检查</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw --version</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #6a737d;"># 应该显示：2026.3.7</p>
+<p style="margin: 8px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw doctor</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #6a737d;"># 检查配置是否正常</p>
+</section>
+
+<p style="margin: 16px 0; padding: 8px; background: #28a745; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 💡 总结 ━</p>
+
+<p style="margin: 12px 0;">OpenClaw v2026.3.7 是一次<strong>史诗级更新</strong>：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Context Engine 插件 - 无损记忆</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ ACP 持久化绑定 - 重启不丢失</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Telegram 话题路由 - 每个话题专属 Agent</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Web UI 国际化 - 西班牙语支持</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Web Search 增强 - 更多提供商 + 过滤器</p>
+
+<p style="margin: 12px 0;"><strong>最重要的是：Context Engine 让你的 AI 可以拥有真正的长期记忆！</strong></p>
+
+<p style="margin: 16px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🔗 相关资源 ━</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 📦 GitHub：https://github.com/openclaw/openclaw/releases</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 📖 文档：https://docs.openclaw.ai</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 💬 社区：https://discord.com/invite/clawd</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🎯 ClawHub：https://clawhub.com</p>
+
+<hr style="margin: 20px 0; border: none; border-top: 1px solid #e1e4e8;">
+
+<p style="margin: 12px 0;">如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！</p>
+
+<p style="margin: 12px 0;">有任何问题，欢迎在评论区留言，我会一一回复。</p>
+
+<p style="margin: 12px 0;">明天见 👋</p>
