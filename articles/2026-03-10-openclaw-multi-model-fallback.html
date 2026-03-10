@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>OpenClaw 如何支持 20+ AI 模型？多模型架构设计</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #24292e; max-width: 100%; padding: 20px;">
+
+<h1 style="margin-top: 0; margin-bottom: 20px; font-size: 24px; font-weight: 600; color: #24292e; text-align: center;">OpenClaw 如何支持 20+ AI 模型？多模型架构设计</h1>
+
+
+
+<p style="margin: 12px 0; padding: 12px; background: #f1f8ff; border-left: 4px solid #0366d6; color: #24292e; font-style: italic;">本文是 OpenClaw 源码解读系列第 3 篇，深入剖析多模型支持和智能降级机制。</p>
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🎯 为什么需要多模型支持？</h2>
+
+<p style="margin: 8px 0;">想象一个场景：</p>
+
+<p style="margin: 8px 0;">你在用 GPT-5 开发一个 Agent，突然遇到 rate limit，整个系统瘫痪。或者你想测试某个功能在 Claude 和 Gemini 上的表现差异，需要手动切换模型...</p>
+
+<strong style="font-weight: 600;">痛点</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 单一模型 = 单点故障</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 手动切换模型 = 效率低下</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 成本不可控 = 钱包爆炸</p>
+
+<strong style="font-weight: 600;">OpenClaw 的解决方案</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 内置 20+ 模型支持</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 智能降级 + 自动重试</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 灵活的模型选择策略</p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">📊 支持的模型生态</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">内置提供商（无需配置）</h3>
+
+<table style="width: 100%; border-collapse: collapse; margin: 12px 0;">
+<thead>
+<tr>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">提供商</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">Provider ID</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">认证方式</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">热门模型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">OpenAI</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">openai</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">gpt-5.2</code></td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Anthropic</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">anthropic</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key / Token</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">claude-opus-4-5</code></td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">OpenAI Codex</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">openai-codex</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">OAuth</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">gpt-5.2</code></td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Google Gemini</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">google</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">gemini-3-pro-preview</code></td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Z.AI (GLM)</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">zai</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">glm-5</code>, <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">glm-4.7</code></td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">OpenRouter</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">openrouter</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">多模型代理</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">xAI</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">xai</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Grok</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Groq</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">groq</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">快速推理</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Mistral</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">mistral</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Mistral 系列</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Cerebras</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">cerebras</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">超快推理</td>
+</tr>
+</tbody>
+</table>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">自定义提供商（需配置）</h3>
+
+<table style="width: 100%; border-collapse: collapse; margin: 12px 0;">
+<thead>
+<tr>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">提供商</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">Provider ID</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">认证方式</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Kimi</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">kimi-coding</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">国产大模型</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Moonshot</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">moonshot</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Anthropic 兼容</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">MiniMax</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">minimax</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">写作/创意强</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Qwen</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">qwen-portal</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">OAuth</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">免费额度</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Synthetic</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">synthetic</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API Key</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">多模型代理</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Ollama</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">ollama</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">无</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">本地模型</td>
+</tr>
+</tbody>
+</table>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🔄 Fallback 机制详解</h2>
+
+<p style="margin: 8px 0;">OpenClaw 的降级策略分为<strong style="font-weight: 600;">两层</strong>：</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">第一层：Auth Profile Rotation（认证轮换）</h3>
+
+<p style="margin: 8px 0;">当某个 provider 有多个认证配置时，OpenClaw 会自动轮换：</p>
+
+<strong style="font-weight: 600;">轮换顺序</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">显式配置</strong>：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">auth.order[provider]</code>（如果设置）</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">配置的 profiles</strong>：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">auth.profiles</code> 过滤后的</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">存储的 profiles</strong>：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">auth-profiles.json</code> 中的</p>
+
+<strong style="font-weight: 600;">默认规则</strong>（round-robin）：
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">主排序</strong>：OAuth 优先于 API Key</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">次排序</strong>：最近使用时间（最久未用的优先）</p>
+
+<strong style="font-weight: 600;">示例</strong>：你有 3 个 OpenAI API Key
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">Key1 → rate limit → Key2 → rate limit → Key3 → 成功</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">第二层：Model Fallback（模型降级）</h3>
+
+<p style="margin: 8px 0;">当<strong style="font-weight: 600;">所有认证都失败</strong>时，才触发模型降级：</p>
+
+<strong style="font-weight: 600;">降级顺序</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">1. <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agents.defaults.model.primary</code>（首选模型）</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agents.defaults.model.fallbacks</code>（降级列表，按顺序）</p>
+
+<strong style="font-weight: 600;">示例配置</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "zai/glm-5",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "fallbacks": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "zai/glm-4.7",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "minimax/MiniMax-M2.5",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "anthropic/claude-sonnet-4-5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<strong style="font-weight: 600;">执行流程</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">GLM-5 失败 → GLM-4.7 失败 → MiniMax 成功 ✓</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🔐 认证管理</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">Auth Profile 类型</h3>
+
+<strong style="font-weight: 600;">API Key 类型</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "type": "api_key",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "provider": "openai",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "key": "sk-..."</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<strong style="font-weight: 600;">OAuth 类型</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "type": "oauth",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "provider": "google-antigravity",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "access": "ya29...",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "refresh": "1//...",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "expires": 1736160000000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "email": "user@gmail.com"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">Profile ID 规则</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">默认</strong>：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">provider:default</code>（无邮箱时）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">OAuth + 邮箱</strong>：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">provider:<email></code></p>
+<p style="margin: 8px 0;">  - 示例：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">google-antigravity:user@gmail.com</code></p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">存储位置</h3>
+
+<p style="margin: 8px 0;">所有认证信息存储在：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json</p></section>
+
+<strong style="font-weight: 600;">⚠️ 安全提示</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">• 该文件包含敏感凭证，不要提交到 Git</p>
+<p style="margin: 4px 0; padding-left: 20px;">• OpenClaw 会自动处理 token 刷新</p>
+<p style="margin: 4px 0; padding-left: 20px;">• OAuth token 过期前 24 小时会收到警告</p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🚫 Cooldown 机制</h2>
+
+<p style="margin: 8px 0;">当认证失败时，OpenClaw 会将 profile 标记为 cooldown 状态。</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">普通失败（rate limit / timeout）</h3>
+
+<strong style="font-weight: 600;">指数退避</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">• 1 分钟</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 5 分钟</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 25 分钟</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 1 小时（上限）</p>
+
+<strong style="font-weight: 600;">状态存储</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "usageStats": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "openai:default": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "lastUsed": 1736160000000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "cooldownUntil": 1736160600000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "errorCount": 2</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">计费失败（余额不足）</h3>
+
+<strong style="font-weight: 600;">特殊处理</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 不认为是临时错误</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🔄 标记为 <strong style="font-weight: 600;">disabled</strong>（长期禁用）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ⏰ 起始退避：5 小时</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 📈 每次失败翻倍，上限 24 小时</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🔄 24 小时无失败则重置</p>
+
+<strong style="font-weight: 600;">状态存储</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "usageStats": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "openai:default": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "disabledUntil": 1736178000000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "disabledReason": "billing"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🎯 模型选择逻辑</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">选择顺序</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">Primary 模型</strong>：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agents.defaults.model.primary</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">Fallbacks</strong>：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agents.defaults.model.fallbacks</code>（按顺序）</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">Provider 内部降级</strong>：auth profile rotation</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">配置示例</h3>
+
+<strong style="font-weight: 600;">基础配置</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "zai/glm-5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<strong style="font-weight: 600;">完整降级链</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "zai/glm-5",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "fallbacks": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "zai/glm-4.7",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "zai/glm-4.7-flash",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "minimax/MiniMax-M2.5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">模型允许列表</h3>
+
+<p style="margin: 8px 0;">如果你想<strong style="font-weight: 600;">限制可用模型</strong>，可以设置 allowlist：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "anthropic/claude-sonnet-4-5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "models": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "anthropic/claude-sonnet-4-5": { "alias": "Sonnet" },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "anthropic/claude-opus-4-5": { "alias": "Opus" },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "zai/glm-5": { "alias": "GLM-5" }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<strong style="font-weight: 600;">效果</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 用户只能选择列表中的模型</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 选择其他模型会提示：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">Model "xxx" is not allowed</code></p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">💰 成本优化建议</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">1. 按场景选择模型</h3>
+
+<strong style="font-weight: 600;">快速响应</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">cerebras/zai-glm-4.7  ← 超快推理</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">groq/llama-3.3        ← 免费 + 快速</p></section>
+
+<strong style="font-weight: 600;">高质量输出</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">anthropic/claude-opus-4-5  ← 最强推理</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">zai/glm-5                  ← 代码能力强</p></section>
+
+<strong style="font-weight: 600;">创意写作</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">minimax/MiniMax-M2.5  ← 写作风格好</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">2. 合理配置 Fallback</h3>
+
+<strong style="font-weight: 600;">原则</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">• 🎯 Primary 模型选择<strong style="font-weight: 600;">最适合任务</strong>的</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 💸 Fallback 模型选择<strong style="font-weight: 600;">成本更低</strong>的</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🔄 同一 provider 的模型优先（减少延迟）</p>
+
+<strong style="font-weight: 600;">示例</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "primary": "anthropic/claude-opus-4-5",  // 最强但贵</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "fallbacks": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "anthropic/claude-sonnet-4-5",         // 同 provider，便宜</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "zai/glm-4.7"                          // 不同 provider，最便宜</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">3. 利用本地模型</h3>
+
+<strong style="font-weight: 600;">Ollama</strong> 完全免费，适合：
+<p style="margin: 4px 0; padding-left: 20px;">• 🧪 开发测试</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 📊 数据处理</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🔍 简单推理</p>
+
+<strong style="font-weight: 600;">配置</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "ollama/llama3.3",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "fallbacks": ["zai/glm-4.7"]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🛠️ CLI 命令速查</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">查看模型状态</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models status</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models list --all</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models status --check</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">切换模型</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models set zai/glm-5</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models set-image openai/gpt-4-vision</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">/model 3                    # 按编号选择</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">/model zai/glm-5            # 按名称选择</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">/model status               # 查看详情</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">管理 Fallback</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models fallbacks list</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models fallbacks add zai/glm-4.7</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models fallbacks remove zai/glm-4.7</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models fallbacks clear</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">管理别名</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models aliases list</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models aliases add GLM zai/glm-5</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models aliases remove GLM</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">📝 实战案例</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">案例 1：多账号负载均衡</h3>
+
+<strong style="font-weight: 600;">场景</strong>：你有 3 个 OpenAI 账号，想自动轮换
+
+<strong style="font-weight: 600;">配置</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "env": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "OPENAI_API_KEY_1": "sk-...",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "OPENAI_API_KEY_2": "sk-...",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "OPENAI_API_KEY_3": "sk-..."</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "auth": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "profiles": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "openai:account1": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "provider": "openai",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "type": "api_key",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "key": "${OPENAI_API_KEY_1}"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "openai:account2": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "provider": "openai",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "type": "api_key",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "key": "${OPENAI_API_KEY_2}"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "openai:account3": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "provider": "openai",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "type": "api_key",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "key": "${OPENAI_API_KEY_3}"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<strong style="font-weight: 600;">效果</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">• 自动轮换 3 个账号</p>
+<p style="margin: 4px 0; padding-left: 20px;">• rate limit 时自动切换</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 失败账号进入 cooldown</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">案例 2：混合云 + 本地</h3>
+
+<strong style="font-weight: 600;">场景</strong>：优先用本地模型，失败时切换到云端
+
+<strong style="font-weight: 600;">配置</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "ollama/llama3.3",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "fallbacks": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "zai/glm-4.7-flash",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "anthropic/claude-sonnet-4-5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<strong style="font-weight: 600;">效果</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">• 日常用本地模型（免费）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 本地模型失败时自动切换云端</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 保证服务可用性</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">案例 3：按成本优化</h3>
+
+<strong style="font-weight: 600;">场景</strong>：高质量任务用 Opus，普通任务用 Sonnet
+
+<strong style="font-weight: 600;">配置</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "list": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "id": "high-quality",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "model": "anthropic/claude-opus-4-5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "id": "daily",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "primary": "anthropic/claude-sonnet-4-5",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "fallbacks": ["zai/glm-4.7"]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<strong style="font-weight: 600;">使用</strong>：
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw run --agent high-quality "分析这段代码"</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw run --agent daily "翻译这段文字"</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🔧 自定义 Provider</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">添加 Moonshot (Kimi)</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "models": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "mode": "merge",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "providers": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "moonshot": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "baseUrl": "https://api.moonshot.ai/v1",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "apiKey": "${MOONSHOT_API_KEY}",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "api": "openai-completions",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "models": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          { "id": "kimi-k2.5", "name": "Kimi K2.5" }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">添加本地代理 (LM Studio)</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "models": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "providers": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "lmstudio": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "baseUrl": "http://localhost:1234/v1",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "apiKey": "LMSTUDIO_KEY",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "api": "openai-completions",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "models": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">            "id": "minimax-m2.1",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">            "name": "MiniMax M2.1",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">            "contextWindow": 200000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">            "maxTokens": 8192</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🎓 总结</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">核心要点</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">两层降级</strong>：先轮换认证，再降级模型</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">智能 Cooldown</strong>：临时错误快速恢复，计费错误长期禁用</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">灵活配置</strong>：支持多账号、混合云、成本优化</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. <strong style="font-weight: 600;">本地优先</strong>：Ollama 完全免费，适合测试</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">最佳实践</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <strong style="font-weight: 600;">配置降级链</strong>：至少 2-3 个 fallback</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <strong style="font-weight: 600;">分离场景</strong>：不同任务用不同模型</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <strong style="font-weight: 600;">监控成本</strong>：定期检查 usage stats</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <strong style="font-weight: 600;">利用本地</strong>：Ollama 适合开发测试</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">相关命令</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw onboard</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models status</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models set zai/glm-5</p>
+
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models fallbacks list</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">📚 相关文档</h2>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="/concepts/models.md" style="color: #0366d6; text-decoration: none;">Models CLI</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="/concepts/model-failover.md" style="color: #0366d6; text-decoration: none;">Model Failover</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="/concepts/model-providers.md" style="color: #0366d6; text-decoration: none;">Model Providers</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="/gateway/configuration.md" style="color: #0366d6; text-decoration: none;">Gateway Configuration</a></p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<strong style="font-weight: 600;">下一篇</strong>：OpenClaw Session 管理：如何保持 AI 长期记忆？
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<p style="margin: 8px 0;">*本文由 AI 生成，内容基于 OpenClaw 官方文档*</p>
+
+
+</body>
+</html>
