@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>OpenClaw Agent Loop：从消息到回复的完整旅程</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #24292e; max-width: 100%; padding: 20px;">
+
+<h1 style="margin-top: 0; margin-bottom: 20px; font-size: 24px; font-weight: 600; color: #24292e; text-align: center;">OpenClaw Agent Loop：从消息到回复的完整旅程</h1>
+
+
+
+<p style="margin: 12px 0; padding: 12px; background: #f1f8ff; border-left: 4px solid #0366d6; color: #24292e; font-style: italic;">你发给 AI 的一条消息，在 OpenClaw 内部经历了什么？ 本文将带你深入 Agent Loop 的每一个环节，理解 AI Agent 如何思考、执行工具、流式输出。</p>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🎯 什么是 Agent Loop？</h2>
+
+<strong style="font-weight: 600;">Agent Loop（智能体循环）</strong> 是 OpenClaw 的核心执行流程。
+
+<p style="margin: 8px 0;">简单来说，它是从 <strong style="font-weight: 600;">"接收用户消息"</strong> 到 <strong style="font-weight: 600;">"返回 AI 回复"</strong> 的完整路径：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">消息接收 → 上下文组装 → 模型推理 → 工具执行 → 流式输出 → 持久化</p></section>
+
+<p style="margin: 8px 0;">这个过程不是简单的"一发一回"，而是：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 🔄 <strong style="font-weight: 600;">串行执行</strong>：同一会话的多次请求会排队，避免冲突</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🛠️ <strong style="font-weight: 600;">工具调用</strong>：AI 可以执行工具（读文件、发消息、控制设备）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🌊 <strong style="font-weight: 600;">流式输出</strong>：回复不是等 AI 想完才发，而是一字一字地流式返回</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 💾 <strong style="font-weight: 600;">状态持久化</strong>：对话历史自动保存，下次继续</p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🏗️ Agent Loop 的 8 个步骤</h2>
+
+<p style="margin: 8px 0;">从用户发送消息到 AI 返回回复，OpenClaw 会经历 8 个核心步骤：</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">步骤 1：入口层（Entry Point）</h3>
+
+<strong style="font-weight: 600;">📥 用户消息到达</strong>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 来源：WhatsApp / Telegram / Discord / iMessage / Feishu</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 方式：Gateway RPC（异步）或 CLI agent（同步）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 特点：立即返回 runId，不阻塞</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">步骤 2：会话准备（Session Prep）</h3>
+
+<strong style="font-weight: 600;">🔧 准备运行环境</strong>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 解析 sessionKey，找到对应会话</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 加载当前激活的 Skills（技能快照）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 注入引导文件：AGENTS.md / SOUL.md / MEMORY.md</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 获取会话写锁，防止并发冲突</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">步骤 3：队列控制（Queue）</h3>
+
+<strong style="font-weight: 600;">⏳ 请求排队等待</strong>
+
+<p style="margin: 4px 0; padding-left: 20px;">• Session Lane：同一会话的请求串行执行</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Global Lane：控制整体并发数</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 目的：避免工具冲突、会话历史错乱</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">步骤 4：Prompt 组装（Prompt Assembly）</h3>
+
+<strong style="font-weight: 600;">📝 构建系统提示</strong>
+
+<p style="margin: 8px 0;">4 层结构：</p>
+<p style="margin: 4px 0; padding-left: 20px;">1. 基础提示：你是 OpenClaw AI 助手 + 工具调用规范</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. Skills 提示：当前激活的技能列表</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. 引导上下文：AGENTS.md / SOUL.md / MEMORY.md</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. 对话历史：之前的所有对话（自动压缩）</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">步骤 5：模型推理（Model Inference）</h3>
+
+<strong style="font-weight: 600;">🤖 AI 开始思考</strong>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 运行时：pi-agent-core（嵌入式 Agent 运行时）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 模型支持：OpenAI / Claude / Gemini / GLM / Kimi（20+ 模型）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Fallback：首选模型失败，自动降级到备选模型</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 模式：Thinking（深度思考）/ Verbose（详细输出）</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">步骤 6：工具执行（Tool Execution）</h3>
+
+<strong style="font-weight: 600;">🛠️ AI 调用工具完成任务</strong>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 触发条件：AI 决定需要查天气、读文件、发消息等</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 执行流程：工具 start → update → end</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 结果处理：大小限制、图片压缩、消息去重</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">步骤 7：流式输出（Streaming）</h3>
+
+<strong style="font-weight: 600;">🌊 一字一字返回结果</strong>
+
+<p style="margin: 8px 0;">3 种事件流：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• assistant：助手文字增量（一字一字显示）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• tool：工具执行进度（透明展示）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• lifecycle：生命周期（start/end/error）</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">步骤 8：回复整形 + 持久化</h3>
+
+<strong style="font-weight: 600;">💾 保存对话历史</strong>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 组装最终回复：文本 + 工具结果 + 媒体</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 过滤静默令牌：NO_REPLY 不发送</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 写入会话记录：持久化到存储</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 释放会话锁：允许下一个请求执行</p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🔍 详细流程拆解</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">1️⃣ 入口层（Entry Point）</h3>
+
+<p style="margin: 8px 0;">Agent Loop 有两个入口：</p>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">Gateway RPC（推荐）</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "method": "agent",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "params": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "sessionKey": "agent:main:main",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "message": "帮我写一篇关于 AI Agent 的文章"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<strong style="font-weight: 600;">响应</strong>（立即返回）：
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "runId": "run_abc123",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "acceptedAt": "2026-03-10T07:00:00Z"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <strong style="font-weight: 600;">异步执行</strong>：立即返回 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">runId</code>，不阻塞</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 📊 <strong style="font-weight: 600;">状态查询</strong>：用 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agent.wait</code> 等待完成</p>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">CLI 命令</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw agent "帮我写一篇文章"</p></section>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <strong style="font-weight: 600;">同步执行</strong>：等待完成后返回结果</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🔧 <strong style="font-weight: 600;">调试友好</strong>：适合测试和开发</p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">2️⃣ 会话准备（Session Prep）</h3>
+
+<p style="margin: 8px 0;">在真正执行前，OpenClaw 会准备会话环境：</p>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">Step 1: 解析会话</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 根据 sessionKey 找到对应的会话</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">const session = await resolveSession({</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  sessionKey: "agent:main:main",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  sessionId: "abc123"  // 可选</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">});</p></section>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">Step 2: 加载 Skills</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 加载当前激活的所有技能</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">const skills = await loadSkillsSnapshot();</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 示例：加载的技能</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// - feishu-doc (飞书文档)</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// - github (GitHub 操作)</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// - weather (天气查询)</p></section>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">Step 3: 解析引导文件</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 注入上下文文件</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">const bootstrapFiles = [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "AGENTS.md",      // Agent 身份定义</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "SOUL.md",        // 人格设定</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "USER.md",        // 用户信息</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "MEMORY.md",      // 长期记忆</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "TOOLS.md"        // 工具说明</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">];</p></section>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">Step 4: 获取写锁</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 防止并发写入冲突</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">await sessionWriteLock.acquire();</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">3️⃣ 队列控制（Queue）</h3>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">为什么需要队列？</h4>
+
+<strong style="font-weight: 600;">问题场景</strong>：用户快速发送 3 条消息
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">用户: 帮我查天气</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">用户: 然后查 GitHub issues</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">用户: 再发个飞书通知</p></section>
+
+<p style="margin: 8px 0;">如果没有队列，3 个请求会同时执行：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 工具冲突（同时写文件）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 会话历史错乱</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 回复顺序混乱</p>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">解决方案：双层队列</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">┌─────────────────────────────────────────────────┐</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│              Global Lane (全局通道)              │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│  控制整体并发数（例如：最多 5 个会话同时执行）     │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">└─────────────────┬───────────────────────────────┘</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">                  │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">                  ↓</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">┌─────────────────────────────────────────────────┐</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│          Session Lane (会话通道)                 │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│  同一会话的请求串行执行                           │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│                                                  │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│  Session A: [请求1] → [请求2] → [请求3]         │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│  Session B: [请求1] → [请求2]                   │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│  Session C: [请求1]                             │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">└─────────────────────────────────────────────────┘</p></section>
+
+<strong style="font-weight: 600;">效果</strong>：
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Session A 的 3 个请求按顺序执行</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ Session A/B/C 可以并行（受全局并发限制）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 避免工具冲突和会话错乱</p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">4️⃣ Prompt 组装（Prompt Assembly）</h3>
+
+<p style="margin: 8px 0;">OpenClaw 的系统提示由多个部分组成：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">┌─────────────────────────────────────────────────┐</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│           OpenClaw System Prompt                │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">├─────────────────────────────────────────────────┤</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│  1. 基础提示 (Base Prompt)                      │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • 你是 OpenClaw AI 助手                      │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • 工具调用规范                                │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • 安全准则                                    │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">├─────────────────────────────────────────────────┤</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│  2. Skills 提示                                  │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • 当前激活的技能列表                          │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • 每个技能的说明和用法                        │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">├─────────────────────────────────────────────────┤</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│  3. 引导上下文 (Bootstrap Context)              │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • AGENTS.md (身份定义)                       │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • SOUL.md (人格设定)                         │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • USER.md (用户信息)                         │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • MEMORY.md (长期记忆)                       │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">├─────────────────────────────────────────────────┤</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│  4. 对话历史 (Transcript)                       │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • 之前的所有对话                              │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">│     • 自动压缩（超出 token 限制时）              │</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">└─────────────────────────────────────────────────┘</p></section>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">Token 限制</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 不同模型的 token 限制</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">const MODEL_LIMITS = {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "gpt-4": 8192,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "gpt-4-turbo": 128000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "claude-3-opus": 200000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "glm-4": 128000</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">};</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 预留空间给回复</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">const RESERVE_TOKENS = 4096;</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 如果超限，触发自动压缩</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">if (totalTokens &gt; modelLimit - RESERVE_TOKENS) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  await triggerCompaction();</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">5️⃣ 模型推理（Model Inference）</h3>
+
+<p style="margin: 8px 0;">OpenClaw 使用 <strong style="font-weight: 600;">pi-agent-core</strong> 作为嵌入式 Agent 运行时：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// runEmbeddedPiAgent 的核心逻辑</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">async function runEmbeddedPiAgent(params) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 1. 解析模型 + 认证</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const model = await resolveModel(params.model);</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const authProfile = await getAuthProfile(model.provider);</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 2. 构建 pi session</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const piSession = await buildPiSession({</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    model,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    systemPrompt,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    tools,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    timeout: params.timeoutSeconds * 1000</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  });</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 3. 订阅事件流</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  subscribeToPiEvents(piSession, (event) =&gt; {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    if (event.type === "assistant_delta") {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      emit("assistant", event.delta);</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    if (event.type === "tool_call") {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      emit("tool", event);</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  });</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 4. 执行推理</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const result = await piSession.run();</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  return {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    payloads: result.messages,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    usage: result.usage</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  };</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">多模型 Fallback</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 模型降级链</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">const MODEL_FALLBACK_CHAIN = [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "zai/glm-5",        // 首选</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "zai/glm-4.7",      // 备选 1</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "kimi-coding/k2p5"  // 备选 2</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">];</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 如果首选模型失败，自动尝试下一个</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">for (const model of MODEL_FALLBACK_CHAIN) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  try {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    return await callModel(model, prompt);</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  } catch (error) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    console.log(<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">Model ${model} failed, trying next...</code>);</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">6️⃣ 工具执行（Tool Execution）</h3>
+
+<p style="margin: 8px 0;">当 AI 决定调用工具时：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">AI 思考: "我需要查一下天气，调用 weather skill"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  ↓</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">工具调用: { name: "weather", params: { city: "北京" } }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  ↓</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">工具执行: weather skill 查询天气 API</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  ↓</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">工具结果: { temperature: "15°C", condition: "晴" }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  ↓</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">AI 继续思考: "好的，我现在知道天气了，可以回复用户"</p></section>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">工具事件流</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "tool", "event": "start", "tool": "weather", "callId": "call_123"}</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "tool", "event": "update", "tool": "weather", "status": "查询 API..."}</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "tool", "event": "end", "tool": "weather", "result": {...}}</p></section>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">工具结果清理</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 防止工具结果过大</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">function sanitizeToolResult(result) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 1. 限制大小</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  if (result.length &gt; 100000) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    result = result.substring(0, 100000) + "...(truncated)";</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 2. 处理图片</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  if (result.images) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    result.images = result.images.map(compressImage);</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  return result;</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">7️⃣ 流式输出（Streaming）</h3>
+
+<p style="margin: 8px 0;">OpenClaw 支持 3 种流式事件：</p>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">Assistant Stream（助手增量）</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "assistant", "delta": "今天"}</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "assistant", "delta": "北京"}</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "assistant", "delta": "的天气"}</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "assistant", "delta": "是 15°C，晴天"}</p></section>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 🌊 <strong style="font-weight: 600;">实时流式</strong>：一字一字返回，不等 AI 想完</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 📱 <strong style="font-weight: 600;">聊天体验</strong>：用户看到"正在输入..."效果</p>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">Tool Stream（工具事件）</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "tool", "event": "start", "tool": "github"}</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "tool", "event": "update", "status": "查询 issues..."}</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "tool", "event": "end", "result": {...}}</p></section>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 🔧 <strong style="font-weight: 600;">透明执行</strong>：用户看到工具执行进度</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🐛 <strong style="font-weight: 600;">调试友好</strong>：出错时容易定位</p>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">Lifecycle Stream（生命周期）</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "lifecycle", "phase": "start", "runId": "run_123"}</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{"stream": "lifecycle", "phase": "end", "runId": "run_123"}</p></section>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <strong style="font-weight: 600;">状态管理</strong>：标记任务开始/结束</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ⏱️ <strong style="font-weight: 600;">超时控制</strong>：配合 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agent.wait</code> 使用</p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">8️⃣ 回复整形 + 持久化</h3>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">回复整形</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">function shapeReply(payloads) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 1. 过滤 NO_REPLY</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  payloads = payloads.filter(p =&gt; p.text !== "NO_REPLY");</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 2. 去重消息工具</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  payloads = deduplicateMessagingTools(payloads);</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 3. 如果没有可渲染内容，且工具有错</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  if (payloads.length === 0 &amp;&amp; toolError) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    payloads.push({</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      type: "text",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      text: <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">❌ 工具执行失败: ${toolError.message}</code></p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    });</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  return payloads;</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">持久化</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 写入会话记录</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">await sessionManager.append({</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  role: "user",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  content: userMessage</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">});</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">await sessionManager.append({</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  role: "assistant",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  content: assistantReply,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  toolCalls: [...],</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  toolResults: [...]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">});</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🪝 Hook 系统：在哪里拦截？</h2>
+
+<p style="margin: 8px 0;">OpenClaw 提供了两套 Hook 系统，让你可以在关键节点插入自定义逻辑：</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">1. 内部 Hook（Gateway Hooks）</h3>
+
+<p style="margin: 8px 0;">运行在 Gateway 内部，用于命令和生命周期事件：</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 12px 0;">
+<thead>
+<tr>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">Hook 事件</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">触发时机</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">command:new</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">用户发送 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">/new</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">保存会话快照</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">command:reset</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">用户发送 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">/reset</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">清理临时文件</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">command:stop</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">用户发送 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">/stop</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">记录中止原因</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agent:bootstrap</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">构建引导文件时</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">动态注入上下文</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">gateway:startup</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Gateway 启动时</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">初始化任务</td>
+</tr>
+</tbody>
+</table>
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">示例：session-memory Hook</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 当用户发送 /new 时，保存会话到 memory/ 目录</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">const handler: HookHandler = async (event) =&gt; {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  if (event.action !== "new") return;</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 提取最后 15 行对话</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const transcript = await loadTranscript(event.sessionKey);</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const lastLines = transcript.slice(-15);</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 生成文件名</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const slug = await generateSlug(lastLines);</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const filename = <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">memory/${date}-${slug}.md</code>;</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 保存</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  await writeFile(filename, lastLines);</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">};</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">2. 插件 Hook（Plugin Hooks）</h3>
+
+<p style="margin: 8px 0;">运行在 Agent 循环内部，更细粒度的控制：</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 12px 0;">
+<thead>
+<tr>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">Hook 事件</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">触发时机</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">before_agent_start</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Agent 运行前</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">注入上下文、覆盖 prompt</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agent_end</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Agent 完成后</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">审计日志、质量检查</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">before_tool_call</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">工具调用前</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">参数验证、权限检查</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">after_tool_call</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">工具调用后</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">结果转换、错误处理</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">tool_result_persist</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">工具结果持久化前</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">敏感信息过滤</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">before_compaction</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">上下文压缩前</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">选择性保留重要内容</td>
+</tr>
+</tbody>
+</table>
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">示例：敏感信息过滤 Hook</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 在工具结果写入会话前，过滤敏感信息</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">const hook: PluginHook = {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  event: "tool_result_persist",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  handler: (result) =&gt; {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 过滤 API Key</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    result.content = result.content.replace(</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      /sk-[a-zA-Z0-9]{48}/g,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "sk-&lt;strong style="font-weight: 600;"&gt;*REDACTED&lt;/strong&gt;*"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    );</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 过滤手机号</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    result.content = result.content.replace(</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      /\+86\d{11}/g,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "+86&lt;strong style="font-weight: 600;"&gt;*REDACTED&lt;/strong&gt;*"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    );</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    return result;</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">};</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🔄 压缩与重试（Compaction + Retry）</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">为什么需要压缩？</h3>
+
+<strong style="font-weight: 600;">问题</strong>：对话历史越来越长，超出模型 token 限制
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">Session 开始: 500 tokens</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">对话 10 轮后: 8000 tokens</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">对话 50 轮后: 40000 tokens ❌ 超限！</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">压缩策略</h3>
+
+<p style="margin: 8px 0;">OpenClaw 使用 <strong style="font-weight: 600;">summarization</strong> 压缩：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">async function compactTranscript(transcript) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 1. 保留最近的对话（不压缩）</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const recent = transcript.slice(-10);</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 2. 压缩旧对话</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const old = transcript.slice(0, -10);</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  const summary = await summarize(old);</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 3. 组合</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  return [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    { role: "system", content: <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">历史摘要: ${summary}</code> },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    ...recent</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  ];</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">重试机制</h3>
+
+<p style="margin: 8px 0;">压缩后会触发重试：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">if (needsCompaction) {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 1. 发出压缩事件</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  emit("compaction", { phase: "start" });</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 2. 执行压缩</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  await compactTranscript();</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 3. 重置内存缓冲（避免重复输出）</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  resetBuffers();</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  // 4. 重试</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  await retryAgentRun();</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">⏱️ 超时控制</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">两层超时</h3>
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">1. <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agent.wait</code> 超时（等待阶段）</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 默认 30 秒</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">const result = await agent.wait({</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  runId: "run_123",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  timeoutMs: 30000  // 可自定义</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">});</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 超时返回</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  status: "timeout",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  startedAt: "2026-03-10T07:00:00Z",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  endedAt: null</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<strong style="font-weight: 600;">注意</strong>：这只影响等待，不会中止 Agent 运行。
+
+<h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: 600; color: #24292e;">2. Agent 运行时超时</h4>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 配置默认超时（10 分钟）</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "timeoutSeconds": 600</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+
+<p style="margin: 8px 0;">超时后，Agent 会被强制中止：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 在 runEmbeddedPiAgent 中</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">const abortTimer = setTimeout(() =&gt; {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  abortController.abort();</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}, timeoutSeconds * 1000);</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🚨 可能提前结束的情况</h2>
+
+<p style="margin: 8px 0;">Agent Loop 可能在以下情况提前终止：</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 12px 0;">
+<thead>
+<tr>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">情况</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">原因</th>
+<th style="background: #f6f8fa; padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><strong style="font-weight: 600;">Agent 超时</strong></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">运行超过 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">timeoutSeconds</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">中止运行，返回错误</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><strong style="font-weight: 600;">AbortSignal</strong></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">用户发送 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">/stop</code></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">立即停止，保存状态</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><strong style="font-weight: 600;">Gateway 断开</strong></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">网络问题 / 服务重启</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">连接丢失，可能丢失未保存数据</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><strong style="font-weight: 600;">RPC 超时</strong></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">Gateway RPC 调用超时</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">返回超时错误</td>
+</tr>
+<tr>
+<td style="padding: 12px; border: 1px solid #d0d7de;"><strong style="font-weight: 600;">模型错误</strong></td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">API 错误 / 限流</td>
+<td style="padding: 12px; border: 1px solid #d0d7de;">触发 Fallback 或返回错误</td>
+</tr>
+</tbody>
+</table>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">📊 实战案例：一次完整的 Agent Loop</h2>
+
+<p style="margin: 8px 0;">让我们看一个完整例子：</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">用户输入</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">用户（Telegram）: 帮我查一下北京天气，然后发个飞书通知</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">完整流程</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">1️⃣ 入口层</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - Telegram 消息到达 Gateway</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 触发 agent RPC</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 返回 { runId: "run_abc", acceptedAt: "..." }</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">2️⃣ 会话准备</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 解析 sessionKey: "agent:main:telegram:+86188..."</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 加载 Skills: [weather, feishu-doc, feishu-drive]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 注入 MEMORY.md（用户偏好：喜欢简洁回复）</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">3️⃣ 队列控制</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - Session Lane: 等待前一个请求完成</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - Global Lane: 当前 3 个并发，未超限</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">4️⃣ Prompt 组装</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 基础提示 + Skills 提示 + MEMORY.md + 对话历史</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 总 tokens: 3200（未超限）</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">5️⃣ 模型推理</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 首选模型: zai/glm-5</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - AI 思考: 需要调用 weather 工具</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">6️⃣ 工具执行 #1</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 工具: weather</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 参数: { city: "北京" }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 结果: { temperature: "15°C", condition: "晴" }</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">7️⃣ 流式输出 #1</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - assistant delta: "北京今天天气不错，"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - assistant delta: "气温 15°C，晴天。"</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">8️⃣ 工具执行 #2</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 工具: feishu-message</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 参数: { chat: "user:ou_xxx", message: "北京天气：15°C，晴" }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 结果: { success: true }</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">9️⃣ 流式输出 #2</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - tool event: "已发送飞书通知 ✅"</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">🔟 回复整形 + 持久化</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 组装最终回复: "北京今天天气不错，气温 15°C，晴天。\n\n已发送飞书通知 ✅"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 写入会话记录</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 释放会话锁</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">✅ 完成</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - 发送 lifecycle end 事件</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">   - Telegram 返回最终回复</p></section>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">最终用户看到的</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">AI: 北京今天天气不错，气温 15°C，晴天。</p>
+
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">已发送飞书通知 ✅</p></section>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🎓 总结：Agent Loop 的设计哲学</h2>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">1. 串行化保证一致性</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 同一会话的请求串行执行</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 避免工具冲突和状态错乱</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 对话历史始终一致</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">2. 流式输出提升体验</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 不等 AI 想完才回复</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 一字一字流式返回</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 用户感知"正在思考"</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">3. Hook 系统提供扩展性</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 关键节点可拦截</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 自定义逻辑注入</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 不修改核心代码</p>
+
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">4. 多层容错机制</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 模型 Fallback 降级</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 超时自动中止</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 压缩避免超限</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 错误优雅降级</p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">🔗 相关文档</h2>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="./2026-03-09-openclaw-architecture-guide.md" style="color: #0366d6; text-decoration: none;">OpenClaw 整体架构解析</a>（第 1 篇）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="#" style="color: #0366d6; text-decoration: none;">Session 管理与上下文工程</a>（第 4 篇，即将发布）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="#" style="color: #0366d6; text-decoration: none;">多模型支持与 Fallback 机制</a>（第 3 篇，即将发布）</p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">💡 思考题</h2>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">为什么 Agent Loop 需要双层队列（Session + Global）？单层队列不够吗？</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">如果工具执行时间很长（例如 5 分钟），会如何影响 Agent Loop？</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">如何设计一个 Hook，在每次工具调用前验证用户权限？</strong></p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<strong style="font-weight: 600;">下一篇预告</strong>：OpenClaw 如何支持 20+ AI 模型？多模型架构设计
+
+<p style="margin: 8px 0;">我们将深入探讨：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 模型路由机制</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Fallback 降级策略</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Provider 限流与 cooldown</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 成本优化技巧</p>
+
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+
+<p style="margin: 8px 0;">*作者：小J | 发布日期：2026-03-10*</p>
+
+
+</body>
+</html>
