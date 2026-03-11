@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>OpenClaw Session 管理：如何让 AI 拥有长期记忆？</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.8; color: #333; max-width: 100%; padding: 20px;">
+
+<h1 style="font-size: 24px; font-weight: bold; margin: 24px 0 16px 0; color: #000;">OpenClaw Session 管理：如何让 AI 拥有长期记忆？</h1>
+
+<p style="margin: 16px 0; color: #666; font-style: italic;">本文是 OpenClaw 源码解读系列第 4 篇，深入剖析会话状态管理和上下文工程。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">你是否遇到过这些问题？</h2>
+
+<p style="margin: 12px 0;">让 AI 帮你处理任务，第二天再问它：</p>
+
+<blockquote style="margin: 16px 0; padding: 12px 16px; background: #f5f5f5; border-left: 4px solid #ddd; color: #666;">"昨天我们讨论的那个项目..."</blockquote>
+
+<p style="margin: 12px 0;">AI 一脸懵："不好意思，我没有之前对话的记录。"</p>
+
+<p style="margin: 12px 0;">或者对话长了之后：</p>
+
+<blockquote style="margin: 16px 0; padding: 12px 16px; background: #f5f5f5; border-left: 4px solid #ddd; color: #666;">"抱歉，上下文太长了，我记不住之前的内容..."</blockquote>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">AI 的记忆问题</strong>：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">- 重启就失忆<br/>
+- 上下文窗口有限<br/>
+- 重要信息被淹没</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">OpenClaw 的解决方案</strong>：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">- 持久化 Session（重启不丢记忆）<br/>
+- 上下文压缩（智能保留关键信息）<br/>
+- 长期记忆（MEMORY.md + daily notes）</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">Session 生命周期</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">完整流程</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">创建 Session<br/>
+    ↓<br/>
+持久化到磁盘<br/>
+    ↓<br/>
+[使用中] ← → [加载到内存]<br/>
+    ↓<br/>
+上下文膨胀？<br/>
+    ↓<br/>
+自动压缩（Prune）<br/>
+    ↓<br/>
+归档（Archive）</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">状态转换</strong>：</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px;"><strong style="font-weight: bold;">Active</strong> - 正在使用（有新消息）<br/><br/>
+<strong style="font-weight: bold;">Idle</strong> - 空闲中（超过 30 分钟无活动）<br/><br/>
+<strong style="font-weight: bold;">Pruned</strong> - 已压缩（上下文超过阈值）<br/><br/>
+<strong style="font-weight: bold;">Archived</strong> - 已归档（用户手动归档）</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">上下文管理策略</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px;"><strong style="font-weight: bold;">1. Memory.md - 长期记忆</strong><br/><br/>
+<strong style="font-weight: bold;">作用</strong>：存储用户偏好、重要决策、长期任务<br/><br/>
+<strong style="font-weight: bold;">加载时机</strong>：主会话（直接聊天）→ 自动加载；共享会话（Discord/群聊）→ 不加载</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px;"><strong style="font-weight: bold;">2. Daily Notes - 短期记忆</strong><br/><br/>
+<strong style="font-weight: bold;">作用</strong>：记录当天的工作、临时决策<br/><br/>
+<strong style="font-weight: bold;">清理策略</strong>：每周整理一次，重要信息迁移到 MEMORY.md</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px;"><strong style="font-weight: bold;">3. Context Engine - 动态上下文</strong><br/><br/>
+<strong style="font-weight: bold;">作用</strong>：根据当前任务动态加载相关上下文<br/><br/>
+<strong style="font-weight: bold;">加载流程</strong>：分析当前消息 → 搜索相关文件 → 提取关键片段 → 注入到 prompt</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">持久化设计</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">文件结构</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">~/.openclaw/<br/>
+├── sessions/<br/>
+│   ├── session-abc123.json      # Session 元数据<br/>
+│   └── session-abc123-transcript.jsonl  # 对话记录<br/>
+├── workspace/<br/>
+│   ├── MEMORY.md                # 长期记忆<br/>
+│   └── memory/<br/>
+│       ├── 2026-03-11.md        # 每日记录<br/>
+│       └── heartbeat-state.json # 状态数据</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">Session 元数据示例</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{<br/>
+  "sessionKey": "session-abc123",<br/>
+  "createdAt": "2026-03-11T10:00:00Z",<br/>
+  "lastActive": "2026-03-11T14:00:00Z",<br/>
+  "model": "zai/glm-5",<br/>
+  "status": "active",<br/>
+  "messageCount": 42,<br/>
+  "contextSize": 15000<br/>
+}</p>
+</section>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">上下文压缩（Prune）</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">触发条件</strong>：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">- 上下文超过模型窗口的 80%<br/>
+- Session 空闲超过 24 小时<br/>
+- 手动触发 prune</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">压缩策略</strong>：</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px;"><strong style="font-weight: bold;">1. 保留系统消息</strong><br/>
+System Prompt + Skills + MEMORY.md<br/><br/>
+<strong style="font-weight: bold;">2. 保留最近 N 轮对话</strong><br/>
+最近 10 轮对话（用户 + AI）<br/><br/>
+<strong style="font-weight: bold;">3. 压缩中间对话</strong><br/>
+中间对话 → 摘要（Summary）</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">Session 工具</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">查看 Session 状态</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">session_status()</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">列出所有 Session</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">sessions_list()</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">发送消息到其他 Session</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">sessions_send(sessionKey, message)</p>
+</section>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">最佳实践</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">分层记忆策略</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">┌─────────────────┐<br/>
+│   System Prompt │ (AI 身份 + 能力)<br/>
+├─────────────────┤<br/>
+│    MEMORY.md    │ (长期记忆 - 用户偏好)<br/>
+├─────────────────┤<br/>
+│   Daily Notes   │ (短期记忆 - 今天的工作)<br/>
+├─────────────────┤<br/>
+│  Recent Chat    │ (最近对话 - 当前上下文)<br/>
+└─────────────────┘</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">定期整理</strong>：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">每天</strong>：更新 daily notes，记录重要决策<br/>
+- <strong style="font-weight: bold;">每周</strong>：整理 daily notes，迁移重要信息到 MEMORY.md<br/>
+- <strong style="font-weight: bold;">每月</strong>：备份 MEMORY.md，归档旧 Session</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">性能优化</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px;"><strong style="font-weight: bold;">1. 延迟加载</strong><br/>
+只在需要时加载 Session，减少内存占用<br/><br/>
+<strong style="font-weight: bold;">2. 增量写入</strong><br/>
+对话记录追加写入，不重写整个文件<br/><br/>
+<strong style="font-weight: bold;">3. 内存缓存</strong><br/>
+热点 Session 保存在内存，LRU 策略自动清理</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">实战案例</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px;"><strong style="font-weight: bold;">案例 1：长期项目跟踪</strong><br/><br/>
+<strong style="font-weight: bold;">场景</strong>：28 天公众号文章系列<br/><br/>
+<strong style="font-weight: bold;">效果</strong>：<br/>
+- 重启后继续工作<br/>
+- 跨 Session 保持上下文<br/>
+- 自动追踪进度</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #cce5ff; border-radius: 8px;"><strong style="font-weight: bold;">案例 2：多 Session 协作</strong><br/><br/>
+<strong style="font-weight: bold;">场景</strong>：Cron 任务 + 主会话<br/><br/>
+<strong style="font-weight: bold;">架构</strong>：<br/>
+主会话 (session-main) → Cron 任务 (session-cron-xxx) → 完成后通知主会话</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">配置选项</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">Session 配置</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{<br/>
+  "session": {<br/>
+    "maxContextSize": 50000,  // 最大上下文（tokens）<br/>
+    "pruneThreshold": 0.8,    // 压缩阈值（80%）<br/>
+    "archiveAfterDays": 30,   // 30 天后归档<br/>
+    "memoryFile": "MEMORY.md" // 长期记忆文件<br/>
+  }<br/>
+}</p>
+</section>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">总结</h2>
+
+<p style="margin: 12px 0;">OpenClaw 的 Session 管理设计哲学：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">1. <strong style="font-weight: bold;">持久化优先</strong>：重启不丢记忆<br/>
+2. <strong style="font-weight: bold;">分层记忆</strong>：长期 + 短期 + 动态<br/>
+3. <strong style="font-weight: bold;">智能压缩</strong>：自动管理上下文窗口<br/>
+4. <strong style="font-weight: bold;">安全隔离</strong>：共享会话不加载敏感信息</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">核心价值</strong>：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">- AI 拥有"长期记忆"<br/>
+- 跨 Session 保持上下文<br/>
+- 自动追踪项目进度<br/>
+- 安全可控的信息访问</p>
+
+<hr style="margin: 24px 0; border: none; border-top: 1px solid #ddd;"/>
+
+<p style="margin: 16px 0; color: #666; font-size: 14px;"><strong style="font-weight: bold;">下一篇</strong>：技能系统架构设计 - OpenClaw 如何实现可扩展的 AI 能力？</p>
+
+<p style="margin: 16px 0; color: #666; font-size: 14px; text-align: center;">如果觉得有用，点个"在看"吧 👇</p>
+
+</body>
+</html>
