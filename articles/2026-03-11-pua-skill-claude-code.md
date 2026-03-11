@@ -231,4 +231,4 @@ claude plugin install pua@pua-skills
 
 ---
 
-*本文由 AI 自动生成*
+<p style="text-align: center; color: #999; font-size: 14px; margin-top: 24px;">如果觉得有用，点个"在看"吧 👇</p>
