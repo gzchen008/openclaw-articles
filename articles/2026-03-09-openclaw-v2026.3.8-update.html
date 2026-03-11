@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw v2026.3.8 更新</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.8;
+      max-width: 100%;
+      padding: 20px;
+      color: #333;
+      background-color: #fff;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      color: #000;
+      margin: 24px 0 16px 0;
+      text-align: center;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: bold;
+      color: #000;
+      margin: 24px 0 12px 0;
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 8px;
+    }
+    h3 {
+      font-size: 18px;
+      font-weight: bold;
+      color: #4CAF50;
+      margin: 20px 0 10px 0;
+    }
+    p {
+      margin: 12px 0;
+      font-size: 16px;
+    }
+    blockquote {
+      background-color: #f5f5f5;
+      border-left: 4px solid #4CAF50;
+      padding: 12px 16px;
+      margin: 16px 0;
+      font-size: 14px;
+      color: #666;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      font-size: 14px;
+    }
+    pre {
+      background-color: #2d2d2d;
+      color: #f8f8f2;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+    pre code {
+      background-color: transparent;
+      padding: 0;
+      color: inherit;
+    }
+    ul, ol {
+      margin: 12px 0;
+      padding-left: 0;
+    }
+    li {
+      margin: 8px 0;
+      font-size: 16px;
+    }
+    .feature-card {
+      background-color: #f8f9fa;
+      border-left: 4px solid #4CAF50;
+      padding: 16px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .highlight {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    .emoji {
+      font-size: 18px;
+    }
+    a {
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .divider {
+      border-top: 1px solid #e0e0e0;
+      margin: 24px 0;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin: 24px 0;
+    }
+    .cta-box h3 {
+      color: white;
+      margin-top: 0;
+    }
+    .tag {
+      display: inline-block;
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      margin: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>OpenClaw v2026.3.8 更新：备份命令 + LLM 搜索 + Talk 静音超时</h1>
+
+<blockquote>
+  发布时间：2026-03-09
+</blockquote>
+
+<h2><span class="emoji">📦</span> 更新总览</h2>
+
+<p>OpenClaw 发布了最新版本 <strong>v2026.3.8</strong>，带来了 <span class="highlight">5 大新功能</span>和多项 Bug 修复。</p>
+
+<div class="divider"></div>
+
+<h2><span class="emoji">🚀</span> 核心新功能</h2>
+
+<div class="feature-card">
+  <h3>1️⃣ CLI 备份命令（全新）</h3>
+  <p>现在可以用命令行备份和恢复 OpenClaw 配置：</p>
+  <pre><code># 创建备份
+openclaw backup create
+
+# 仅备份配置
+openclaw backup create --only-config
+
+# 验证备份
+openclaw backup verify</code></pre>
+  <p><span class="emoji">💡</span> <strong>使用场景</strong>：升级前备份、迁移配置、定期归档</p>
+</div>
+
+<div class="feature-card">
+  <h3>2️⃣ Talk 静音超时配置</h3>
+  <p>语音模式现在可以配置静音多久后自动发送：</p>
+  <pre><code>{
+  "talk": {
+    "silenceTimeoutMs": 2000
+  }
+}</code></pre>
+  <p>默认各平台不同，现在可以自定义了！</p>
+</div>
+
+<div class="feature-card">
+  <h3>3️⃣ Brave 搜索 LLM 增强模式</h3>
+  <p>返回带来源元数据的结构化摘要：</p>
+  <pre><code>{
+  "tools": {
+    "web": {
+      "search": {
+        "brave": {
+          "mode": "llm-context"
+        }
+      }
+    }
+  }
+}</code></pre>
+  <p><span class="emoji">✅</span> 结构化摘要 + <span class="emoji">✅</span> 来源链接 + <span class="emoji">✅</span> 适合 AI 消费</p>
+</div>
+
+<div class="feature-card">
+  <h3>4️⃣ ACP 来源追踪</h3>
+  <p>多 Agent 协作时追踪消息来源：</p>
+  <pre><code>openclaw acp --provenance meta+receipt</code></pre>
+  <p>三种模式：<code>off</code> | <code>meta</code> | <code>meta+receipt</code></p>
+</div>
+
+<div class="feature-card">
+  <h3>5️⃣ macOS 远程网关配置</h3>
+  <p>macOS 应用现在支持直接配置远程网关 Token，改善远程模式体验。</p>
+</div>
+
+<div class="divider"></div>
+
+<h2><span class="emoji">🐛</span> 主要 Bug 修复</h2>
+
+<p><span class="emoji">🔧</span> <strong>稳定性改进</strong></p>
+<p style="padding-left: 20px;">• macOS 更新 - 修复 LaunchAgent 服务重启问题</p>
+<p style="padding-left: 20px;">• Telegram DM - 修复同一消息触发重复回复</p>
+<p style="padding-left: 20px;">• Matrix DM - 改善 DM 房间检测</p>
+<p style="padding-left: 20px;">• 飞书插件 - 修复安装后重复提示下载</p>
+<p style="padding-left: 20px;">• 浏览器扩展 - 支持 WSL2 跨命名空间</p>
+<p style="padding-left: 20px;">• TUI 主题 - 自动检测浅色终端背景</p>
+
+<div class="divider"></div>
+
+<h2><span class="emoji">📝</span> 升级指南</h2>
+
+<pre><code># 使用 npm 升级
+npm update -g openclaw
+
+# 或使用 Homebrew
+brew upgrade openclaw
+
+# 检查版本
+openclaw --version</code></pre>
+
+<div class="cta-box">
+  <h3><span class="emoji">🔗</span> 完整更新日志</h3>
+  <p>https://github.com/openclaw/openclaw/releases/tag/v2026.3.8</p>
+</div>
+
+<h2><span class="emoji">💡</span> 相关资源</h2>
+
+<p style="padding-left: 20px;">📚 <a href="https://docs.openclaw.ai">OpenClaw 文档</a></p>
+<p style="padding-left: 20px;">💬 <a href="https://discord.gg/clawd">Discord 社区</a></p>
+<p style="padding-left: 20px;">🌟 <a href="https://github.com/openclaw/openclaw">GitHub 仓库</a></p>
+
+<div class="divider"></div>
+
+<p style="text-align: center; color: #999; font-size: 14px;">本文由 OpenClaw 自动生成</p>
+
+<p style="text-align: center; font-weight: bold; color: #4CAF50; font-size: 16px;">关注我们，第一时间获取 OpenClaw 最新动态！</p>
+
+</body>
+</html>

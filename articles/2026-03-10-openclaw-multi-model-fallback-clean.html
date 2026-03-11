@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>OpenClaw  20+ AI </title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #24292e; max-width: 100%; padding: 20px;">
+<h1 style="margin-top: 0; margin-bottom: 20px; font-size: 24px; font-weight: 600; color: #24292e; text-align: center;">OpenClaw  20+ AI </h1>
+<p style="margin: 12px 0; padding: 12px; background: #f1f8ff; border-left: 4px solid #0366d6; color: #24292e; font-style: italic;"> OpenClaw  3 </p>
+<p style="margin: 8px 0;"> GPT-5  Agent rate limit Claude  Gemini ...</p>
+<p style="margin: 4px 0; padding-left: 20px;">•   = </p>
+<p style="margin: 4px 0; padding-left: 20px;">•   = </p>
+<p style="margin: 4px 0; padding-left: 20px;">•   = </p>
+<strong style="font-weight: 600;">OpenClaw </strong>
+<p style="margin: 4px 0; padding-left: 20px;">•   20+ </p>
+<p style="margin: 4px 0; padding-left: 20px;">•   + </p>
+<p style="margin: 4px 0; padding-left: 20px;">•  </p>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;"> Fallback </h2>
+<p style="margin: 8px 0;">OpenClaw </p>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">Auth Profile Rotation</h3>
+<p style="margin: 8px 0;"> provider OpenClaw </p>
+<p style="margin: 4px 0; padding-left: 20px;">1. <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">auth.order[provider]</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;"> profiles</strong><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">auth.profiles</code> </p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;"> profiles</strong><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">auth-profiles.json</code> </p>
+round-robin
+<p style="margin: 4px 0; padding-left: 20px;">• OAuth  API Key</p>
+<p style="margin: 4px 0; padding-left: 20px;">• </p>
+ 3  OpenAI API Key
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">Key1 → rate limit → Key2 → rate limit → Key3 → </p></section>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">Model Fallback</h3>
+<p style="margin: 4px 0; padding-left: 20px;">1. <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agents.defaults.model.primary</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agents.defaults.model.fallbacks</code></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "zai/glm-5",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "fallbacks": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "zai/glm-4.7",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "minimax/MiniMax-M2.5",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "anthropic/claude-sonnet-4-5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">GLM-5  → GLM-4.7  → MiniMax  </p></section>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">Auth Profile </h3>
+<strong style="font-weight: 600;">API Key </strong>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "type": "api_key",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "provider": "openai",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "key": "sk-..."</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<strong style="font-weight: 600;">OAuth </strong>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "type": "oauth",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "provider": "google-antigravity",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "access": "ya29...",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "refresh": "1//...",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "expires": 1736160000000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "email": "user@gmail.com"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">Profile ID </h3>
+<p style="margin: 4px 0; padding-left: 20px;">• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">provider:default</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">OAuth + </strong><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">provider:<email></code></p>
+<p style="margin: 8px 0;">  - <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">google-antigravity:user@gmail.com</code></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json</p></section>
+<p style="margin: 4px 0; padding-left: 20px;">•  Git</p>
+<p style="margin: 4px 0; padding-left: 20px;">• OpenClaw  token </p>
+<p style="margin: 4px 0; padding-left: 20px;">• OAuth token  24 </p>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;"> Cooldown </h2>
+<p style="margin: 8px 0;">OpenClaw  profile  cooldown </p>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">rate limit / timeout</h3>
+<p style="margin: 4px 0; padding-left: 20px;">• 1 </p>
+<p style="margin: 4px 0; padding-left: 20px;">• 5 </p>
+<p style="margin: 4px 0; padding-left: 20px;">• 25 </p>
+<p style="margin: 4px 0; padding-left: 20px;">• 1 </p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "usageStats": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "openai:default": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "lastUsed": 1736160000000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "cooldownUntil": 1736160600000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "errorCount": 2</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<p style="margin: 4px 0; padding-left: 20px;">•  </p>
+<p style="margin: 4px 0; padding-left: 20px;">•   <strong style="font-weight: 600;">disabled</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• ⏰ 5 </p>
+<p style="margin: 4px 0; padding-left: 20px;">•   24 </p>
+<p style="margin: 4px 0; padding-left: 20px;">•  24 </p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "usageStats": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "openai:default": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "disabledUntil": 1736178000000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "disabledReason": "billing"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">Primary </strong><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agents.defaults.model.primary</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">Fallbacks</strong><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">agents.defaults.model.fallbacks</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">Provider </strong>auth profile rotation</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "zai/glm-5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "zai/glm-5",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "fallbacks": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "zai/glm-4.7",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "zai/glm-4.7-flash",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "minimax/MiniMax-M2.5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<p style="margin: 8px 0;"> allowlist</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "anthropic/claude-sonnet-4-5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "models": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "anthropic/claude-sonnet-4-5": { "alias": "Sonnet" },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "anthropic/claude-opus-4-5": { "alias": "Opus" },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "zai/glm-5": { "alias": "GLM-5" }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<p style="margin: 4px 0; padding-left: 20px;">•  </p>
+<p style="margin: 4px 0; padding-left: 20px;">•  <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px;">Model "xxx" is not allowed</code></p>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">1. </h3>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">cerebras/zai-glm-4.7  ← </p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">groq/llama-3.3        ←  + </p></section>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">anthropic/claude-opus-4-5  ← </p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">zai/glm-5                  ← </p></section>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">minimax/MiniMax-M2.5  ← </p></section>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">2.  Fallback</h3>
+<p style="margin: 4px 0; padding-left: 20px;">•  Primary </p>
+<p style="margin: 4px 0; padding-left: 20px;">•  Fallback </p>
+<p style="margin: 4px 0; padding-left: 20px;">•   provider </p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "primary": "anthropic/claude-opus-4-5",  // </p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "fallbacks": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "anthropic/claude-sonnet-4-5",         //  provider</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "zai/glm-4.7"                          //  provider</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">3. </h3>
+<strong style="font-weight: 600;">Ollama</strong> 
+<p style="margin: 4px 0; padding-left: 20px;">•  </p>
+<p style="margin: 4px 0; padding-left: 20px;">•  </p>
+<p style="margin: 4px 0; padding-left: 20px;">•  </p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "ollama/llama3.3",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "fallbacks": ["zai/glm-4.7"]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;"> CLI </h2>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models status</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models list --all</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models status --check</p></section>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models set zai/glm-5</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models set-image openai/gpt-4-vision</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">/model 3                    # </p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">/model zai/glm-5            # </p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">/model status               # </p></section>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;"> Fallback</h3>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models fallbacks list</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models fallbacks add zai/glm-4.7</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models fallbacks remove zai/glm-4.7</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models fallbacks clear</p></section>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models aliases list</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models aliases add GLM zai/glm-5</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models aliases remove GLM</p></section>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;"> 1</h3>
+ 3  OpenAI 
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "env": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "OPENAI_API_KEY_1": "sk-...",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "OPENAI_API_KEY_2": "sk-...",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "OPENAI_API_KEY_3": "sk-..."</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "auth": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "profiles": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "openai:account1": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "provider": "openai",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "type": "api_key",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "key": "${OPENAI_API_KEY_1}"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "openai:account2": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "provider": "openai",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "type": "api_key",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "key": "${OPENAI_API_KEY_2}"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "openai:account3": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "provider": "openai",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "type": "api_key",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "key": "${OPENAI_API_KEY_3}"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<p style="margin: 4px 0; padding-left: 20px;">•  3 </p>
+<p style="margin: 4px 0; padding-left: 20px;">• rate limit </p>
+<p style="margin: 4px 0; padding-left: 20px;">•  cooldown</p>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;"> 2 + </h3>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "defaults": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "primary": "ollama/llama3.3",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "fallbacks": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "zai/glm-4.7-flash",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "anthropic/claude-sonnet-4-5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<p style="margin: 4px 0; padding-left: 20px;">• </p>
+<p style="margin: 4px 0; padding-left: 20px;">• </p>
+<p style="margin: 4px 0; padding-left: 20px;">• </p>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;"> 3</h3>
+ Opus Sonnet
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "agents": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "list": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "id": "high-quality",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "model": "anthropic/claude-opus-4-5"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      },</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "id": "daily",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "model": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "primary": "anthropic/claude-sonnet-4-5",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          "fallbacks": ["zai/glm-4.7"]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw run --agent high-quality ""</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw run --agent daily ""</p></section>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<h2 style="margin-top: 28px; margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;">  Provider</h2>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;"> Moonshot (Kimi)</h3>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "models": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "mode": "merge",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "providers": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "moonshot": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "baseUrl": "https://api.moonshot.ai/v1",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "apiKey": "${MOONSHOT_API_KEY}",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "api": "openai-completions",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "models": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          { "id": "kimi-k2.5", "name": "Kimi K2.5" }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 18px; font-weight: 600; color: #24292e; border-bottom: 1px solid #eaecef; padding-bottom: 8px;"> (LM Studio)</h3>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "models": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "providers": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "lmstudio": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "baseUrl": "http://localhost:1234/v1",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "apiKey": "LMSTUDIO_KEY",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "api": "openai-completions",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        "models": [</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">            "id": "minimax-m2.1",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">            "name": "MiniMax M2.1",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">            "contextWindow": 200000,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">            "maxTokens": 8192</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        ]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p></section>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<p style="margin: 4px 0; padding-left: 20px;">1. </p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;"> Cooldown</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">3. </p>
+<p style="margin: 4px 0; padding-left: 20px;">4. Ollama </p>
+<p style="margin: 4px 0; padding-left: 20px;">•   2-3  fallback</p>
+<p style="margin: 4px 0; padding-left: 20px;">•  </p>
+<p style="margin: 4px 0; padding-left: 20px;">•   usage stats</p>
+<p style="margin: 4px 0; padding-left: 20px;">•  Ollama </p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;"><p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw onboard</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models status</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models set zai/glm-5</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw models fallbacks list</p></section>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<p style="margin: 4px 0; padding-left: 20px;">• Models CLI</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Model Failover</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Model Providers</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Gateway Configuration</p>
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+OpenClaw Session  AI 
+<hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;">
+<p style="margin: 8px 0;">* AI  OpenClaw *</p>
+</body>
+</html>

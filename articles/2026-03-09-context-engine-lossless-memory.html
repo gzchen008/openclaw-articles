@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; line-height: 1.6; color: #333;">
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🎯 什么是 Context Engine？</h2>
+
+<p style="margin: 8px 0;"><strong>Context Engine</strong> 是 OpenClaw 的一个<strong>独占插件插槽</strong>，负责管理 AI Agent 的上下文（Context）。</p>
+
+<p style="margin: 8px 0;"><strong>什么是上下文？</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 上下文 = <strong>所有发送给 AI 模型的内容</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 包括：System Prompt、对话历史、工具调用、附件等</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 上下文受模型的 <strong>token 限制</strong>（如 GPT-4 的 128K tokens）</p>
+
+<p style="margin: 8px 0;"><strong>Context Engine 的职责</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong>Context Assembly</strong>（上下文组装）：构建发送给模型的完整上下文</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong>Compaction</strong>（压缩）：当上下文接近 token 限制时，压缩旧对话</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong>Session Context Orchestration</strong>（会话上下文编排）：管理会话的生命周期</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. <strong>Ingest</strong>（摄入）：处理新的消息和工具结果</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">📦 默认引擎：Legacy Context Engine</h2>
+
+<p style="margin: 8px 0;"><strong>OpenClaw 默认使用 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">legacy</code> 上下文引擎</strong>，这是一个内置引擎，提供基本的上下文管理功能。</p>
+
+<p style="margin: 8px 0;"><strong>核心功能</strong>：</p>
+
+<p style="margin: 8px 0; font-weight: bold;">1. 上下文组装</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// Legacy 引擎的上下文组装流程</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">function assembleContext(session, params) {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  return {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 1. System Prompt</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 2. 对话历史</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 3. 工具调用和结果</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 4. 附件</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  };</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 8px 0; font-weight: bold;">2. 压缩机制（Compaction）</p>
+
+<p style="margin: 8px 0; padding: 12px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;"><strong>压缩示例</strong>：<br><br>
+原始对话（100K tokens）：<br>
+[10:00] User: 帮我写一个爬虫<br>
+[10:01] Assistant: 好的，我来帮你...<br>
+...<br>
+[14:00] User: 添加异常处理<br><br>
+
+压缩后（10K tokens）：<br>
+[System] 之前讨论了 Python 爬虫，已创建 spider.py...<br>
+[14:00] User: 添加异常处理</p>
+
+<p style="margin: 8px 0;"><strong>压缩的问题</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">❌ <strong>信息丢失</strong>：旧的对话细节被总结成摘要</p>
+<p style="margin: 4px 0; padding-left: 20px;">❌ <strong>上下文断裂</strong>：模型可能忘记之前的决策</p>
+<p style="margin: 4px 0; padding-left: 20px;">❌ <strong>依赖关系丢失</strong>：工具调用的因果关系被简化</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🔍 无损记忆的实现方案</h2>
+
+<p style="margin: 12px 0; padding: 12px; background: #f0f7ff; border-left: 4px solid #0366d6; border-radius: 4px;"><strong>无损记忆的目标</strong>：<br>
+✅ 保留所有对话细节<br>
+✅ 保留所有工具调用和结果<br>
+✅ 智能组织上下文，避免信息丢失<br>
+✅ 在 token 限制内最大化上下文利用</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">方案 1：分层上下文（Layered Context）</h3>
+
+<p style="margin: 8px 0; padding: 12px; background: #d4edda; border-left: 4px solid #28a745; border-radius: 4px;">
+<strong>活跃层（Active Layer）</strong><br>
+• 最近 20 轮对话（完整）<br>
+• 当前工具调用<br>
+• 2,000 tokens<br><br>
+
+<strong>索引层（Index Layer）</strong><br>
+• 之前对话的索引（主题+关键词）<br>
+• 工具调用的索引（文件+操作）<br>
+• 5,000 tokens<br><br>
+
+<strong>存储层（Storage Layer）</strong><br>
+• 完整对话历史（磁盘）<br>
+• 完整工具调用记录<br>
+• 按需加载
+</p>
+
+<p style="margin: 8px 0;"><strong>优势</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 活跃层保证当前任务的完整上下文</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 索引层提供快速检索能力</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 存储层保证不丢失任何信息</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">方案 2：图结构上下文（Graph Context）</h3>
+
+<p style="margin: 8px 0;"><strong>对话图（Conversation Graph）</strong>：</p>
+
+<p style="margin: 8px 0; padding: 12px; background: #e7f3ff; border-left: 4px solid #0066cc; border-radius: 4px;">
+[Node 1: 创建爬虫]<br>
+  └─→ [Node 2: write(spider.py)]<br>
+        └─→ [Node 3: 添加异常处理]<br>
+              └─→ [Node 4: read(spider.py)]<br>
+                    └─→ [Node 5: edit(spider.py)]<br><br>
+
+<strong>依赖关系</strong>：<br>
+• Node 5 依赖 Node 4（需要先读取）<br>
+• Node 4 依赖 Node 2（需要知道文件内容）<br>
+• Node 2 依赖 Node 1（需要知道爬虫需求）
+</p>
+
+<p style="margin: 8px 0;"><strong>优势</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 保留因果关系</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 可以追溯决策链</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 按需加载相关节点</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">方案 3：向量化上下文（Vector Context）⭐ 推荐</h3>
+
+<p style="margin: 8px 0;"><strong>向量数据库（Vector Database）</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">Message 1 → Embedding → [0.1, 0.2, 0.3, ...]</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">Message 2 → Embedding → [0.4, 0.5, 0.6, ...]</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">...</p>
+<p style="margin: 8px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">当前问题 → Embedding → [0.2, 0.3, 0.4, ...]</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">           ↓</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">      向量搜索（相似度 &gt; 0.8）</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">           ↓</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">   返回相关的历史消息</p>
+</section>
+
+<p style="margin: 8px 0;"><strong>优势</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ <strong>语义搜索</strong>，找到真正相关的内容</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 不受关键词限制</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 支持跨会话检索</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🛠️ 如何启用 Context Engine？</h2>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">配置方法</h3>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// openclaw.json</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "plugins": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    "slots": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">      "memory": "memory-lancedb",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">      "contextEngine": "legacy"  // 或其他插件 ID</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">📊 性能对比</h2>
+
+<p style="margin: 8px 0;"><strong>Legacy vs 无损记忆</strong>：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;"><strong>上下文保留</strong>：</p>
+<p style="margin: 4px 0; padding-left: 40px;">• Legacy：压缩后丢失细节 ❌</p>
+<p style="margin: 4px 0; padding-left: 40px;">• 无损记忆：完整保留 ✅</p>
+
+<p style="margin: 4px 0; padding-left: 20px;"><strong>检索能力</strong>：</p>
+<p style="margin: 4px 0; padding-left: 40px;">• Legacy：无（只能看最近 N 轮）❌</p>
+<p style="margin: 4px 0; padding-left: 40px;">• 无损记忆：向量搜索，语义检索 ✅</p>
+
+<p style="margin: 4px 0; padding-left: 20px;"><strong>Token 使用</strong>：</p>
+<p style="margin: 4px 0; padding-left: 40px;">• Legacy：较低（压缩后）✅</p>
+<p style="margin: 4px 0; padding-left: 40px;">• 无损记忆：较高（但更智能）</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🎯 最佳实践</h2>
+
+<p style="margin: 8px 0;"><strong>推荐场景</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ <strong>长期项目</strong>（多天/多周的对话）</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ <strong>复杂任务</strong>（需要追溯决策链）</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ <strong>多文件协作</strong>（需要记住文件关系）</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ <strong>用户偏好记忆</strong>（个性化服务）</p>
+
+<p style="margin: 8px 0;"><strong>不推荐场景</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">❌ <strong>简单问答</strong>（不需要历史上下文）</p>
+<p style="margin: 4px 0; padding-left: 20px;">❌ <strong>一次性任务</strong>（不需要长期记忆）</p>
+<p style="margin: 4px 0; padding-left: 20px;">❌ <strong>Token 预算有限</strong>（向量搜索会增加开销）</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">📚 总结</h2>
+
+<p style="margin: 12px 0; padding: 12px; background: #f0f7ff; border-left: 4px solid #0366d6; border-radius: 4px;">
+<strong>Context Engine</strong> 是 OpenClaw 的核心插件插槽，负责管理 AI Agent 的上下文。<br><br>
+
+默认的 <strong>Legacy 引擎</strong>通过压缩来处理长对话，但会丢失细节。<br><br>
+
+<strong>无损记忆引擎</strong>通过向量搜索、分层存储等技术，在 token 限制内最大化保留上下文信息，适用于长期项目和复杂任务。
+</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🔗 参考资料</h2>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="https://docs.openclaw.ai/concepts/context" style="color: #0366d6;">OpenClaw Context 文档</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="https://docs.openclaw.ai/tools/plugin" style="color: #0366d6;">Plugin 开发指南</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="https://lancedb.github.io/lancedb/" style="color: #0366d6;">LanceDB - 向量数据库</a></p>
+
+<p style="margin: 24px 0 0 0; padding-top: 16px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
+<strong>作者</strong>：小J<br>
+<strong>发布日期</strong>：2026-03-09<br>
+<strong>标签</strong>：#OpenClaw #ContextEngine #无损记忆 #向量搜索
+</p>
+
+</body>
+</html>

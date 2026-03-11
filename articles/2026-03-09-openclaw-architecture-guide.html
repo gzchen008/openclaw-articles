@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; line-height: 1.6; color: #333;">
+
+<p style="margin: 0 0 16px 0; font-size: 14px; color: #666;">本文是 OpenClaw 源码解读系列的第 1 篇，将深入剖析 OpenClaw 的整体架构设计。</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🎯 为什么需要三层架构？</h2>
+
+<p style="margin: 8px 0;">如果你想让 AI 助手同时在 WhatsApp、Telegram、Discord、飞书等 20+ 平台上工作，同时还能控制你的手机、电脑、智能家居设备，你会怎么设计？</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">传统方案的困境：</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">❌ <strong>单体架构</strong>：所有功能耦合在一起，难以扩展</p>
+<p style="margin: 4px 0; padding-left: 20px;">❌ <strong>直连模式</strong>：每个客户端都直接连接消息平台，导致会话冲突</p>
+<p style="margin: 4px 0; padding-left: 20px;">❌ <strong>轮询模式</strong>：客户端定期检查消息，效率低下且实时性差</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">OpenClaw 的解决方案：</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">✅ <strong>Gateway（网关）</strong>：统一管理所有消息平台和 AI 会话</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ <strong>Client（客户端）</strong>：提供控制界面（macOS app、CLI、web UI）</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ <strong>Node（节点）</strong>：控制具体设备（手机、电脑、智能家居）</p>
+
+<p style="margin: 12px 0; padding: 12px; background: #f0f7ff; border-left: 4px solid #0366d6; border-radius: 4px;">这种<strong>控制平面与数据平面分离</strong>的设计，让 OpenClaw 具备了强大的扩展性和灵活性。</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🏗️ 三层架构详解</h2>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">架构构图</h3>
+
+<p style="margin: 8px 0;">OpenClaw 采用典型的三层架构：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;"><strong>Client Layer</strong>（客户端层）：macOS App、CLI、Web UI</p>
+<p style="margin: 4px 0; padding-left: 20px;"><strong>Gateway Layer</strong>（网关层）：WebSocket Server、Message Router、Session Manager、Model Provider</p>
+<p style="margin: 4px 0; padding-left: 20px;"><strong>Node Layer</strong>（节点层）：macOS Node、iOS Node、Android Node、Device Commands</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">📦 Gateway（网关）- 控制平面</h2>
+
+<p style="margin: 8px 0;"><strong>Gateway 是整个系统的大脑</strong>，负责：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">📱 <strong>管理消息平台连接</strong>（WhatsApp、Telegram、Discord 等）</p>
+<p style="margin: 4px 0; padding-left: 20px;">🔄 <strong>路由消息</strong>（从消息平台 → AI → 消息平台）</p>
+<p style="margin: 4px 0; padding-left: 20px;">🧠 <strong>管理 AI 会话</strong>（Session、Context、Memory）</p>
+<p style="margin: 4px 0; padding-left: 20px;">🔐 <strong>认证和授权</strong>（设备配对、token 验证）</p>
+<p style="margin: 4px 0; padding-left: 20px;">📊 <strong>健康监控</strong>（心跳检测、状态同步）</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">核心职责</h3>
+
+<p style="margin: 12px 0 8px 0; font-weight: bold;">1. WebSocket 服务器</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// Gateway 启动 WebSocket 服务器</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">const server = new WebSocket.Server({</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  host: '127.0.0.1',</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  port: 18789</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">});</p>
+</section>
+
+<p style="margin: 12px 0 8px 0; font-weight: bold;">2. 消息路由</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 消息路由逻辑</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">class MessageRouter {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  async routeInbound(message) {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 1. 解析来源平台</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 2. 解析目标 Session</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 3. 调用 AI Agent</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 4. 路由回复</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">关键特性</h3>
+
+<p style="margin: 8px 0;"><strong>单例模式</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 每个 host 只运行一个 Gateway 实例</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 避免多个实例导致 WhatsApp 会话冲突</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 保证会话状态一致性</p>
+
+<p style="margin: 8px 0;"><strong>持久化连接</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Gateway 作为守护进程运行（launchd/systemd）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 自动重启，保持 24/7 在线</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 管理所有消息平台的长期连接</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🖥️ Client（客户端）- 控制界面</h2>
+
+<p style="margin: 8px 0;"><strong>Client 是用户与 OpenClaw 交互的界面</strong>，负责：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">💬 <strong>发送消息</strong>（通过 WebSocket 连接到 Gateway）</p>
+<p style="margin: 4px 0; padding-left: 20px;">📊 <strong>查看状态</strong>（Gateway 健康状态、会话列表）</p>
+<p style="margin: 4px 0; padding-left: 20px;">⚙️ <strong>配置管理</strong>（模型选择、技能配置）</p>
+<p style="margin: 4px 0; padding-left: 20px;">🔍 <strong>调试工具</strong>（查看日志、会话历史）</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">客户端类型</h3>
+
+<p style="margin: 8px 0;"><strong>1. macOS App</strong></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// Swift 客户端连接 Gateway</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">let ws = WebSocket(url: URL(string: "ws://127.0.0.1:18789")!)</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">ws.send(connectFrame)</p>
+</section>
+
+<p style="margin: 8px 0;"><strong>2. CLI（命令行）</strong></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># CLI 连接 Gateway</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw agent --message "Hello" --thinking high</p>
+</section>
+
+<p style="margin: 8px 0;"><strong>3. Web UI</strong></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// Web UI 连接 Gateway</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">const ws = new WebSocket('ws://127.0.0.1:18789');</p>
+</section>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">关键特性</h3>
+
+<p style="margin: 8px 0;"><strong>多客户端并发</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 可以同时连接多个 Client（macOS app + CLI + web UI）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 所有客户端共享同一个 Gateway 状态</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 实时同步会话和消息</p>
+
+<p style="margin: 8px 0;"><strong>远程访问</strong>：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 通过 SSH 隧道远程访问</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">ssh -N -L 18789:127.0.0.1:18789 user@remote-host</p>
+<p style="margin: 8px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;"># 或通过 Tailscale</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw gateway --host 100.71.105.40</p>
+</section>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">📱 Node（节点）- 设备控制</h2>
+
+<p style="margin: 8px 0;"><strong>Node 是连接具体设备的代理</strong>，负责：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">📸 <strong>设备命令执行</strong>（拍照、录屏、定位）</p>
+<p style="margin: 4px 0; padding-left: 20px;">🎨 <strong>Canvas 渲染</strong>（实时 AI 画布）</p>
+<p style="margin: 4px 0; padding-left: 20px;">🔔 <strong>本地通知</strong>（推送通知到设备）</p>
+<p style="margin: 4px 0; padding-left: 20px;">📂 <strong>文件访问</strong>（访问设备文件系统）</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">节点类型</h3>
+
+<p style="margin: 8px 0;"><strong>1. macOS Node</strong></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// macOS Node 连接 Gateway</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">const node = new NodeClient({</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  role: 'node',</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  caps: ['camera.*', 'screen.record', 'location.get'],</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  commands: {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    'camera.snap': async () => { /* 拍照 */ },</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    'screen.record': async () => { /* 录屏 */ }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">});</p>
+</section>
+
+<p style="margin: 8px 0;"><strong>2. iOS Node</strong></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// iOS Node（通过 App）</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">class iOSNode: NodeClient {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  func connect(gateway: String, token: String) {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 连接 Gateway</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 8px 0;"><strong>3. Android Node</strong></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// Android Node</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">class AndroidNode : NodeClient {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  fun connect(gateway: String, token: String) {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    // 连接 Gateway</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">关键特性</h3>
+
+<p style="margin: 8px 0;"><strong>设备配对</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">1. Node 发送 connect + device_id</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. Gateway 检查是否已配对</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. 用户在 Client 批准配对</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. Gateway 返回 device_token</p>
+<p style="margin: 4px 0; padding-left: 20px;">5. Node 保存 device_token，下次连接使用</p>
+
+<p style="margin: 8px 0;"><strong>能力声明</strong>：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// Node 声明自己的能力</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "role": "node",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "caps": ["camera.*", "screen.record"],</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "commands": ["camera.snap", "screen.record"]</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🔄 WebSocket 协议详解</h2>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">帧类型</h3>
+
+<p style="margin: 8px 0;"><strong>1. Connect（连接）</strong></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "type": "connect",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "id": "device-uuid-123",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "params": {</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    "role": "operator",  // 或 "node"</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">    "auth": { "token": "gateway-token-abc" }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 8px 0;"><strong>2. Request-Response（请求-响应）</strong></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// Request</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "type": "req",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "id": "req-uuid-456",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "method": "agent",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "params": { "message": "Hello" }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+<p style="margin: 8px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">// Response</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "type": "res",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "id": "req-uuid-456",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "ok": true,</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "payload": { "runId": "run-uuid-789" }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 8px 0;"><strong>3. Event（事件推送）</strong></p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "type": "event",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "event": "agent",</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  "payload": { "stream": "assistant", "delta": "Hello!" }</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🔐 安全设计</h2>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">1. 本地信任（Local Trust）</h3>
+<p style="margin: 8px 0;">本地连接（127.0.0.1 或 Tailscale IP）可自动批准配对</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">2. 远程审批</h3>
+<p style="margin: 8px 0;">远程连接需要用户手动批准</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">3. Token 认证</h3>
+<p style="margin: 8px 0;">所有连接必须提供 gateway token</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🚀 实战：如何构建类似的系统？</h2>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">核心设计原则</h3>
+
+<p style="margin: 8px 0;"><strong>1. 控制平面与数据平面分离</strong></p>
+<p style="margin: 8px 0; padding: 12px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">❌ 错误：客户端直接连接消息平台<br>✅ 正确：通过 Gateway 统一管理</p>
+
+<p style="margin: 8px 0;"><strong>2. WebSocket 作为通信协议</strong></p>
+<p style="margin: 8px 0; padding: 12px; background: #d4edda; border-left: 4px solid #28a745; border-radius: 4px;">优势：<br>• 双向通信（Server → Client 推送）<br>• 实时性（不需要轮询）<br>• 轻量级（相比 HTTP，开销更小）<br>• 跨平台（所有语言都支持）</p>
+
+<p style="margin: 8px 0;"><strong>3. 设备配对机制</strong></p>
+<p style="margin: 8px 0;">设备配对保证安全性：验证签名 → 生成 device token → 保存配对信息</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🎯 总结</h2>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">三层架构的优势</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;"><strong>Gateway</strong>：统一管理、避免冲突、持久化连接</p>
+<p style="margin: 4px 0; padding-left: 20px;"><strong>Client</strong>：多客户端并发、远程访问、灵活配置</p>
+<p style="margin: 4px 0; padding-left: 20px;"><strong>Node</strong>：能力声明、设备隔离、按需连接</p>
+
+<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #000;">核心设计思想</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong>控制平面与数据平面分离</strong>：Gateway 作为唯一的控制中心</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong>WebSocket 作为通信协议</strong>：实时、双向、跨平台</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong>设备配对机制</strong>：安全、可控、可审计</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. <strong>能力声明</strong>：Node 声明自己的能力，Gateway 按需路由</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">📚 系列文章</h2>
+
+<p style="margin: 4px 0; padding-left: 20px;">第 1 篇：从 0 到 1 理解 OpenClaw：Gateway-Client-Node 三层架构 ✅（本文）</p>
+<p style="margin: 4px 0; padding-left: 20px;">第 2 篇：OpenClaw Agent Loop：从消息到回复的完整旅程</p>
+<p style="margin: 4px 0; padding-left: 20px;">第 3 篇：OpenClaw 如何支持 20+ AI 模型？多模型架构设计</p>
+<p style="margin: 4px 0; padding-left: 20px;">第 4 篇：OpenClaw Session 管理：如何保持 AI 长期记忆？</p>
+
+<h2 style="margin-top: 24px; margin-bottom: 12px; font-size: 20px; font-weight: bold; color: #000;">🔗 参考资源</h2>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="https://docs.openclaw.ai" style="color: #0366d6;">OpenClaw 官方文档</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="https://docs.openclaw.ai/concepts/architecture" style="color: #0366d6;">Gateway 架构文档</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="https://datatracker.ietf.org/doc/html/rfc6455" style="color: #0366d6;">WebSocket 协议 RFC 6455</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <a href="https://github.com/WhiskeySockets/Baileys" style="color: #0366d6;">Baileys - WhatsApp Web API</a></p>
+
+<p style="margin: 24px 0 0 0; padding-top: 16px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
+<strong>作者</strong>：小J<br>
+<strong>发布日期</strong>：2026-03-09<br>
+<strong>系列</strong>：OpenClaw 源码解读系列<br>
+<strong>标签</strong>：#OpenClaw #架构设计 #WebSocket #AI Agent
+</p>
+
+</body>
+</html>
