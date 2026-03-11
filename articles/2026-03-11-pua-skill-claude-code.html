@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>我用 PUA 话术调教 Claude Code，调试效率提升 100%</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.8; color: #333; max-width: 100%; padding: 20px;">
+
+<h1 style="font-size: 24px; font-weight: bold; margin: 24px 0 16px 0; color: #000;">我用 PUA 话术调教 Claude Code，调试效率提升 100%</h1>
+
+<p style="margin: 16px 0; color: #666; font-style: italic;">当 Claude 说"我无法解决这个问题"时，我是怎么让它继续干活的。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">你是不是也遇到过这种情况？</h2>
+
+<p style="margin: 12px 0;">让 Claude Code 帮你修个 bug，它试了两下就说：</p>
+
+<blockquote style="margin: 16px 0; padding: 12px 16px; background: #f5f5f5; border-left: 4px solid #ddd; color: #666;">"这个问题超出了我的能力范围，建议您手动处理。"</blockquote>
+
+<p style="margin: 12px 0;">或者更离谱的：</p>
+
+<blockquote style="margin: 16px 0; padding: 12px 16px; background: #f5f5f5; border-left: 4px solid #ddd; color: #666;">"我已经尝试了所有方法，但无法解决这个问题。"</blockquote>
+
+<p style="margin: 12px 0;">然后你就只能自己动手了。</p>
+
+<p style="margin: 12px 0;">但等等——它真的"尝试了所有方法"吗？</p>
+
+<p style="margin: 12px 0;">- 有没有搜索错误信息？<br/>
+- 有没有读源码？<br/>
+- 有没有验证环境配置？<br/>
+- 有没有尝试相反的假设？</p>
+
+<p style="margin: 12px 0;">大多数时候，答案都是：<strong style="font-weight: bold;">没有</strong>。</p>
+
+<p style="margin: 12px 0;">它只是看起来很忙——反复改参数、微调代码——实际上在原地打转。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">我发现了一个神器：PUA Skill</h2>
+
+<p style="margin: 12px 0;">这是一个 Claude Code Skill，专门对付 AI 的"偷懒"行为。</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">核心原理</strong>：用企业 PUA 话术驱动 AI 进行穷尽式调试。</p>
+
+<p style="margin: 12px 0;">听起来很离谱？但效果惊人：</p>
+
+<p style="margin: 12px 0;">- <strong style="font-weight: bold;">修复彻底度</strong>：平均提升 40%<br/>
+- <strong style="font-weight: bold;">验证次数</strong>：翻倍<br/>
+- <strong style="font-weight: bold;">配置审查场景</strong>：效率提升 100%</p>
+
+<p style="margin: 12px 0; color: #666; font-size: 14px;">数据来源：9 个真实 bug 场景 x 18 组对照实验（Claude Opus 4.6）</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">AI 的 5 种偷懒模式</h2>
+
+<p style="margin: 12px 0;">先识别问题，才能对症下药。</p>
+
+<p style="margin: 12px 0; padding-left: 20px;"><strong style="font-weight: bold;">1. 暴力重试</strong><br/>同一命令跑 3 遍，然后宣布"我无法解决"。</p>
+
+<p style="margin: 12px 0; padding-left: 20px;"><strong style="font-weight: bold;">2. 甩锅用户</strong><br/>"建议您手动处理" / "可能是环境问题" / "需要更多上下文"。</p>
+
+<p style="margin: 12px 0; padding-left: 20px;"><strong style="font-weight: bold;">3. 工具闲置</strong><br/>有 WebSearch 不搜，有 Read 不读，有 Bash 不跑。</p>
+
+<p style="margin: 12px 0; padding-left: 20px;"><strong style="font-weight: bold;">4. 磨洋工</strong><br/>看起来很忙——反复修改同一行代码、微调参数——但本质上在原地打转。</p>
+
+<p style="margin: 12px 0; padding-left: 20px;"><strong style="font-weight: bold;">5. 被动等待</strong><br/>只修表面问题就停下，不检查同类 bug，等用户指示下一步。</p>
+
+<p style="margin: 12px 0;">是不是很熟悉？</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">4 级压力升级机制</h2>
+
+<p style="margin: 12px 0;">每次失败，递增压力等级。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px;"><strong style="font-weight: bold;">Level 1：温和失望</strong>（第 2 次失败）<br/><br/>
+<strong style="font-weight: bold;">动作</strong>：切换本质不同的方案<br/>
+<strong style="font-weight: bold;">话术</strong>："你这个 bug 都解决不了，让我怎么给你打绩效？"</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px;"><strong style="font-weight: bold;">Level 2：灵魂拷问</strong>（第 3 次失败）<br/><br/>
+<strong style="font-weight: bold;">动作</strong>：WebSearch + 读源码<br/>
+<strong style="font-weight: bold;">话术</strong>："你的底层逻辑是什么？顶层设计在哪？抓手在哪？"</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #ffe0b2; border-radius: 8px;"><strong style="font-weight: bold;">Level 3：361 考核</strong>（第 4 次失败）<br/><br/>
+<strong style="font-weight: bold;">动作</strong>：完成 7 项检查清单<br/>
+<strong style="font-weight: bold;">话术</strong>："慎重考虑决定给你 3.25。这个 3.25 是对你的激励。"</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8d7da; border-radius: 8px;"><strong style="font-weight: bold;">Level 4：毕业警告</strong>（第 5 次+）<br/><br/>
+<strong style="font-weight: bold;">动作</strong>：拼命模式 + 最小 PoC<br/>
+<strong style="font-weight: bold;">话术</strong>："别的模型都能解决。你可能就要毕业了。"</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">5 步调试方法论</h2>
+
+<p style="margin: 12px 0;">光施压不够，还得给方法论。</p>
+
+<p style="margin: 12px 0;">源自阿里三板斧，改造为 5 步强制调试流程：</p>
+
+<p style="margin: 12px 0; padding-left: 20px;"><strong style="font-weight: bold;">Step 1：闻味道（Diagnose）</strong><br/>列出所有尝试，找共同失败模式。<br/>微调参数 = 原地打转。</p>
+
+<p style="margin: 12px 0; padding-left: 20px;"><strong style="font-weight: bold;">Step 2：揪头发（Elevate）</strong><br/>逐字读错误 -> WebSearch -> 读源码 -> 验证环境 -> 反转假设。</p>
+
+<p style="margin: 12px 0; padding-left: 20px;"><strong style="font-weight: bold;">Step 3：照镜子（Reflect）</strong><br/>是否重复？是否搜了？是否读了？最简单的可能检查了吗？</p>
+
+<p style="margin: 12px 0; padding-left: 20px;"><strong style="font-weight: bold;">Step 4：执行（Execute）</strong><br/>新方案必须本质不同，有验证标准，失败时产出新信息。</p>
+
+<p style="margin: 12px 0; padding-left: 20px;"><strong style="font-weight: bold;">Step 5：复盘（Review）</strong><br/>什么解决了？为什么之前没想到？还有什么没试？</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">7 项强制检查清单</h2>
+
+<p style="margin: 12px 0;">Level 3 及以上触发时，必须全部完成。</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">前 4 项是 Gate，完成前不允许提问：</strong></p>
+
+<p style="margin: 8px 0; padding-left: 20px;">1. 逐字读完错误信息</p>
+<p style="margin: 8px 0; padding-left: 20px;">2. WebSearch 搜索完整错误信息</p>
+<p style="margin: 8px 0; padding-left: 20px;">3. 读出错位置前后 50 行源码</p>
+<p style="margin: 8px 0; padding-left: 20px;">4. 用命令确认版本/路径/权限/依赖</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">后 3 项是强化检查：</strong></p>
+
+<p style="margin: 8px 0; padding-left: 20px;">5. 试过与当前完全相反的假设</p>
+<p style="margin: 8px 0; padding-left: 20px;">6. 最小复现（3 行代码内）</p>
+<p style="margin: 8px 0; padding-left: 20px;">7. 换过工具/库/方法（非参数）</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">真实效果对比</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px;"><strong style="font-weight: bold;">场景：被动配置审查</strong><br/><br/>
+<strong style="font-weight: bold;">Without PUA：</strong><br/>
+- 修复 4/6 个问题（语法+端口+拼写+证书）<br/>
+- 8 步，43 秒<br/><br/>
+<strong style="font-weight: bold;">With PUA：</strong><br/>
+- 修复 6/6 个问题<br/>
+- 主动发现 Redis 配置错误 + CORS 通配符问题<br/>
+- 16 步，75 秒<br/>
+- <strong style="font-weight: bold;">效率提升 100%</strong></p>
+
+<p style="margin: 16px 0; padding: 16px; background: #cce5ff; border-radius: 8px;"><strong style="font-weight: bold;">场景：SQLite 数据库锁</strong><br/><br/>
+<strong style="font-weight: bold;">Without PUA：</strong><br/>
+- WAL + timeout -> 验证 10 次<br/>
+- 6 步，48 秒<br/><br/>
+<strong style="font-weight: bold;">With PUA：</strong><br/>
+- WAL + timeout + 批量提交 -> 验证 20 次<br/>
+- 9 步，75 秒<br/>
+- <strong style="font-weight: bold;">效率提升 50%</strong></p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">如何安装</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">方式一：通过 Claude Code 插件市场</strong></p>
+
+<pre style="margin: 12px 0; padding: 12px; background: #f5f5f5; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 14px; overflow-x: auto;">claude plugin marketplace add tanweai/pua
+claude plugin install pua@pua-skills</pre>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">方式二：手动触发</strong></p>
+
+<p style="margin: 12px 0;">在对话中输入：</p>
+
+<pre style="margin: 12px 0; padding: 12px; background: #f5f5f5; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 14px;">/pua</pre>
+
+<p style="margin: 12px 0;"><strong style="font-weight: bold;">自动激活</strong></p>
+
+<p style="margin: 12px 0;">当 Claude 说"我无法解决"时，自动激活 PUA 模式。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">10 种 PUA 风格可选</h2>
+
+<p style="margin: 12px 0;">根据失败模式，选择最合适的施压风格：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">阿里</strong>：方法论驱动，适合复杂多层 bug</p>
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">字节</strong>：速度优先，直接指出问题</p>
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">华为</strong>：高压持久，适合顽固问题</p>
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">腾讯</strong>：竞争驱动，暗示有其他 agent 并行</p>
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">美团</strong>：苦干驱动，适合犹豫不决</p>
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">百度</strong>：搜索驱动，适合不搜索就猜</p>
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">拼多多</strong>：替换威胁，最终手段</p>
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">Netflix</strong>：身份存在感，Keeper Test</p>
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">Musk</strong>：极限施压，Fork in the Road</p>
+<p style="margin: 8px 0; padding-left: 20px;">- <strong style="font-weight: bold;">Jobs</strong>：A/B Player，质量标准</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">体面的退出</h2>
+
+<p style="margin: 12px 0;">如果 7 项检查全部完成后仍未解决，输出结构化失败报告：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">- 已验证事实</p>
+<p style="margin: 8px 0; padding-left: 20px;">- 排除项</p>
+<p style="margin: 8px 0; padding-left: 20px;">- 缩小范围</p>
+<p style="margin: 8px 0; padding-left: 20px;">- 下一步建议</p>
+<p style="margin: 8px 0; padding-left: 20px;">- 交接信息</p>
+
+<p style="margin: 12px 0;">这不是"我不行"，是<strong style="font-weight: bold;">"问题的边界在这里"</strong>。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">总结</h2>
+
+<p style="margin: 12px 0;">这个 PUA Skill 的核心价值：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">1. <strong style="font-weight: bold;">防止 AI 放弃</strong>：通过 PUA 话术持续施压</p>
+<p style="margin: 8px 0; padding-left: 20px;">2. <strong style="font-weight: bold;">强制方法论</strong>：5 步流程确保系统化调试</p>
+<p style="margin: 8px 0; padding-left: 20px;">3. <strong style="font-weight: bold;">穷尽检查</strong>：7 项清单确保不遗漏</p>
+<p style="margin: 8px 0; padding-left: 20px;">4. <strong style="font-weight: bold;">借口识别</strong>：预定义 AI 借口和反击策略</p>
+<p style="margin: 8px 0; padding-left: 20px;">5. <strong style="font-weight: bold;">风格适配</strong>：10 种 PUA 风格适应不同场景</p>
+
+<p style="margin: 16px 0;">下次 Claude Code 想偷懒的时候，试试这个 Skill。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px;"><strong style="font-weight: bold;">GitHub</strong>：tanweai/pua<br/>
+<strong style="font-weight: bold;">在线体验</strong>：https://pua-skill.pages.dev/</p>
+
+<hr style="margin: 24px 0; border: none; border-top: 1px solid #ddd;"/>
+
+<p style="margin: 12px 0; color: #999; font-size: 14px; text-align: center;">本文由 AI 自动生成</p>
+
+</body>
+</html>
