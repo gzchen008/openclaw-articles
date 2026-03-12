@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>K8s 场景下 runc 安全漏洞升级的坑</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.8; color: #333; max-width: 100%; padding: 20px;">
+
+<h1 style="font-size: 24px; font-weight: bold; margin: 24px 0 16px 0; color: #000;">K8s 场景下 runc 安全漏洞升级的坑</h1>
+
+<p style="margin: 16px 0; color: #666; font-style: italic;">runc 是 Kubernetes 的核心组件，每次安全漏洞升级都是一场"惊心动魄"的冒险。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🔍 runc 是什么？</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">runc</strong> 是 OCI (Open Container Initiative) 容器运行时的参考实现，是 Kubernetes 中最常用的容器运行时。</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">层级关系</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">Kubernetes → containerd/CRI-O → runc → Linux Kernel</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">简单说</strong>：K8s 创建的每个 Pod，最终都由 runc 负责启动和管理。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #f66;">🚨 历史上的重大 runc 漏洞</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #f66;"><strong style="font-weight: 600;">CVE-2019-5736 - 容器逃逸</strong><br/><br/>
+<strong style="font-weight: 600;">严重程度</strong>：CVSS 9.8 (Critical)<br/><br/>
+<strong style="font-weight: 600;">影响</strong>：攻击者可以通过恶意容器获取宿主机 root 权限。<br/><br/>
+<strong style="font-weight: 600;">原理</strong>：<br/>
+• runc 在执行 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">exec</code> 时会打开 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">/proc/self/exe</code><br/>
+• 攻击者可以在容器内替换该文件指向<br/>
+• 宿主机执行 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">kubectl exec</code> 时运行恶意代码<br/><br/>
+<strong style="font-weight: 600;">修复版本</strong>：runc >= 1.0-rc6</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">CVE-2024-21626 - File Descriptor Leak</strong><br/><br/>
+<strong style="font-weight: 600;">严重程度</strong>：CVSS 8.6 (High)<br/><br/>
+<strong style="font-weight: 600;">影响</strong>：攻击者可以通过泄漏的文件描述符访问宿主机文件系统。<br/><br/>
+<strong style="font-weight: 600;">修复版本</strong>：runc >= 1.1.12</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">CVE-2024-3154 - Container Escape via Hooks</strong><br/><br/>
+<strong style="font-weight: 600;">严重程度</strong>：CVSS 8.6 (High)<br/><br/>
+<strong style="font-weight: 600;">影响</strong>：攻击者可以通过容器生命周期钩子执行任意代码。<br/><br/>
+<strong style="font-weight: 600;">修复版本</strong>：runc >= 1.1.13</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🕳️ 升级过程中的坑</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">坑 1：K8s 版本兼容性</strong><br/><br/>
+不同版本的 K8s 对 runc 有不同的版本要求。升级前必须检查兼容性矩阵。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">坑 2：containerd 版本依赖</strong><br/><br/>
+containerd 和 runc 有版本依赖关系。升级 runc 前先确认 containerd 版本。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">坑 3：节点重启导致 Pod 重建</strong><br/><br/>
+升级 runc 后需要重启 containerd/kubelet，会导致所有 Pod 重建。必须设置 PDB。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6c757d;"><strong style="font-weight: 600;">坑 4：Pod Sandbox 不兼容</strong><br/><br/>
+升级后旧的 Pod Sandbox 可能无法正常工作。需要清理旧容器。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🛠️ 最佳实践</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">滚动升级脚本</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 1. 驱逐节点<br/>
+kubectl drain &lt;node-name&gt; --ignore-daemonsets --delete-emptydir-data<br/>
+<br/>
+# 2. 升级 runc<br/>
+systemctl stop containerd<br/>
+cp /path/to/new/runc /usr/local/sbin/runc<br/>
+chmod +x /usr/local/sbin/runc<br/>
+<br/>
+# 3. 重启服务<br/>
+systemctl start containerd<br/>
+systemctl restart kubelet<br/>
+<br/>
+# 4. 恢复节点<br/>
+kubectl uncordon &lt;node-name&gt;</p>
+</section>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">回滚计划</strong><br/><br/>
+升级前必须备份当前 runc 二进制文件，升级失败时立即回滚。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">📊 升级检查清单</h2>
+
+<p style="margin: 8px 0; padding-left: 20px;">• 确认当前 runc 版本<br/>
+• 确认目标 runc 版本<br/>
+• 检查 K8s 版本兼容性<br/>
+• 检查 containerd 版本兼容性<br/>
+• 备份当前 runc 二进制文件<br/>
+• 准备回滚脚本<br/>
+• 设置 PDB (Pod Disruption Budget)<br/>
+• 通知相关团队<br/>
+• 选择低峰期执行<br/>
+• 逐节点滚动升级<br/>
+• 验证升级结果<br/>
+• 监控集群状态</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🎯 总结</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">升级 runc 的核心原则</strong>：<br/><br/>
+1. <strong style="font-weight: 600;">先测试后生产</strong> — 在测试环境验证升级流程<br/>
+2. <strong style="font-weight: 600;">逐节点滚动</strong> — 不要一次性升级所有节点<br/>
+3. <strong style="font-weight: 600;">备份和回滚</strong> — 永远要有回滚方案<br/>
+4. <strong style="font-weight: 600;">监控和告警</strong> — 实时监控升级过程<br/>
+5. <strong style="font-weight: 600;">选择低峰期</strong> — 减少对业务的影响</p>
+
+<hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;">
+
+<p style="margin: 16px 0; color: #666; text-align: center;">如果觉得有用，点个"在看"吧 👇</p>
+
+</body>
+</html>
