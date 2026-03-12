@@ -64,25 +64,22 @@ Kubernetes → containerd/CRI-O → runc → Linux Kernel
 | 1.7.x | >= 1.1.2 |
 | 2.0.x | >= 1.2.0 |
 
-### 坑 3：cgroup v1 限制（CentOS 7 等）
+### 坑 3：cgroup 版本兼容性（重要！）
 
-**问题**：老系统（CentOS 7）只支持 cgroup v1，无法使用最新 runc 版本。
+**问题**：runc 需要正确识别系统的 cgroup 版本。
 
-**关键约束**：
-- CentOS 7 内核版本：3.10.x
-- 只支持 cgroup v1，不支持 cgroup v2
-- runc >= 1.2.0 需要 cgroup v2 支持
+**关键点**：
+- **runc 1.2.x 同时支持 cgroup v1 和 v2**
+- 并没有废弃 cgroup v1！
+- runc 会自动检测系统使用的 cgroup 版本
 
-**兼容性矩阵**：
+**正确的兼容性矩阵**：
 
-| containerd 版本 | runc 最高版本 | cgroup v1 兼容 |
-|-----------------|---------------|----------------|
-| 1.5.x | 1.0.3 | ✅ |
-| 1.6.x | 1.1.13 | ✅ |
-| 1.7.x | 1.1.13 | ✅ |
-| 2.0.x | 1.2.x | ❌ (需要 cgroup v2) |
-
-**推荐**：CentOS 7 + containerd 1.5+ 最高只能用 **runc 1.1.13**
+| runc 版本 | cgroup v1 | cgroup v2 | 备注 |
+|-----------|-----------|-----------|------|
+| 1.0.x | ✅ | ❌ | 只支持 v1 |
+| 1.1.x | ✅ | ✅ | 同时支持 |
+| 1.2.x | ✅ | ✅ | 同时支持 |
 
 **检查 cgroup 版本**：
 ```bash
@@ -94,20 +91,24 @@ mount | grep cgroup
 
 # cgroup v2 输出示例：
 # cgroup2 on /sys/fs/cgroup type cgroup2
+
+# 或者用更简单的方法
+stat -fc %T /sys/fs/cgroup/
+# 输出 "cgroup2fs" 表示 v2
+# 输出 "tmpfs" 表示 v1
 ```
 
-**解决**：
-```bash
-# 下载 runc 1.1.13（最后一个稳定 cgroup v1 版本）
-wget https://github.com/opencontainers/runc/releases/download/v1.1.13/runc.amd64
+**CentOS 7 的真实限制**：
 
-# 备份并升级
-cp /usr/local/sbin/runc /usr/local/sbin/runc.bak
-mv runc.amd64 /usr/local/sbin/runc
-chmod +x /usr/local/sbin/runc
-```
+| 限制因素 | 说明 |
+|----------|------|
+| **内核版本** | 3.10.x，缺少某些新特性 |
+| **cgroup** | 只支持 v1 |
+| **runc** | 可以用 1.2.x（使用 v1 模式） |
 
-**长期方案**：如需使用 runc 1.2.x，必须升级操作系统（CentOS 8 / Rocky Linux 8+）
+**真正的坑**：
+1. **containerd 2.0.x 要求 runc >= 1.2.0**，但 CentOS 7 的 systemd 版本太老（219），可能有兼容性问题
+2. **建议**：CentOS 7 用 containerd 1.7.x + runc 1.1.13 最稳定
 
 ### 坑 4：节点重启导致 Pod 重建
 
@@ -157,7 +158,7 @@ runc --version
 containerd --version
 
 # 检查 cgroup 版本
-mount | grep cgroup
+stat -fc %T /sys/fs/cgroup/
 ```
 
 ### 2. 回滚计划
@@ -181,7 +182,7 @@ systemctl restart kubelet
 - [ ] 确认目标 runc 版本
 - [ ] 检查 K8s 版本兼容性
 - [ ] 检查 containerd 版本兼容性
-- [ ] **检查 cgroup 版本（CentOS 7 特别注意）**
+- [ ] **检查 cgroup 版本（确定用 v1 还是 v2）**
 - [ ] 备份当前 runc 二进制文件
 - [ ] 准备回滚脚本
 - [ ] 设置 PDB (Pod Disruption Budget)
@@ -203,7 +204,9 @@ systemctl restart kubelet
 4. **监控和告警** — 实时监控升级过程
 5. **选择低峰期** — 减少对业务的影响
 
-**CentOS 7 用户特别注意**：最高只能升级到 runc 1.1.13！
+**CentOS 7 建议**：
+- containerd 1.7.x + runc 1.1.13（最稳定）
+- 或 containerd 1.7.x + runc 1.2.x（可用，但需测试）
 
 ---
 

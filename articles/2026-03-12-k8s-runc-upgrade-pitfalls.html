@@ -12,9 +12,7 @@
 
 <h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🔍 runc 是什么？</h2>
 
-<p style="margin: 12px 0;"><strong style="font-weight: 600;">runc</strong> 是 OCI (Open Container Initiative) 容器运行时的参考实现，是 Kubernetes 中最常用的容器运行时。</p>
-
-<p style="margin: 12px 0;"><strong style="font-weight: 600;">层级关系</strong>：</p>
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">runc</strong> 是 OCI 容器运行时的参考实现，是 K8s 最常用的容器运行时。</p>
 
 <section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
   <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">Kubernetes → containerd/CRI-O → runc → Linux Kernel</p>
@@ -24,95 +22,105 @@
 
 <p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #f66;"><strong style="font-weight: 600;">CVE-2019-5736 - 容器逃逸</strong><br/><br/>
 <strong style="font-weight: 600;">严重程度</strong>：CVSS 9.8 (Critical)<br/>
-<strong style="font-weight: 600;">影响</strong>：攻击者可以通过恶意容器获取宿主机 root 权限。<br/>
 <strong style="font-weight: 600;">修复版本</strong>：runc >= 1.0-rc6</p>
 
 <p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">CVE-2024-21626 - File Descriptor Leak</strong><br/><br/>
 <strong style="font-weight: 600;">严重程度</strong>：CVSS 8.6 (High)<br/>
-<strong style="font-weight: 600;">影响</strong>：攻击者可以通过泄漏的文件描述符访问宿主机文件系统。<br/>
 <strong style="font-weight: 600;">修复版本</strong>：runc >= 1.1.12</p>
 
 <p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">CVE-2024-3154 - Container Escape via Hooks</strong><br/><br/>
 <strong style="font-weight: 600;">严重程度</strong>：CVSS 8.6 (High)<br/>
-<strong style="font-weight: 600;">影响</strong>：攻击者可以通过容器生命周期钩子执行任意代码。<br/>
 <strong style="font-weight: 600;">修复版本</strong>：runc >= 1.1.13</p>
 
 <h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🕳️ 升级过程中的坑</h2>
 
 <p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">坑 1：K8s 版本兼容性</strong><br/><br/>
-不同版本的 K8s 对 runc 有不同的版本要求。升级前必须检查兼容性矩阵。</p>
+不同版本的 K8s 对 runc 有不同的版本要求。升级前检查兼容性矩阵。</p>
 
 <p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">坑 2：containerd 版本依赖</strong><br/><br/>
-containerd 和 runc 有版本依赖关系。升级 runc 前先确认 containerd 版本。</p>
+containerd 和 runc 有版本依赖关系。</p>
 
-<p style="margin: 16px 0; padding: 16px; background: #f66; color: #fff; border-radius: 8px; border-left: 4px solid #000;"><strong style="font-weight: 600;">⚠️ 坑 3：cgroup v1 限制（CentOS 7 等）</strong><br/><br/>
-<strong style="font-weight: 600;">问题</strong>：老系统（CentOS 7）只支持 cgroup v1，无法使用最新 runc 版本。<br/><br/>
-<strong style="font-weight: 600;">关键约束</strong>：<br/>
-• CentOS 7 内核版本：3.10.x<br/>
-• 只支持 cgroup v1，不支持 cgroup v2<br/>
-• runc >= 1.2.0 需要 cgroup v2 支持</p>
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">坑 3：cgroup 版本兼容性（重要！）</strong><br/><br/>
+<strong style="font-weight: 600;">关键点</strong>：<br/>
+• <strong style="font-weight: 600;">runc 1.2.x 同时支持 cgroup v1 和 v2</strong><br/>
+• 并没有废弃 cgroup v1！<br/>
+• runc 会自动检测系统使用的 cgroup 版本</p>
 
-<p style="margin: 12px 0;"><strong style="font-weight: 600;">兼容性矩阵</strong>：</p>
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">正确的兼容性矩阵</strong>：</p>
 
 <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
   <tr style="background: #f6f8fa;">
-    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">containerd 版本</th>
-    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">runc 最高版本</th>
-    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">cgroup v1 兼容</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">runc 版本</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">cgroup v1</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">cgroup v2</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">备注</th>
   </tr>
   <tr>
-    <td style="border: 1px solid #ddd; padding: 10px;">1.5.x</td>
-    <td style="border: 1px solid #ddd; padding: 10px;">1.0.3</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">1.0.x</td>
     <td style="border: 1px solid #ddd; padding: 10px;">✅</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">❌</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">只支持 v1</td>
   </tr>
   <tr>
-    <td style="border: 1px solid #ddd; padding: 10px;">1.6.x</td>
-    <td style="border: 1px solid #ddd; padding: 10px;">1.1.13</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">1.1.x</td>
     <td style="border: 1px solid #ddd; padding: 10px;">✅</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid #ddd; padding: 10px;">1.7.x</td>
-    <td style="border: 1px solid #ddd; padding: 10px;">1.1.13</td>
     <td style="border: 1px solid #ddd; padding: 10px;">✅</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">同时支持</td>
   </tr>
   <tr>
-    <td style="border: 1px solid #ddd; padding: 10px;">2.0.x</td>
     <td style="border: 1px solid #ddd; padding: 10px;">1.2.x</td>
-    <td style="border: 1px solid #ddd; padding: 10px; color: #f66;">❌ (需要 cgroup v2)</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">✅</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">✅</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">同时支持</td>
   </tr>
 </table>
-
-<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">推荐</strong>：CentOS 7 + containerd 1.5+ 最高只能用 <strong style="font-weight: 600;">runc 1.1.13</strong></p>
 
 <p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6c757d;"><strong style="font-weight: 600;">检查 cgroup 版本</strong></p>
 
 <section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
-  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 查看当前 cgroup 版本<br/>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 方法 1：查看挂载<br/>
 mount | grep cgroup<br/>
 <br/>
-# cgroup v1 输出示例：<br/>
-# cgroup on /sys/fs/cgroup/systemd type cgroup<br/>
-<br/>
-# cgroup v2 输出示例：<br/>
-# cgroup2 on /sys/fs/cgroup type cgroup2</p>
+# 方法 2：更简单<br/>
+stat -fc %T /sys/fs/cgroup/<br/>
+# 输出 "cgroup2fs" = v2<br/>
+# 输出 "tmpfs" = v1</p>
 </section>
 
-<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">解决</strong></p>
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">CentOS 7 建议</strong>：<br/>
+• containerd 1.7.x + runc 1.1.13（最稳定）<br/>
+• 或 containerd 1.7.x + runc 1.2.x（可用，但需测试）</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">坑 4：节点重启导致 Pod 重建</strong><br/><br/>
+升级 runc 后需要重启 containerd/kubelet，会导致所有 Pod 重建。必须设置 PDB。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🛠️ 最佳实践</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6c757d;"><strong style="font-weight: 600;">版本验证</strong></p>
 
 <section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
-  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 下载 runc 1.1.13（最后一个稳定 cgroup v1 版本）<br/>
-wget https://github.com/opencontainers/runc/releases/download/v1.1.13/runc.amd64<br/>
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 检查 runc 版本<br/>
+runc --version<br/>
 <br/>
-# 备份并升级<br/>
-cp /usr/local/sbin/runc /usr/local/sbin/runc.bak<br/>
-mv runc.amd64 /usr/local/sbin/runc<br/>
-chmod +x /usr/local/sbin/runc</p>
+# 检查 containerd 版本<br/>
+containerd --version<br/>
+<br/>
+# 检查 cgroup 版本<br/>
+stat -fc %T /sys/fs/cgroup/</p>
 </section>
 
-<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">长期方案</strong>：如需使用 runc 1.2.x，必须升级操作系统（CentOS 8 / Rocky Linux 8+）</p>
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">回滚计划</strong></p>
 
-<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">坑 4：节点重启导致 Pod 重建</strong><br/><br/>
-升级 runc 后需要重启 containerd/kubelet，会导致所有 Pod 重建。必须设置 PDB。</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 升级前备份<br/>
+cp /usr/local/sbin/runc /usr/local/sbin/runc.bak<br/>
+<br/>
+# 升级失败时回滚<br/>
+systemctl stop containerd<br/>
+mv /usr/local/sbin/runc.bak /usr/local/sbin/runc<br/>
+systemctl start containerd<br/>
+systemctl restart kubelet</p>
+</section>
 
 <h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">📊 升级检查清单</h2>
 
@@ -120,7 +128,7 @@ chmod +x /usr/local/sbin/runc</p>
 • 确认目标 runc 版本<br/>
 • 检查 K8s 版本兼容性<br/>
 • 检查 containerd 版本兼容性<br/>
-• <strong style="font-weight: 600;">检查 cgroup 版本（CentOS 7 特别注意）</strong><br/>
+• <strong style="font-weight: 600;">检查 cgroup 版本（确定用 v1 还是 v2）</strong><br/>
 • 备份当前 runc 二进制文件<br/>
 • 准备回滚脚本<br/>
 • 设置 PDB (Pod Disruption Budget)<br/>
@@ -138,8 +146,6 @@ chmod +x /usr/local/sbin/runc</p>
 3. <strong style="font-weight: 600;">备份和回滚</strong> — 永远要有回滚方案<br/>
 4. <strong style="font-weight: 600;">监控和告警</strong> — 实时监控升级过程<br/>
 5. <strong style="font-weight: 600;">选择低峰期</strong> — 减少对业务的影响</p>
-
-<p style="margin: 16px 0; padding: 16px; background: #f66; color: #fff; border-radius: 8px; border-left: 4px solid #000;"><strong style="font-weight: 600;">CentOS 7 用户特别注意</strong>：最高只能升级到 runc 1.1.13！</p>
 
 <hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;">
 
