@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>OpenClaw 飞书流式输出：三条命令搞定，告别等待焦虑</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.8; color: #333; max-width: 100%; padding: 20px;">
+
+<h1 style="font-size: 24px; font-weight: bold; margin: 24px 0 16px 0; color: #000;">OpenClaw 飞书流式输出：三条命令搞定，告别等待焦虑</h1>
+
+<p style="margin: 16px 0; color: #666; font-style: italic;">之前飞书回复总是"等很久 → 突然蹦出一大段"，现在终于可以像 ChatGPT 一样逐字显示了！</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">😫 之前的痛点</h2>
+
+<p style="margin: 12px 0;">你有没有遇到过这种情况：</p>
+
+<p style="margin: 12px 0;">在飞书里问 AI 一个问题，然后盯着屏幕等了 30 秒...</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">突然！</strong> 一大段文字蹦出来，吓你一跳。</p>
+
+<p style="margin: 12px 0;">这就是 <strong style="font-weight: 600;">非流式输出</strong> 的体验：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">• ❌ 等待时间长，不知道 AI 在干嘛<br/>
+• ❌ 突然出现一大段，阅读体验差<br/>
+• ❌ 没有"正在思考"的反馈感</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">流式输出</strong> 的体验是这样的：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">• ✅ 文字逐字出现，像真人在打字<br/>
+• ✅ 可以边看边理解，不用等完整回复<br/>
+• ✅ 有"正在生成"的即时反馈</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🎯 三条命令启用流式输出</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">Step 1：确认插件版本</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw plugins list | grep feishu</p>
+</section>
+
+<p style="margin: 12px 0;">确保版本 ≥ 2026.3.8（流式输出是这个版本新增的）</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">Step 2：编辑配置文件</strong></p>
+
+<p style="margin: 12px 0;">打开 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">~/.openclaw/openclaw.json</code>，找到飞书配置：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{<br/>
+  "channels": {<br/>
+    "feishu": {<br/>
+      "accounts": {<br/>
+        "default": {<br/>
+          "appId": "YOUR_APP_ID",<br/>
+          "appSecret": "YOUR_APP_SECRET",<br/>
+          "streaming": true,<br/>
+          "renderMode": "card"<br/>
+        }<br/>
+      }<br/>
+    }<br/>
+  }<br/>
+}</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">关键配置</strong>：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">"streaming": true</code> — 启用流式输出<br/>
+• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">"renderMode": "card"</code> — 使用卡片模式（流式输出需要）</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">Step 3：重启 Gateway</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw gateway restart</p>
+</section>
+
+<p style="margin: 12px 0;">完成！现在飞书回复就是流式的了。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🔧 技术原理</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">为什么之前不能流式？</strong></p>
+
+<p style="margin: 12px 0;">飞书 API 有<strong style="font-weight: 600;">速率限制</strong>，频繁更新消息容易触发限流。所以之前的实现是：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">AI 生成完整回复 → 一次性发送 → 用户等待 30 秒</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">现在是怎么实现的？</strong></p>
+
+<p style="margin: 12px 0;">OpenClaw 使用飞书 <strong style="font-weight: 600;">CardKit API</strong> 的 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">streaming_mode</code>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">创建流式卡片 → 逐字更新内容 → 完成后关闭流式模式</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">核心代码</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">// 1. 创建流式卡片<br/>
+const cardJson = {<br/>
+  schema: "2.0",<br/>
+  config: {<br/>
+    streaming_mode: true,  // 关键！<br/>
+    streaming_config: {<br/>
+      print_frequency_ms: { default: 50 },  // 50ms 更新一次<br/>
+      print_step: { default: 2 }<br/>
+    }<br/>
+  },<br/>
+  body: {<br/>
+    elements: [{ tag: "markdown", content: "Thinking..." }]<br/>
+  }<br/>
+};<br/>
+<br/>
+// 2. 发送卡片<br/>
+await client.im.message.create({ ... });<br/>
+<br/>
+// 3. 流式更新内容<br/>
+await fetch(`${apiBase}/cardkit/v1/cards/${cardId}/elements/content/content`, {<br/>
+  method: "PUT",<br/>
+  body: JSON.stringify({ content: newText, sequence: sequence++ })<br/>
+});<br/>
+<br/>
+// 4. 完成后关闭流式模式<br/>
+await fetch(`${apiBase}/cardkit/v1/cards/${cardId}/settings`, { ... });</p>
+</section>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">📊 对比效果</h2>
+
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="background: #f6f8fa;">
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">特性</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">非流式</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">流式</th>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">等待体验</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">盯着空白等 30s</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">立即看到文字出现</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">阅读体验</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">突然一大段</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">逐字显示，边看边理解</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">反馈感</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">不知道 AI 在干嘛</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">明显感到"正在生成"</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">API 调用</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">1 次</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">N 次（但有节流保护）</td>
+  </tr>
+</table>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">⚠️ 注意事项</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px;"><strong style="font-weight: 600;">1. 必须使用卡片模式</strong><br/><br/>
+流式输出需要 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">renderMode: "card"</code>，因为它是基于 CardKit API 实现的。</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{<br/>
+  "renderMode": "card",<br/>
+  "streaming": true<br/>
+}</p>
+</section>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px;"><strong style="font-weight: 600;">2. 有节流保护</strong><br/><br/>
+为了避免触发飞书 API 限流，OpenClaw 内置了节流机制：<br/><br/>
+• 最小更新间隔：100ms<br/>
+• 智能合并：相同内容不重复更新<br/>
+• 自动降级：如果流式失败，自动回退到普通模式</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px;"><strong style="font-weight: 600;">3. 群聊也支持</strong><br/><br/>
+流式输出在私聊和群聊都能用，只要配置正确。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🎉 总结</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">之前</strong>：等 30 秒 → 突然蹦出一大段 → 吓一跳</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">现在</strong>：立即开始 → 逐字显示 → 像真人在打字</p>
+
+<p style="margin: 12px 0;">三条命令搞定：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 1. 确认版本<br/>
+openclaw plugins list | grep feishu<br/>
+<br/>
+# 2. 编辑配置（添加 streaming: true）<br/>
+<br/>
+# 3. 重启<br/>
+openclaw gateway restart</p>
+</section>
+
+<hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;">
+
+<p style="margin: 16px 0; color: #666; text-align: center;">如果觉得有用，点个"在看"吧 👇</p>
+
+</body>
+</html>
