@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Violoop：一个硬核的 AI Agent 安全自动化平台</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.8; color: #333; max-width: 100%; padding: 20px;">
+
+<h1 style="font-size: 24px; font-weight: bold; margin: 24px 0 16px 0; color: #000;">Violoop：一个硬核的 AI Agent 安全自动化平台</h1>
+
+<p style="margin: 16px 0; color: #666; font-style: italic;">这个项目把 AI Agent 的安全性做到了硬件级别。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">你有没有担心过 AI Agent 的安全问题？</h2>
+
+<p style="margin: 12px 0;">让 AI 帮你操作电脑，确实很方便。但是...</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">• <strong style="font-weight: 600;">万一它误删了重要文件怎么办？</strong><br/>
+• <strong style="font-weight: 600;">万一它访问了敏感数据怎么办？</strong><br/>
+• <strong style="font-weight: 600;">万一它执行了危险命令怎么办？</strong></p>
+
+<p style="margin: 12px 0;">大多数 AI Agent 平台的解决方案是：<strong style="font-weight: 600;">加个确认弹窗</strong>。</p>
+
+<p style="margin: 12px 0;">但弹窗会被习惯性点击，Token 会被泄露，审批链会被绕过。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">Violoop</strong> 的方案不一样：<strong style="font-weight: 600;">硬件级别的安全隔离 + Ed25519 签名审批链</strong>。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🎯 Violoop 是什么？</h2>
+
+<p style="margin: 12px 0;">Violoop 是一个 <strong style="font-weight: 600;">AI Agent 安全自动化平台</strong>，包含硬件 + 软件的完整生态系统。</p>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 10px 0; color: #000;">产品线</h3>
+
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="background: #f6f8fa;">
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">产品</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">硬件</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">说明</th>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><strong style="font-weight: 600;">Lite</strong></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">RV1106</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">智能 KVM 网关</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><strong style="font-weight: 600;">Pro</strong></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">RK3576</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">边缘 AI 记忆站</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><strong style="font-weight: 600;">Desktop</strong></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">macOS</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">控制中心</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><strong style="font-weight: 600;">Mobile</strong></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">iOS</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">审批认证器</td>
+  </tr>
+</table>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🔧 核心项目</h2>
+
+<p style="margin: 8px 0; padding-left: 20px;">• <strong style="font-weight: 600;">bvio-agent</strong> — 开源 CLI Agent，支持 Hook 协议 + 策略引擎<br/>
+• <strong style="font-weight: 600;">violoop-protocol</strong> — 事件协议（MsgPack + Ed25519 签名）<br/>
+• <strong style="font-weight: 600;">violoop-workflows</strong> — 自动化工作流（folder-as-agent）</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🔒 安全机制</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">Hook 协议</strong><br/><br/>
+拦截和审批危险操作，所有操作需要用户确认。</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{<br/>
+  "type": "prompt",<br/>
+  "action": {<br/>
+    "type": "shell",<br/>
+    "command": "rm -rf node_modules",<br/>
+    "risk_level": "medium"<br/>
+  },<br/>
+  "context": {<br/>
+    "reason": "Cleaning dependencies before reinstall"<br/>
+  }<br/>
+}</p>
+</section>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">策略引擎</strong><br/><br/>
+可配置的允许/拒绝列表，自动判断是否需要审批。</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{<br/>
+  "allow": [<br/>
+    { "type": "shell", "pattern": "^ls\\b" },<br/>
+    { "type": "file_read", "path": "*.md" }<br/>
+  ],<br/>
+  "deny": [<br/>
+    { "type": "shell", "pattern": "rm -rf /" },<br/>
+    { "type": "network", "domain": "*.suspicious.com" }<br/>
+  ],<br/>
+  "require_approval": [<br/>
+    { "type": "file_write" },<br/>
+    { "type": "file_delete" }<br/>
+  ]<br/>
+}</p>
+</section>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🚀 快速开始</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6c757d;"><strong style="font-weight: 600;">安装 CLI Agent</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">npm install -g @b-vio/agent</p>
+</section>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6c757d;"><strong style="font-weight: 600;">运行</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 交互模式（需要审批）<br/>
+bvio-agent run "organize my downloads folder"<br/>
+<br/>
+# 预览模式（不执行）<br/>
+bvio-agent plan "update all npm packages"<br/>
+<br/>
+# 指定模型<br/>
+bvio-agent run --model claude-3 "refactor this code"<br/>
+<br/>
+# 自定义策略<br/>
+bvio-agent run --policy strict.json "deploy to production"</p>
+</section>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">💡 可借鉴的设计</h2>
+
+<p style="margin: 8px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">Ed25519 签名审批链</strong> — 比 Token 更安全，无法伪造审批记录<br/>
+2. <strong style="font-weight: 600;">风险分级</strong> — <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">risk_level: low/medium/high</code>，不同操作不同审批级别<br/>
+3. <strong style="font-weight: 600;">硬件隔离</strong> — 敏感操作必须经过物理设备确认（Mobile iOS 认证器）<br/>
+4. <strong style="font-weight: 600;">Folder-as-Agent</strong> — 文件夹触发自动化，无需编写代码<br/>
+5. <strong style="font-weight: 600;">不可变审计追踪</strong> — 所有操作记录上链，无法篡改</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">📚 相关链接</h2>
+
+<p style="margin: 8px 0; padding-left: 20px;">• <strong style="font-weight: 600;">bvio-agent</strong>: https://github.com/B-VIO/bvio-agent<br/>
+• <strong style="font-weight: 600;">violoop-protocol</strong>: https://github.com/B-VIO/violoop-protocol<br/>
+• <strong style="font-weight: 600;">violoop-workflows</strong>: https://github.com/B-VIO/violoop-workflows</p>
+
+<hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;">
+
+<p style="margin: 16px 0; color: #666; text-align: center;">如果觉得有用，点个"在看"吧 👇</p>
+
+</body>
+</html>
