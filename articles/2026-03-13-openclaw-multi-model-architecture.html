@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>OpenClaw 如何支持 20+ AI 模型？多模型架构设计</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.8; color: #333; max-width: 100%; padding: 20px;">
+
+<h1 style="font-size: 24px; font-weight: bold; margin: 24px 0 16px 0; color: #000;">OpenClaw 如何支持 20+ AI 模型？多模型架构设计</h1>
+
+<p style="margin: 16px 0; color: #666; font-style: italic;">这篇文章是「OpenClaw 源码解读系列」第 3 篇。前面我们聊了整体架构和 Agent Loop，今天深入多模型支持的设计哲学。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">你有没有遇到过这些问题？</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">场景 1</strong>：正在用 Claude 写代码，突然 API 限流了。</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #f66;">Error: Rate limit exceeded. Please retry after 20 seconds.</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">场景 2</strong>：GPT-4 太贵，想切换到便宜的模型，但不知道哪个好用。</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">场景 3</strong>：想用国产模型（GLM、Kimi），但不知道怎么配置。</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">场景 4</strong>：多个 AI 账号，想自动轮换避免限流。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;">OpenClaw 的多模型架构就是为了解决这些问题设计的。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🎯 核心设计：两级 Failover</h2>
+
+<p style="margin: 12px 0;">OpenClaw 使用 <strong style="font-weight: 600;">两级容错机制</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">Provider 内部 Auth Profile 轮换 → Model Fallback → 失败</p>
+</section>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">第 1 级：Auth Profile 旋转</strong><br/><br/>
+当某个 API Key 限流时，自动切换到同 Provider 的其他账号。<br/><br/>
+<strong style="font-weight: 600;">示例</strong>：<br/>
+• anthropic/claude-sonnet-4-5<br/>
+  ├── Profile 1: sk-ant-xxx (限流)<br/>
+  ├── Profile 2: sk-ant-yyy (自动切换) ✅<br/>
+  └── Profile 3: sk-ant-zzz (备用)</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">第 2 级：Model Fallback</strong><br/><br/>
+如果 Provider 的所有 Profile 都失败，切换到下一个模型。<br/><br/>
+<strong style="font-weight: 600;">流程</strong>：<br/>
+Primary: anthropic/claude-sonnet-4-5 ↓<br/>
+Fallback 1: openai/gpt-5.2 ↓<br/>
+Fallback 2: zai/glm-5 ↓<br/>
+错误</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🔄 Auth Profile 旋转机制</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">旋转顺序</strong><br/><br/>
+1. <strong style="font-weight: 600;">显式配置</strong>：auth.order[provider]<br/>
+2. <strong style="font-weight: 600;">配置的 Profile</strong>：auth.profiles<br/>
+3. <strong style="font-weight: 600;">存储的 Profile</strong>：auth-profiles.json<br/><br/>
+默认使用 <strong style="font-weight: 600;">Round-Robin</strong> 轮换：<br/>
+• OAuth 优先于 API Key<br/>
+• 最久未用的优先<br/>
+• Cooldown/Disabled 移到最后</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">Session 粘性</strong><br/><br/>
+OpenClaw <strong style="font-weight: 600;">不会每次请求都轮换</strong>，而是：<br/>
+• Pin 住当前 Session 使用的 Profile<br/>
+• 保持 Provider 缓存热度<br/>
+• 只有在限流/超时时才切换</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">⏱️ Cooldown 机制</h2>
+
+<p style="margin: 12px 0;">当 Profile 失败时（限流、超时、认证错误），OpenClaw 会将其标记为 <strong style="font-weight: 600;">Cooldown</strong> 状态。</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">指数退避</strong>：</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="background: #f6f8fa;">
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">失败次数</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">Cooldown 时间</th>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">1</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">1 分钟</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">2</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">5 分钟</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">3</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">25 分钟</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">4+</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">1 小时（上限）</td>
+  </tr>
+</table>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🚫 Billing Disable 机制</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #f66; color: #fff; border-radius: 8px; border-left: 4px solid #000;"><strong style="font-weight: 600;">计费错误（余额不足）不是临时问题</strong>，使用更长的退避：<br/><br/>
+• 初始退避：5 小时<br/>
+• 最大退避：24 小时<br/>
+• 重置窗口：24 小时无失败</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🌐 Provider 生态</h2>
+
+<p style="margin: 12px 0;">OpenClaw 内置 20+ Provider：</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="background: #f6f8fa;">
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">Provider</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">模型示例</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">认证方式</th>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">OpenAI</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">gpt-5.2</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">API Key</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">Anthropic</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">claude-opus-4-5</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">API Key / OAuth</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">Google</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">gemini-3-pro-preview</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">API Key / OAuth</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">Z.AI (GLM)</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">glm-5</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">API Key</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">Kimi Coding</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">k2p5</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">API Key</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">MiniMax</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">minimax-m2.1</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">API Key</td>
+  </tr>
+</table>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🛠️ CLI 命令</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6c757d;"><strong style="font-weight: 600;">查看模型状态</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 列出所有模型<br/>
+openclaw models list<br/>
+<br/>
+# 查看详细状态<br/>
+openclaw models status<br/>
+<br/>
+# 设置主模型<br/>
+openclaw models set anthropic/claude-sonnet-4-5</p>
+</section>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6c757d;"><strong style="font-weight: 600;">管理 Fallback</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 查看 fallback 列表<br/>
+openclaw models fallbacks list<br/>
+<br/>
+# 添加 fallback<br/>
+openclaw models fallbacks add openai/gpt-5.2<br/>
+<br/>
+# 删除 fallback<br/>
+openclaw models fallbacks remove openai/gpt-5.2</p>
+</section>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🎯 最佳实践</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">配置多级 Fallback</strong><br/><br/>
+<strong style="font-weight: 600;">策略</strong>：<br/>
+• 主模型：性能最好<br/>
+• Fallback 1：稳定可靠<br/>
+• Fallback 2：国产备选<br/>
+• Fallback 3：本地兜底</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{<br/>
+  "model": {<br/>
+    "primary": "anthropic/claude-sonnet-4-5",<br/>
+    "fallbacks": [<br/>
+      "openai/gpt-5.2",<br/>
+      "zai/glm-5",<br/>
+      "ollama/llama3.3"<br/>
+    ]<br/>
+  }<br/>
+}</p>
+</section>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">📊 总结</h2>
+
+<p style="margin: 8px 0; padding-left: 20px;"><strong style="font-weight: 600;">OpenClaw 多模型架构的核心设计</strong>：<br/><br/>
+1. <strong style="font-weight: 600;">两级 Failover</strong> — Provider 内轮换 → Model Fallback<br/>
+2. <strong style="font-weight: 600;">智能旋转</strong> — OAuth 优先、最久未用优先、Cooldown 移后<br/>
+3. <strong style="font-weight: 600;">Session 粘性</strong> — 保持 Provider 缓存热度<br/>
+4. <strong style="font-weight: 600;">指数退避</strong> — 避免频繁重试失败的 Profile<br/>
+5. <strong style="font-weight: 600;">Billing Disable</strong> — 计费问题使用更长退避</p>
+
+<hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;">
+
+<p style="margin: 16px 0; color: #666; text-align: center;">如果觉得有用，点个"在看"吧 👇</p>
+
+</body>
+</html>
