@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>真人CS激光对抗APP系统设计文档</title>
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.8;
+    color: #333;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: #fff;
+}
+h1 {
+    font-size: 32px;
+    color: #000;
+    border-bottom: 3px solid #0366d6;
+    padding-bottom: 15px;
+    margin-top: 0;
+}
+h2 {
+    font-size: 24px;
+    color: #000;
+    margin-top: 40px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e1e4e8;
+}
+h3 {
+    font-size: 20px;
+    color: #24292e;
+    margin-top: 30px;
+}
+h4 {
+    font-size: 18px;
+    color: #24292e;
+    margin-top: 25px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+th, td {
+    border: 1px solid #dfe2e5;
+    padding: 12px;
+    text-align: left;
+}
+th {
+    background: #f6f8fa;
+    font-weight: 600;
+}
+tr:nth-child(even) {
+    background: #f9f9f9;
+}
+code {
+    background: #f6f8fa;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 14px;
+}
+pre {
+    background: #f6f8fa;
+    padding: 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+pre code {
+    background: none;
+    padding: 0;
+}
+ul, ol {
+    padding-left: 30px;
+}
+li {
+    margin: 8px 0;
+}
+p {
+    margin: 16px 0;
+}
+strong {
+    font-weight: 600;
+}
+hr {
+    border: none;
+    border-top: 1px solid #e1e4e8;
+    margin: 40px 0;
+}
+.metadata {
+    background: #f6f8fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 30px;
+}
+@page {
+    size: A4;
+    margin: 2cm;
+}
+@media print {
+    body {
+        max-width: 100%;
+        padding: 0;
+    }
+    h2 {
+        page-break-before: auto;
+        page-break-after: avoid;
+    }
+    table {
+        page-break-inside: avoid;
+    }
+    pre {
+        page-break-inside: avoid;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="metadata">
+<strong>版本：</strong>v1.0<br>
+<strong>日期：</strong>2026-03-13<br>
+<strong>作者：</strong>技术团队
+</div>
+
+<h1>真人CS激光对抗APP系统设计文档</h1>
+
+<h2>一、项目概述</h2>
+
+<h3>1.1 项目背景</h3>
+
+<p>真人CS激光对抗是一款结合实体装备与移动应用的沉浸式战术竞技游戏。玩家使用配备激光发射器的仿真武器、激光接收头灯、智能地雷等设备，通过APP进行游戏组织、实时对战和成绩统计。</p>
+
+<h3>1.2 目标用户</h3>
+
+<ul>
+<li>真人CS俱乐部/场馆运营商</li>
+<li>团建活动组织者</li>
+<li>军事爱好者/战术竞技玩家</li>
+</ul>
+
+<h3>1.3 核心价值</h3>
+
+<ul>
+<li><strong>沉浸式体验</strong>：实体装备 + APP 实时反馈</li>
+<li><strong>战术深度</strong>：兵种配合、区域占领、道具使用</li>
+<li><strong>数据驱动</strong>：完整战绩记录、数据分析</li>
+</ul>
+
+<h2>二、系统架构</h2>
+
+<h3>2.1 整体架构</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│                     客户端层                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│  │  Android APP│  │  管理后台   │  │  裁判端     │      │
+│  └─────────────┘  └─────────────┘  └─────────────┘      │
+├─────────────────────────────────────────────────────────┤
+│                     通信层                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│  │  蓝牙模块   │  │  4G/5G网络  │  │  GPS定位    │      │
+│  └─────────────┘  └─────────────┘  └─────────────┘      │
+├─────────────────────────────────────────────────────────┤
+│                     服务层                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│  │  游戏服务器 │  │  数据库     │  │  推送服务   │      │
+│  └─────────────┘  └─────────────┘  └─────────────┘      │
+├─────────────────────────────────────────────────────────┤
+│                     硬件层                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│  │  激光枪械   │  │  头灯接收器 │  │  智能地雷   │      │
+│  └─────────────┘  └─────────────┘  └─────────────┘      │
+└─────────────────────────────────────────────────────────┘</code></pre>
+
+<h3>2.2 技术架构</h3>
+
+<table>
+<thead>
+<tr><th>层级</th><th>技术选型</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>客户端</strong></td><td>Kotlin + Jetpack Compose</td><td>原生Android开发</td></tr>
+<tr><td><strong>蓝牙通信</strong></td><td>Bluetooth LE</td><td>低功耗蓝牙，连接枪械和头灯</td></tr>
+<tr><td><strong>网络通信</strong></td><td>Retrofit + OkHttp</td><td>RESTful API</td></tr>
+<tr><td><strong>实时通信</strong></td><td>WebSocket</td><td>对战实时数据同步</td></tr>
+<tr><td><strong>定位服务</strong></td><td>Google Fused Location</td><td>高精度GPS定位</td></tr>
+<tr><td><strong>地图服务</strong></td><td>高德地图 SDK</td><td>室外战场地图</td></tr>
+<tr><td><strong>后端</strong></td><td>Spring Boot / Node.js</td><td>游戏服务器</td></tr>
+<tr><td><strong>数据库</strong></td><td>MySQL + Redis</td><td>持久化 + 缓存</td></tr>
+<tr><td><strong>推送</strong></td><td>极光推送 / FCM</td><td>游戏通知</td></tr>
+</tbody>
+</table>
+
+<h2>三、功能模块设计</h2>
+
+<h3>3.1 用户系统</h3>
+
+<h4>3.1.1 用户注册/登录</h4>
+
+<ul>
+<li>手机号 + 验证码登录</li>
+<li>微信/QQ 第三方登录</li>
+<li>游客模式（仅观战）</li>
+</ul>
+
+<h4>3.1.2 用户信息</h4>
+
+<table>
+<thead>
+<tr><th>字段</th><th>类型</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>user_id</td><td>String</td><td>用户唯一ID</td></tr>
+<tr><td>nickname</td><td>String</td><td>昵称</td></tr>
+<tr><td>avatar</td><td>String</td><td>头像URL</td></tr>
+<tr><td>level</td><td>Int</td><td>等级</td></tr>
+<tr><td>exp</td><td>Int</td><td>经验值</td></tr>
+<tr><td>total_kills</td><td>Int</td><td>总击杀数</td></tr>
+<tr><td>total_deaths</td><td>Int</td><td>总死亡数</td></tr>
+<tr><td>win_rate</td><td>Float</td><td>胜率</td></tr>
+</tbody>
+</table>
+
+<h3>3.2 房间管理</h3>
+
+<h4>3.2.1 创建房间</h4>
+
+<table>
+<thead>
+<tr><th>参数</th><th>类型</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>room_name</td><td>String</td><td>房间名称</td></tr>
+<tr><td>region</td><td>String</td><td>所在地区</td></tr>
+<tr><td>max_players</td><td>Int</td><td>最大人数（2-100）</td></tr>
+<tr><td>game_mode</td><td>Enum</td><td>计时/积分/自主结算</td></tr>
+<tr><td>duration</td><td>Int</td><td>游戏时长（分钟）</td></tr>
+<tr><td>target_score</td><td>Int</td><td>目标积分</td></tr>
+<tr><td>friendly_fire</td><td>Boolean</td><td>友伤开关</td></tr>
+<tr><td>map_config</td><td>Object</td><td>地图配置</td></tr>
+</tbody>
+</table>
+
+<h4>3.2.2 加入房间</h4>
+
+<ul>
+<li><strong>扫码加入</strong>：扫描房主二维码</li>
+<li><strong>房间号加入</strong>：输入6位房间号</li>
+<li><strong>列表加入</strong>：选择地区 → 查看房间列表 → 加入</li>
+</ul>
+
+<h4>3.2.3 房间状态</h4>
+
+<table>
+<thead>
+<tr><th>状态</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>WAITING</td><td>等待玩家加入</td></tr>
+<tr><td>PREPARING</td><td>准备中（玩家连接设备）</td></tr>
+<tr><td>PLAYING</td><td>游戏进行中</td></tr>
+<tr><td>FINISHED</td><td>游戏结束</td></tr>
+<tr><td>SETTLED</td><td>已结算</td></tr>
+</tbody>
+</table>
+
+<h3>3.3 设备连接</h3>
+
+<h4>3.3.1 蓝牙设备管理</h4>
+
+<pre><code>data class BluetoothDevice(
+    val deviceId: String,      // 设备唯一ID
+    val deviceType: DeviceType, // GUN, HEADLIGHT, CAMERA
+    val name: String,          // 设备名称
+    val battery: Int,          // 电量
+    val status: DeviceStatus,  // CONNECTED, DISCONNECTED, LOW_BATTERY
+    val firmwareVersion: String // 固件版本
+)</code></pre>
+
+<h4>3.3.2 连接流程</h4>
+
+<ol>
+<li>APP 扫描蓝牙设备</li>
+<li>用户选择设备 → 配对</li>
+<li>验证设备类型和固件版本</li>
+<li>连接成功 → 设备状态更新</li>
+<li>游戏中实时同步设备数据</li>
+</ol>
+
+<h3>3.4 游戏核心</h3>
+
+<h4>3.4.1 兵种系统</h4>
+
+<table>
+<thead>
+<tr><th>兵种</th><th>血量</th><th>特殊能力</th><th>次数限制</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>突击手</strong></td><td>120</td><td>无</td><td>-</td></tr>
+<tr><td><strong>医疗兵</strong></td><td>100</td><td>复活队友</td><td>3次/局</td></tr>
+<tr><td><strong>弹药兵</strong></td><td>90</td><td>弹药补给</td><td>5次/局</td></tr>
+</tbody>
+</table>
+
+<h4>3.4.2 武器系统</h4>
+
+<table>
+<thead>
+<tr><th>武器类型</th><th>威力</th><th>弹匣容量</th><th>射速</th><th>CD时间</th></tr>
+</thead>
+<tbody>
+<tr><td>突击步枪</td><td>15</td><td>30</td><td>中</td><td>0.1s</td></tr>
+<tr><td>冲锋枪</td><td>10</td><td>40</td><td>快</td><td>0.05s</td></tr>
+<tr><td>狙击枪</td><td>50</td><td>5</td><td>慢</td><td>2.0s</td></tr>
+<tr><td>霰弹枪</td><td>30</td><td>8</td><td>慢</td><td>1.5s</td></tr>
+</tbody>
+</table>
+
+<h4>3.4.3 道具系统</h4>
+
+<table>
+<thead>
+<tr><th>道具</th><th>连接方式</th><th>激活方式</th><th>效果</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>防守地雷</strong></td><td>4G</td><td>APP激活</td><td>区域内敌人全部阵亡</td></tr>
+<tr><td><strong>阔剑地雷</strong></td><td>4G</td><td>手动引爆</td><td>扇形区域内敌人阵亡</td></tr>
+</tbody>
+</table>
+
+<h4>3.4.4 击杀判定流程</h4>
+
+<ol>
+<li>攻击者枪械发射激光信号（包含：设备ID、武器类型、时间戳）</li>
+<li>被攻击者头灯接收激光信号</li>
+<li>头灯通过蓝牙发送被击中事件到APP</li>
+<li>APP 计算伤害：
+<ul>
+<li>基础伤害 = 武器威力</li>
+<li>距离衰减（可选）</li>
+<li>护甲减免（可选）</li>
+</ul>
+</li>
+<li>更新被攻击者血量</li>
+<li>血量 ≤ 0 → 阵亡</li>
+<li>上报服务器 → 更新击杀/死亡统计</li>
+</ol>
+
+<h3>3.5 地图系统</h3>
+
+<h4>3.5.1 区域类型</h4>
+
+<table>
+<thead>
+<tr><th>区域类型</th><th>功能</th><th>阵营限制</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>战场</strong></td><td>主要交战区域</td><td>通用</td></tr>
+<tr><td><strong>复活区</strong></td><td>阵亡后重生点</td><td>分阵营</td></tr>
+<tr><td><strong>基地</strong></td><td>初始出生点</td><td>分阵营</td></tr>
+<tr><td><strong>补给区</strong></td><td>弹药/血量补给</td><td>分阵营</td></tr>
+<tr><td><strong>占领区</strong></td><td>占领得分区域</td><td>通用</td></tr>
+<tr><td><strong>毒气区</strong></td><td>每5秒扣3点血</td><td>通用</td></tr>
+<tr><td><strong>辐射区</strong></td><td>每5秒扣1点血</td><td>通用</td></tr>
+</tbody>
+</table>
+
+<h4>3.5.2 区域绘制</h4>
+
+<ul>
+<li>房主在地图上选择3个以上坐标点</li>
+<li>系统自动绘制多边形区域</li>
+<li>支持设置区域属性（CD时间、扣血频率等）</li>
+</ul>
+
+<h4>3.5.3 占领区规则</h4>
+
+<ol>
+<li>玩家进入占领区 → 开始计时</li>
+<li>区域内只有单阵营玩家 → 占领计时（120秒）</li>
+<li>区域内存在双方玩家 → 争夺状态（不计时）</li>
+<li>占领成功 → 该阵营获得积分加成</li>
+<li>占领期间被敌方全部击杀 → 恢复初始状态</li>
+</ol>
+
+<h3>3.6 游戏模式</h3>
+
+<h4>3.6.1 计时模式</h4>
+
+<ul>
+<li><strong>规则</strong>：规定时间内击杀数最高的队伍获胜</li>
+<li><strong>参数</strong>：时长（最高10小时）</li>
+<li><strong>胜利条件</strong>：时间结束 → 击杀数对比</li>
+</ul>
+
+<h4>3.6.2 积分模式</h4>
+
+<ul>
+<li><strong>规则</strong>：达到目标积分的队伍获胜</li>
+<li><strong>参数</strong>：目标积分（最高99999分）</li>
+<li><strong>积分来源</strong>：
+<ul>
+<li>击杀敌人：+100分</li>
+<li>占领区域：+50分/分钟</li>
+<li>完成任务：+200分</li>
+</ul>
+</li>
+</ul>
+
+<h4>3.6.3 自主结算模式</h4>
+
+<ul>
+<li><strong>规则</strong>：房主自主开局和结束</li>
+<li><strong>参数</strong>：无</li>
+<li><strong>胜利条件</strong>：房主手动结束 → 积分对比</li>
+</ul>
+
+<h3>3.7 实时态势</h3>
+
+<h4>3.7.1 地图展示</h4>
+
+<ul>
+<li>双方玩家实时位置（GPS）</li>
+<li>玩家所持武器种类/型号</li>
+<li>区域状态（占领方、争夺中）</li>
+<li>道具位置</li>
+</ul>
+
+<h4>3.7.2 数据更新频率</h4>
+
+<table>
+<thead>
+<tr><th>数据类型</th><th>更新频率</th></tr>
+</thead>
+<tbody>
+<tr><td>玩家位置</td><td>1秒</td></tr>
+<tr><td>血量状态</td><td>实时（事件触发）</td></tr>
+<tr><td>区域状态</td><td>5秒</td></tr>
+<tr><td>击杀事件</td><td>实时</td></tr>
+</tbody>
+</table>
+
+<h3>3.8 历史战绩</h3>
+
+<h4>3.8.1 数据保存</h4>
+
+<ul>
+<li>服务器保存：30局（或1个月）</li>
+<li>本地保存：所有历史战绩</li>
+</ul>
+
+<h4>3.8.2 战绩内容</h4>
+
+<table>
+<thead>
+<tr><th>字段</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>游戏时间</td><td>开始/结束时间</td></tr>
+<tr><td>游戏模式</td><td>计时/积分/自主</td></tr>
+<tr><td>地图</td><td>战场名称</td></tr>
+<tr><td>阵营</td><td>A/B</td></tr>
+<tr><td>兵种</td><td>突击/医疗/弹药</td></tr>
+<tr><td>击杀数</td><td>本局击杀</td></tr>
+<tr><td>死亡数</td><td>本局死亡</td></tr>
+<tr><td>伤害量</td><td>总伤害输出</td></tr>
+<tr><td>占领时长</td><td>占领区累计时间</td></tr>
+<tr><td>MVP</td><td>是否为本局MVP</td></tr>
+<tr><td>结果</td><td>胜/负</td></tr>
+</tbody>
+</table>
+
+<h2>四、通信协议</h2>
+
+<h3>4.1 蓝牙协议</h3>
+
+<h4>4.1.1 激光发射数据包</h4>
+
+<pre><code>{
+  "type": "FIRE",
+  "device_id": "gun_001",
+  "weapon_type": "ASSAULT_RIFLE",
+  "timestamp": 1710345600000,
+  "signature": "hash"
+}</code></pre>
+
+<h4>4.1.2 被击中数据包</h4>
+
+<pre><code>{
+  "type": "HIT",
+  "victim_id": "user_123",
+  "attacker_id": "gun_001",
+  "damage": 15,
+  "remaining_hp": 85,
+  "timestamp": 1710345600100
+}</code></pre>
+
+<h3>4.2 网络协议</h3>
+
+<h4>4.2.1 WebSocket 消息格式</h4>
+
+<pre><code>{
+  "event": "PLAYER_UPDATE",
+  "data": {
+    "user_id": "user_123",
+    "position": { "lat": 39.9042, "lng": 116.4074 },
+    "hp": 85,
+    "status": "ALIVE"
+  },
+  "room_id": "room_001",
+  "timestamp": 1710345600000
+}</code></pre>
+
+<h3>4.3 4G 地雷协议</h3>
+
+<pre><code>{
+  "type": "MINE_ACTIVATE",
+  "device_id": "mine_001",
+  "owner_id": "user_123",
+  "position": { "lat": 39.9042, "lng": 116.4074 },
+  "action": "ARM"
+}</code></pre>
+
+<h2>五、数据库设计</h2>
+
+<h3>5.1 用户表 (users)</h3>
+
+<table>
+<thead>
+<tr><th>字段</th><th>类型</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>id</td><td>VARCHAR(32)</td><td>用户ID（主键）</td></tr>
+<tr><td>phone</td><td>VARCHAR(20)</td><td>手机号</td></tr>
+<tr><td>nickname</td><td>VARCHAR(50)</td><td>昵称</td></tr>
+<tr><td>avatar</td><td>VARCHAR(255)</td><td>头像URL</td></tr>
+<tr><td>level</td><td>INT</td><td>等级</td></tr>
+<tr><td>exp</td><td>INT</td><td>经验值</td></tr>
+<tr><td>total_kills</td><td>INT</td><td>总击杀数</td></tr>
+<tr><td>total_deaths</td><td>INT</td><td>总死亡数</td></tr>
+<tr><td>created_at</td><td>DATETIME</td><td>创建时间</td></tr>
+</tbody>
+</table>
+
+<h3>5.2 房间表 (rooms)</h3>
+
+<table>
+<thead>
+<tr><th>字段</th><th>类型</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>id</td><td>VARCHAR(32)</td><td>房间ID（主键）</td></tr>
+<tr><td>room_code</td><td>VARCHAR(6)</td><td>房间号</td></tr>
+<tr><td>owner_id</td><td>VARCHAR(32)</td><td>房主ID</td></tr>
+<tr><td>region</td><td>VARCHAR(50)</td><td>地区</td></tr>
+<tr><td>game_mode</td><td>ENUM</td><td>游戏模式</td></tr>
+<tr><td>status</td><td>ENUM</td><td>房间状态</td></tr>
+<tr><td>created_at</td><td>DATETIME</td><td>创建时间</td></tr>
+<tr><td>started_at</td><td>DATETIME</td><td>开始时间</td></tr>
+<tr><td>ended_at</td><td>DATETIME</td><td>结束时间</td></tr>
+</tbody>
+</table>
+
+<h3>5.3 游戏记录表 (game_records)</h3>
+
+<table>
+<thead>
+<tr><th>字段</th><th>类型</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>id</td><td>VARCHAR(32)</td><td>记录ID</td></tr>
+<tr><td>room_id</td><td>VARCHAR(32)</td><td>房间ID</td></tr>
+<tr><td>user_id</td><td>VARCHAR(32)</td><td>用户ID</td></tr>
+<tr><td>team</td><td>ENUM</td><td>A/B阵营</td></tr>
+<tr><td>class</td><td>ENUM</td><td>兵种</td></tr>
+<tr><td>kills</td><td>INT</td><td>击杀数</td></tr>
+<tr><td>deaths</td><td>INT</td><td>死亡数</td></tr>
+<tr><td>damage</td><td>INT</td><td>伤害量</td></tr>
+<tr><td>result</td><td>ENUM</td><td>WIN/LOSE</td></tr>
+<tr><td>created_at</td><td>DATETIME</td><td>创建时间</td></tr>
+</tbody>
+</table>
+
+<h2>六、UI/UX 设计</h2>
+
+<h3>6.1 主要界面</h3>
+
+<table>
+<thead>
+<tr><th>界面</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>首页</strong></td><td>创建房间/加入房间/历史战绩</td></tr>
+<tr><td><strong>房间大厅</strong></td><td>玩家列表/设备连接/游戏设置</td></tr>
+<tr><td><strong>游戏界面</strong></td><td>地图/血量/弹药/击杀提示</td></tr>
+<tr><td><strong>结算界面</strong></td><td>战绩统计/MVP展示</td></tr>
+<tr><td><strong>个人中心</strong></td><td>战绩/成就/设置</td></tr>
+</tbody>
+</table>
+
+<h3>6.2 设计原则</h3>
+
+<ul>
+<li><strong>战场可见性</strong>：地图信息清晰、实时更新</li>
+<li><strong>操作便捷性</strong>：关键操作不超过3次点击</li>
+<li><strong>视觉反馈</strong>：击中/被击中有明显视觉和音效反馈</li>
+<li><strong>低功耗</strong>：优化蓝牙和GPS使用，延长续航</li>
+</ul>
+
+<h2>七、安全设计</h2>
+
+<h3>7.1 防作弊机制</h3>
+
+<table>
+<thead>
+<tr><th>作弊类型</th><th>防御措施</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>信号伪造</strong></td><td>加密签名验证</td></tr>
+<tr><td><strong>位置欺骗</strong></td><td>GPS + 基站双重定位</td></tr>
+<tr><td><strong>数据篡改</strong></td><td>服务端二次验证</td></tr>
+<tr><td><strong>设备克隆</strong></td><td>设备唯一ID绑定</td></tr>
+</tbody>
+</table>
+
+<h3>7.2 数据加密</h3>
+
+<ul>
+<li>蓝牙通信：AES-128加密</li>
+<li>网络通信：HTTPS + 证书校验</li>
+<li>敏感数据：本地加密存储</li>
+</ul>
+
+<h2>八、性能要求</h2>
+
+<h3>8.1 响应时间</h3>
+
+<table>
+<thead>
+<tr><th>操作</th><th>目标响应时间</th></tr>
+</thead>
+<tbody>
+<tr><td>蓝牙连接</td><td>&lt; 3秒</td></tr>
+<tr><td>击中反馈</td><td>&lt; 100ms</td></tr>
+<tr><td>地图更新</td><td>&lt; 1秒</td></tr>
+<tr><td>房间列表</td><td>&lt; 2秒</td></tr>
+</tbody>
+</table>
+
+<h3>8.2 并发能力</h3>
+
+<ul>
+<li>单房间支持：100人同时在线</li>
+<li>单服务器支持：1000个房间并发</li>
+</ul>
+
+<h3>8.3 电量消耗</h3>
+
+<ul>
+<li>持续游戏2小时，电量消耗 &lt; 30%</li>
+</ul>
+
+<h2>九、测试计划</h2>
+
+<h3>9.1 测试类型</h3>
+
+<table>
+<thead>
+<tr><th>测试类型</th><th>覆盖范围</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>功能测试</strong></td><td>所有功能模块</td></tr>
+<tr><td><strong>兼容性测试</strong></td><td>Android 8.0+ 各品牌机型</td></tr>
+<tr><td><strong>性能测试</strong></td><td>高并发场景</td></tr>
+<tr><td><strong>安全测试</strong></td><td>防作弊机制</td></tr>
+<tr><td><strong>实地测试</strong></td><td>真实战场环境</td></tr>
+</tbody>
+</table>
+
+<h3>9.2 测试用例示例</h3>
+
+<table>
+<thead>
+<tr><th>用例ID</th><th>场景</th><th>预期结果</th></tr>
+</thead>
+<tbody>
+<tr><td>TC001</td><td>创建房间</td><td>成功创建，生成房间号</td></tr>
+<tr><td>TC002</td><td>连接枪械</td><td>蓝牙配对成功，设备状态显示</td></tr>
+<tr><td>TC003</td><td>击杀判定</td><td>被击中者血量正确减少</td></tr>
+<tr><td>TC004</td><td>占领区域</td><td>120秒后占领成功</td></tr>
+<tr><td>TC005</td><td>断线重连</td><td>自动重连，恢复游戏状态</td></tr>
+</tbody>
+</table>
+
+<h2>十、项目计划</h2>
+
+<h3>10.1 开发周期</h3>
+
+<table>
+<thead>
+<tr><th>阶段</th><th>时间</th><th>交付物</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>需求分析</strong></td><td>2周</td><td>需求文档</td></tr>
+<tr><td><strong>架构设计</strong></td><td>1周</td><td>架构设计文档</td></tr>
+<tr><td><strong>UI设计</strong></td><td>2周</td><td>UI原型/设计稿</td></tr>
+<tr><td><strong>开发</strong></td><td>8周</td><td>APP + 后端</td></tr>
+<tr><td><strong>测试</strong></td><td>3周</td><td>测试报告</td></tr>
+<tr><td><strong>上线</strong></td><td>1周</td><td>正式版本</td></tr>
+</tbody>
+</table>
+
+<p><strong>总周期</strong>：17周（约4个月）</p>
+
+<h3>10.2 团队配置</h3>
+
+<table>
+<thead>
+<tr><th>角色</th><th>人数</th><th>职责</th></tr>
+</thead>
+<tbody>
+<tr><td>产品经理</td><td>1</td><td>需求/原型</td></tr>
+<tr><td>Android开发</td><td>2</td><td>APP开发</td></tr>
+<tr><td>后端开发</td><td>2</td><td>服务器开发</td></tr>
+<tr><td>UI设计师</td><td>1</td><td>界面设计</td></tr>
+<tr><td>测试工程师</td><td>1</td><td>质量保证</td></tr>
+<tr><td>硬件工程师</td><td>1</td><td>设备对接</td></tr>
+</tbody>
+</table>
+
+<h2>十一、风险评估</h2>
+
+<table>
+<thead>
+<tr><th>风险</th><th>影响</th><th>应对措施</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>蓝牙干扰</strong></td><td>游戏中断</td><td>多频段支持/重连机制</td></tr>
+<tr><td><strong>GPS漂移</strong></td><td>定位不准</td><td>融合定位算法</td></tr>
+<tr><td><strong>网络不稳定</strong></td><td>数据丢失</td><td>本地缓存/断点续传</td></tr>
+<tr><td><strong>设备兼容性</strong></td><td>部分机型异常</td><td>兼容性测试覆盖</td></tr>
+<tr><td><strong>作弊攻击</strong></td><td>游戏公平性</td><td>多层防护机制</td></tr>
+</tbody>
+</table>
+
+<h2>十二、附录</h2>
+
+<h3>12.1 术语表</h3>
+
+<table>
+<thead>
+<tr><th>术语</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>头灯</strong></td><td>佩戴在头部的激光接收器</td></tr>
+<tr><td><strong>阔剑</strong></td><td>定向地雷（美制/俄制）</td></tr>
+<tr><td><strong>友伤</strong></td><td>友军伤害（队友误伤）</td></tr>
+<tr><td><strong>CD时间</strong></td><td>冷却时间</td></tr>
+<tr><td><strong>态势</strong></td><td>战场实时状况</td></tr>
+</tbody>
+</table>
+
+<h3>12.2 参考资料</h3>
+
+<ul>
+<li>Bluetooth LE 官方文档</li>
+<li>高德地图 Android SDK 文档</li>
+<li>WebSocket 协议规范</li>
+</ul>
+
+<hr>
+
+<p style="text-align: center; color: #666; margin-top: 40px;">
+<strong>文档版本：</strong>v1.0<br>
+<strong>最后更新：</strong>2026-03-13
+</p>
+
+</body>
+</html>
