@@ -1,16 +1,25 @@
 <p style="margin: 8px 0;">想象一下：早上醒来，窗帘自动拉开，咖啡机开始工作，音箱播放你喜欢的晨间音乐——而这一切，只需要对 AI 说一句话。</p>
-<p style="margin: 8px 0;">OpenClaw 与 Home Assistant 的结合，让这一切成为可能。</p>
+<p style="margin: 8px 0;">更棒的是，这个 AI 助手是完全开源的，你可以自由修改、部署、甚至商业化。</p>
 
-<p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">🤖 为什么选择这个组合？</p>
+<p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">🌟 OpenClaw：32万+ Stars 的开源 AI 助手</p>
 
-<p style="margin: 8px 0;">Home Assistant 是目前最强大的开源智能家居平台，支持超过 1000 种设备。但它的自动化配置需要写 YAML，学习曲线陡峭。</p>
+<p style="margin: 8px 0;">OpenClaw 是一个 <strong style="font-weight: 600;">完全开源（MIT 协议）</strong> 的个人 AI 助手，在 GitHub 上拥有超过 <strong style="font-weight: 600;">32万 Stars</strong>，社区极其活跃。</p>
 
-<p style="margin: 8px 0;"><strong style="font-weight: 600;">OpenClaw</strong> 是一个 <strong style="font-weight: 600;">完全开源</strong> 的个人 AI 助手（MIT 协议），在 GitHub 上拥有超过 <strong style="font-weight: 600;">32万 Stars</strong>，社区活跃。它的加入改变了这一切：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">GitHub</strong>: <a href="https://github.com/openclaw/openclaw" style="color: #0366d6;">github.com/openclaw/openclaw</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">协议</strong>: MIT License（商用友好）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">Stars</strong>: 32万+（还在快速增长）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">贡献者</strong>: 150+ 位开发者</p>
 
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">自然语言控制</strong>：不用写代码，说话就能控制设备</p>
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">智能场景联动</strong>：AI 理解你的意图，自动触发多个设备</p>
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">语音远程操控</strong>：通过 WhatsApp、Discord 随时随地控制家里</p>
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">自动化监控</strong>：异常情况自动推送通知</p>
+<p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">🏠 为什么选择 Home Assistant？</p>
+
+<p style="margin: 8px 0;">Home Assistant 是目前最强大的开源智能家居平台，支持超过 1000 种设备：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">品牌中立</strong>：支持 Apple HomeKit、Google Home、小米、飞利浦等</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">隐私优先</strong>：本地运行，数据不上传云端</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">社区活跃</strong>：丰富的集成和自动化模板</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">但</strong>：Home Assistant 的自动化配置需要写 YAML，学习曲线陡峭。</p>
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">OpenClaw 的加入改变了这一切</strong> —— 让你用自然语言控制智能家居。</p>
 
 <p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">🔧 前置准备</p>
 
@@ -19,6 +28,16 @@
 <p style="margin: 4px 0; padding-left: 20px;">1. 一台运行 OpenClaw 的设备（Mac/Linux/树莓派）</p>
 <p style="margin: 4px 0; padding-left: 20px;">2. Home Assistant 实例（建议使用 HAOS 或 Docker 部署）</p>
 <p style="margin: 4px 0; padding-left: 20px;">3. 确保两者在同一网络，或通过内网穿透互通</p>
+
+<p style="margin: 16px 0 8px 0; font-weight: 600; color: #24292e;">安装 OpenClaw（开源免费）</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 使用 npm 安装（推荐）</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">npm install -g @jackwener/openclaw</p>
+<p style="margin: 8px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;"># 或从源码构建</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">git clone https://github.com/openclaw/openclaw.git</p>
+<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">cd openclaw && npm install && npm run build</p>
+</section>
 
 <p style="margin: 16px 0 8px 0; font-weight: 600; color: #24292e;">获取 Home Assistant 信息</p>
 
@@ -105,53 +124,27 @@
 <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
 </section>
 
-<p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">📱 远程控制示例</p>
+<p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">📱 支持的平台</p>
 
-<p style="margin: 8px 0;">无论你在家还是外出，都可以通过消息平台控制：</p>
+<p style="margin: 8px 0;">OpenClaw 支持 20+ 个消息平台：</p>
 
 <p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">WhatsApp</strong>：直接发消息给绑定的号码</p>
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">Discord</strong>：在配置的频道中 @机器人</p>
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">飞书</strong>：群聊中 @机器人 或私聊</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">Telegram</strong>： 机器人回复消息</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">Discord</strong>： 在配置的频道中 @机器人</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">Slack</strong>： 工作群组交流</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">飞书</strong>： 群聊中 @机器人 或私聊</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">企业微信</strong>： 企业内部沟通</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">iMessage</strong>： 苹果设备专属</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">Signal</strong>： 加密聊天</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">Matrix</strong>： 去中心化聊天</p>
 
-<p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">💡 进阶技巧</p>
+<p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">💡 开源的优势</p>
 
-<p style="margin: 16px 0 8px 0; font-weight: 600; color: #24292e;">1. 创建场景脚本</p>
-
-<p style="margin: 8px 0;">在 Home Assistant 中定义场景，OpenClaw 一键触发：</p>
-
-<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># Home Assistant configuration.yaml</p>
-<p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">script:</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  movie_mode:</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    sequence:</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      - service: light.turn_off</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        target:</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          entity_id: light.living_room</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      - service: cover.close_cover</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        target:</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          entity_id: cover.living_room_curtain</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      - service: media_player.turn_on</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">        target:</p>
-<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">          entity_id: media_player.tv</p>
-</section>
-
-<p style="margin: 8px 0;">然后在 OpenClaw 中说：<strong style="font-weight: 600;">开启电影模式</strong></p>
-
-<p style="margin: 16px 0 8px 0; font-weight: 600; color: #24292e;">2. 条件联动</p>
-
-<p style="margin: 8px 0;">结合传感器数据实现智能联动：</p>
-
-<p style="margin: 4px 0; padding-left: 20px;">• 温度超过 28°C 自动开空调</p>
-<p style="margin: 4px 0; padding-left: 20px;">• 检测到人移动自动开灯</p>
-<p style="margin: 4px 0; padding-left: 20px;">• 门窗异常打开推送警报</p>
-
-<p style="margin: 16px 0 8px 0; font-weight: 600; color: #24292e;">3. 语音播报</p>
-
-<p style="margin: 8px 0;">配置 OpenClaw 的 TTS 功能，让智能家居"开口说话"：</p>
-
-<p style="margin: 4px 0; padding-left: 20px;">• 门铃响起时播报"有客人来访"</p>
-<p style="margin: 4px 0; padding-left: 20px;">• 洗衣机完成时提醒"衣服洗好了"</p>
-<p style="margin: 4px 0; padding-left: 20px;">• 安防警报时语音提示</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">透明可控</strong>： 代码完全公开，可以审查和修改</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">免费使用</strong>： MIT 协议，商用友好</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">社区驱动</strong>: 150+ 贡献者，持续迭代</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">可定制化</strong>： 根据需求修改功能</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">无厂商锁定</strong>： 完全自主可控</p>
 
 <p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">🔐 安全建议</p>
 
@@ -164,21 +157,18 @@
 
 <p style="margin: 8px 0;">配置完成后，你的智能家居体验将升级为：</p>
 
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">零代码配置</strong>：说话代替写 YAML</p>
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">多平台控制</strong>：一个 AI 统管所有入口</p>
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">智能理解</strong>：AI 理解模糊指令，自动匹配设备</p>
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">主动服务</strong>：异常情况自动通知，不用盯着 App</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">零代码配置</strong>： 说话代替写 YAML</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">多平台控制</strong>： 一个 AI 统管所有入口</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">智能理解</strong>： AI 理解模糊指令，自动匹配设备</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">主动服务</strong>： 异常情况自动通知，不用盯着 App</p>
+
+<p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">🔗 相关资源</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">GitHub</strong>: <a href="https://github.com/openclaw/openclaw" style="color: #0366d6;">github.com/openclaw/openclaw</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">官网</strong>: <a href="https://openclaw.ai" style="color: #0366d6;">openclaw.ai</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">文档</strong>: <a href="https://docs.openclaw.ai" style="color: #0366d6;">docs.openclaw.ai</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">Discord 社区</strong>: <a href="https://discord.gg/clawd" style="color: #0366d6;">discord.gg/clawd</a></p>
 
 <hr style="margin: 24px 0; border: none; border-top: 1px solid #e1e4e8;">
 
 <p style="margin: 8px 0; color: #586069; font-size: 14px;">如果觉得有用，点个"在看"吧 👇</p>
-
-<p style="margin: 24px 0 8px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; font-size: 18px; border-radius: 4px;">🌐 加入开源社区</p>
-
-<p style="margin: 8px 0;">OpenClaw 是开源项目，欢迎参与贡献：</p>
-
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">GitHub</strong>: <a href="https://github.com/openclaw/openclaw" style="color: #0366d6; text-decoration: none;">github.com/openclaw/openclaw</a></p>
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">Discord 社区</strong>: <a href="https://discord.gg/clawd" style="color: #0366d6; text-decoration: none;">discord.gg/clawd</a></p>
-<p style="margin: 4px 0; padding-left: 20px;">• <strong style="font-weight: 600;">官方文档</strong>: <a href="https://docs.openclaw.ai" style="color: #0366d6; text-decoration: none;">docs.openclaw.ai</a></p>
-
-<p style="margin: 8px 0;">无论是提 Issue、贡献代码，还是分享使用心得，都是对社区的支持 💪</p>

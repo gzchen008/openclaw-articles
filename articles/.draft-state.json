@@ -1,59 +1,6 @@
 {
-  "last_updated": "2026-03-22T09:00:00+08:00",
-  "drafts": [
-    {
-      "title": "OpenClaw + Home Assistant：智能家庭自动化",
-      "media_id": "Sgs1hrgsJnAqIX94EoxAiAKeZ_ele3Mpxqb0cmlFQf09hEqDU2ZUlMozUD-ZcI-5",
-      "created_at": "2026-03-22T09:00:00+08:00",
-      "scheduled_date": "2026-03-22"
-    },
-    {
-      "title": "Open SWE：打造你的专属编程助手，像顶级公司一样用 AI 写代码（已修复黑点）",
-      "media_id": "Sgs1hrgsJnAqIX94EoxAiIP9tH6_dUzjLyt8x0rge1rwbr-4mxYmhpwx0eCATMKh",
-      "created_at": "2026-03-21T16:50:00+08:00",
-      "scheduled_date": "2026-03-21"
-    },
-    {
-      "title": "给 AI 套上缰绳：Harness Engineering 实战指南（已修复黑点）",
-      "media_id": "Sgs1hrgsJnAqIX94EoxAiCYBmgQLNeyrPQuDVZfxJRKuHdDlgcpoWCsVSBJve892VwdsVfxl",
-      "created_at": "2026-03-21T16:35:00+08:00",
-      "scheduled_date": "2026-03-21"
-    },
-    {
-      "title": "给 AI 套上缰绳:Harness Engineering 实战指南",
-      "media_id": "Sgs1hrgsJnAqIX94EoxAiCeNhRoGYeI9l614ERF-neX_B_BUG0BHfJ7w6mEKrDpH",
-      "created_at": "2026-03-21T16:17:00+08:00",
-      "scheduled_date": "2026-03-21"
-    },
-    {
-      "title": "OpenClaw 个性化配置：打造你的专属 AI 助手",
-      "media_id": "Sgs1hrgsJnAqIX94EoxAiKFViS_3UnnEui1if-hneiOPkxmL25QrtxtGClEK87B_",
-      "created_at": "2026-03-21T09:00:00+08:00",
-      "scheduled_date": "2026-03-21"
-    },
-    {
-      "title": "我的 AI 语伴:每天 15 分钟，口语进步看得见",
-      "media_id": "Sgs1hrgsJnAqIX94EoxAiCPCOWyorY0kLoL03_Qpf9l9xjfuyJMQDc4-jbc2p_9h",
-      "created_at": "2026-03-20T09:05:00+08:00",
-      "scheduled_date": "2026-03-20"
-    },
-    {
-      "title": "OpenClaw 故障排查手册",
-      "media_id": "Sgs1hrgsJnAqIX94EoxAiMVVxK2_Q4VH1Nlu_aRk8BKdXejQKP8NANklBQtt2Pud",
-      "created_at": "2026-03-19T09:25:00+08:00",
-      "scheduled_date": "2026-03-19"
-    },
-    {
-      "title": "OpenClaw 性能优化秘籍",
-      "media_id": "Sgs1hrgsJnAqIX94EoxAiHHLiQ79uxxmtw5ybOyOudaWU5nIrBrxcxPqy55NVeEU",
-      "created_at": "2026-03-19T09:26:00+08:00",
-      "scheduled_date": "2026-03-20"
-    },
-    {
-      "title": "OpenClaw 安全与隐私保护指南",
-      "media_id": "Sgs1hrgsJnAqIX94EoxAiMz05ePM9RPYp2J7PrXMTE4r2wIHOC-wuEV0nOo48wJC",
-      "created_at": "2026-03-19T09:27:00+08:00",
-      "scheduled_date": "2026-03-21"
-    }
-  ]
+  "lastDraftId": "Sgs1hrgsJnAqIX94EoxAiLi35kKuYox66LpKOibo4up1I8ZdyBt1mmITmjUHD5By",
+  "lastUpdated": "2026-03-23T09:00:00+08:00",
+  "title": "OpenClaw 插件开发入门：打造你的专属技能",
+  "file": "articles/2026-03-23-openclaw-plugin-development.html"
 }

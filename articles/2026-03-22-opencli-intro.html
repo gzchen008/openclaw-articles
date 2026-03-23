@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4125 Star！这个开源工具让 AI 直接复用你的浏览器登录</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; line-height: 1.6; color: #24292e; max-width: 100%; padding: 0 16px;">
+
+<p style="margin: 0 0 16px 0; font-size: 13px; color: #586069; text-align: center; padding: 8px; background: #f6f8fa; border-radius: 4px;">💡 本文介绍一个无需 API Key 就能操作 20+ 平台的开源工具</p>
+
+<p style="margin: 20px 0 8px 0; font-size: 18px; font-weight: 600; color: #24292e;"><strong style="font-weight: 600;">痛点开场</strong></p>
+
+<p style="margin: 8px 0;">你是不是也遇到过这些问题：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• 想用 AI 自动抓取小红书数据，结果发现要申请 API Key，流程复杂得要死</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 想让 AI 帮你自动发知乎文章，但 OAuth 登录折腾半天</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 想自动化操作 20 多个平台，每个平台都要单独处理登录凭证</p>
+
+<p style="margin: 16px 0 8px 0;"><strong style="font-weight: 600; color: #d73a49;">最致命的是</strong>：把账号密码交给第三方工具，你敢吗？</p>
+
+<p style="margin: 16px 0 8px 0;">今天介绍的这个开源项目，完美解决了这些问题——<strong style="font-weight: 600; color: #0366d6;">无需 API Key，直接复用你的浏览器登录状态，凭证永远不出浏览器</strong>。</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🚀 opencli：专为 AI Agent 设计的 CLI 工具 ━</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">opencli</strong> 是一个 TypeScript 开发的开源工具，核心能力是把任何 Electron 应用（浏览器、桌面应用）变成 CLI 命令，让 AI Agent 可以直接调用。</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 14px; color: #586069;"><strong style="font-weight: 600;">核心数据</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ⭐ <strong style="font-weight: 600;">4,125 Stars</strong>（GitHub 热门项目）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 📄 <strong style="font-weight: 600;">Apache 2.0 License</strong>（商用友好）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🌐 官网：<a href="https://opencli.info/" style="color: #0366d6; text-decoration: none;">https://opencli.info/</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 📅 最后更新：2026-03-22（今天！）</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 💡 核心特性（太香了） ━</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #0366d6;">1️⃣ CLI All Electron — 把任何应用变命令行</p>
+
+<p style="margin: 8px 0;">opencli 可以把 Chrome、Edge、Cursor、Notion 等 Electron 应用变成 CLI 工具。</p>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600;">这意味着什么？</strong></p>
+
+<p style="margin: 8px 0;">你可以在终端里直接操作这些应用：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;"># 让 Cursor 打开项目并执行命令</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">opencli cursor --project ~/myproject --command "refactor this code"</p>
+<p style="margin: 8px 0 4px 0; font-family: monospace; font-size: 13px; color: #24292e;"># 让 Notion 创建页面</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">opencli notion --create-page --title "今日任务" --content "完成项目文档"</p>
+<p style="margin: 8px 0 4px 0; font-family: monospace; font-size: 13px; color: #24292e;"># 让 Chrome 打开网页并截图</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">opencli chrome --url "https://example.com" --screenshot</p>
+</section>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #0366d6;">2️⃣ Account-safe — 凭证永远不出浏览器</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600; color: #d73a49;">这是最关键的安全特性</strong>。</p>
+
+<p style="margin: 8px 0;">opencli 不会提取你的登录凭证（Cookie、Token），而是直接复用浏览器的登录状态。</p>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600;">原理</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• opencli 启动浏览器时，直接使用你的 Chrome 用户数据目录</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 所有登录状态都保存在浏览器内部</p>
+<p style="margin: 4px 0; padding-left: 20px;">• opencli 只发送操作指令，不接触凭证</p>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600;">对比传统方案</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 传统爬虫：需要导出 Cookie，存在泄露风险</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ API 方案：需要申请 API Key，流程复杂</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ opencli：零凭证导出，安全到极致</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #0366d6;">3️⃣ AI Agent ready — 专为 AI 设计</p>
+
+<p style="margin: 8px 0;">opencli 提供了 <strong style="font-weight: 600;">AGENT.md</strong> 协议，让 AI Agent 可以直接调用它的能力。</p>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600;">这意味着</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 你可以让 ChatGPT、Claude 等 AI 直接操作你的浏览器</p>
+<p style="margin: 4px 0; padding-left: 20px;">• AI 可以自动完成跨平台的复杂任务</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 支持多轮对话式的任务编排</p>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600;">示例场景</strong>：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">你：帮我抓取小红书上"AI 绘画"关键词的前 10 篇笔记</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">AI：好的，我来调用 opencli...</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">    [自动启动 Chrome，访问小红书，执行搜索，提取数据]</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">    已完成！数据已保存到 results.json</p>
+</section>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #0366d6;">4️⃣ External CLI Hub — 自动发现外部工具</p>
+
+<p style="margin: 8px 0;">opencli 会自动发现你系统里安装的 CLI 工具（gh、docker、kubectl、npm 等），并提供统一接口。</p>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600;">好处</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 不用记住每个工具的命令语法</p>
+<p style="margin: 4px 0; padding-left: 20px;">• AI Agent 可以直接调用任何已安装的工具</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 支持跨工具的任务编排</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #0366d6;">5️⃣ Zero Risk — 无需 API Key</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600; color: #d73a49;">这是最大的亮点</strong>。</p>
+
+<p style="margin: 8px 0;">传统方案要操作社交平台，通常需要：</p>
+<p style="margin: 4px 0; padding-left: 20px;">1. 申请开发者账号</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. 提交审核材料</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. 等待平台审批（可能要几周）</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. 获取 API Key</p>
+<p style="margin: 4px 0; padding-left: 20px;">5. 还要担心额度限制</p>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600; color: #28a745;">opencli 的方案</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 直接复用你的浏览器登录</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 无需申请任何 API Key</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 无需等待审批</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 无需担心额度限制</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #0366d6;">6️⃣ Dual-Engine — YAML + TypeScript 双引擎</p>
+
+<p style="margin: 8px 0;">opencli 支持两种配置方式：</p>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600;">YAML 声明式</strong>（适合简单任务）：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">task:</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">  app: chrome</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">  actions:</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">    - open: "https://xiaohongshu.com"</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">    - type: "#search-input" "AI 绘画"</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">    - click: ".search-button"</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">    - extract: ".note-item"</p>
+</section>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600;">TypeScript 注入</strong>（适合复杂逻辑）：</p>
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">await page.goto('https://xiaohongshu.com');</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">await page.type('#search-input', 'AI 绘画');</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">await page.click('.search-button');</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">const notes = await page.evaluate(() => {</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">  return Array.from(document.querySelectorAll('.note-item'))</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">    .map(el => el.textContent);</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">});</p>
+</section>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 📦 支持的平台（太丰富了！） ━</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #24292e;"><strong style="font-weight: 600;">社交平台</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Twitter/X, Reddit, Bilibili, 知乎, 小红书, V2EX, 雪球, BOSS直聘, LinkedIn</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #24292e;"><strong style="font-weight: 600;">桌面应用</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Cursor, Codex, Chatwise, Notion, Discord App, Antigravity</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #24292e;"><strong style="font-weight: 600;">新闻/资讯</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• HackerNews, Dev.to, BBC, Bloomberg, Reuters, Wikipedia, ArXiv</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #24292e;"><strong style="font-weight: 600;">其他</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• YouTube, Ctrip, Coupang, SMZDM, 小宇宙播客</p>
+
+<p style="margin: 16px 0 8px 0;"><strong style="font-weight: 600; color: #0366d6;">总计 20+ 平台</strong>，基本覆盖了主流的社交、资讯、工具类应用。</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🎯 使用场景 ━</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #0366d6;">场景 1：AI Agent 自动化</p>
+
+<p style="margin: 8px 0;">让 AI 自动完成跨平台任务：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">你：帮我监控知乎上"OpenClaw"关键词的最新讨论，每天汇总发送到邮箱</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">AI：好的，我来配置 opencli + cron 任务...</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">    [自动配置定时任务，每天抓取知乎数据，汇总后发邮件]</p>
+</section>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #0366d6;">场景 2：数据采集与分析</p>
+
+<p style="margin: 8px 0;">无需 API Key，直接抓取平台数据：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;"># 抓取小红书某关键词的前 100 篇笔记</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">opencli xiaohongshu search "AI 绘画" --limit 100 --output notes.json</p>
+<p style="margin: 8px 0 4px 0; font-family: monospace; font-size: 13px; color: #24292e;"># 抓取 V2EX 某节点的最新主题</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">opencli v2ex topics --node "share" --limit 50 --output topics.json</p>
+</section>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #0366d6;">场景 3：自动化工作流</p>
+
+<p style="margin: 8px 0;">结合其他工具，构建自动化流程：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;"># 抓取数据 + AI 分析 + 自动发布</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">opencli reddit fetch "r/MachineLearning" | \</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">  ai-analyze --model gpt-4 | \</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">  opencli notion create-page --database "MyResearch"</p>
+</section>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🔧 快速上手 ━</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #24292e;"><strong style="font-weight: 600;">安装</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">npm install -g opencli</p>
+</section>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #24292e;"><strong style="font-weight: 600;">基本使用</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;"># 查看支持的应用</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">opencli list</p>
+<p style="margin: 8px 0 4px 0; font-family: monospace; font-size: 13px; color: #24292e;"># 操作 Chrome</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">opencli chrome --url "https://xiaohongshu.com"</p>
+<p style="margin: 8px 0 4px 0; font-family: monospace; font-size: 13px; color: #24292e;"># 操作 Cursor</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">opencli cursor --project ~/myproject</p>
+<p style="margin: 8px 0 4px 0; font-family: monospace; font-size: 13px; color: #24292e;"># 查看帮助</p>
+<p style="margin: 4px 0; font-family: monospace; font-size: 13px; color: #24292e;">opencli --help</p>
+</section>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px; font-weight: 600; color: #24292e;"><strong style="font-weight: 600;">AI Agent 集成</strong></p>
+
+<p style="margin: 8px 0;">如果你在开发 AI Agent，可以直接读取 <strong style="font-weight: 600;">AGENT.md</strong> 文件，了解如何让 AI 调用 opencli。</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ ⚠️ 注意事项 ━</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">合规使用</strong>：虽然 opencli 技术上可以抓取任何平台，但请遵守平台的使用条款</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">频率控制</strong>：避免高频请求，以免触发平台的风控机制</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">账号安全</strong>：虽然是复用浏览器登录，但建议使用专门的账号进行自动化操作</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 💭 总结 ━</p>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600; color: #0366d6;">opencli 的核心价值</strong>：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">零 API Key</strong>：直接复用浏览器登录，无需申请任何凭证</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">安全第一</strong>：凭证永远不出浏览器，比传统爬虫安全 100 倍</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">AI 友好</strong>：专为 AI Agent 设计，支持自然语言任务编排</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. <strong style="font-weight: 600;">生态丰富</strong>：支持 20+ 平台，覆盖主流应用</p>
+
+<p style="margin: 16px 0 8px 0; font-weight: 600;"><strong style="font-weight: 600; color: #24292e;">适用人群</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• AI Agent 开发者</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 自动化工程师</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 数据分析师</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 需要跨平台操作的任何人</p>
+
+<p style="margin: 16px 0 8px 0; font-weight: 600;"><strong style="font-weight: 600; color: #24292e;">开源地址</strong>：<a href="https://github.com/opencli/opencli" style="color: #0366d6; text-decoration: none;">https://github.com/opencli/opencli</a></p>
+
+<p style="margin: 8px 0; font-weight: 600;"><strong style="font-weight: 600; color: #24292e;">官网</strong>：<a href="https://opencli.info/" style="color: #0366d6; text-decoration: none;">https://opencli.info/</a></p>
+
+<p style="margin: 24px 0 0 0; font-size: 14px; color: #586069; text-align: center;">如果觉得有用，点个"在看"吧 👇</p>
+
+</body>
+</html>
