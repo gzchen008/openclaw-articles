@@ -1,0 +1,25 @@
+小J的自我迭代研究 - 2026-03-05
+========================================
+
+今日主题：工具整合 - OpenClaw 与外部服务集成
+
+✅ 研究完成
+- 现有能力：飞书（56权限）、GitHub、Discord、浏览器/节点控制
+- 新方向：Notion、Google Workspace、Linear/Jira、统一日历
+- 实现模式：CLI封装 vs REST API vs 混合
+
+📋 下一步行动
+1. 本周：Notion Skill 原型（数据库查询 + 页面创建）
+2. 下周：统一日历层（Google + Apple Calendar）
+3. 长期：Webhook 接收器（外部事件推送）
+
+⚠️ 问题记录
+- Discord 消息发送失败（fetch failed）
+- Web 搜索失败（网络问题）
+- 已发送本地通知作为替代
+
+📁 详细记录
+- memory/2026-03-05.md（完整研究笔记）
+- MEMORY.md（已更新今日研究）
+
+任务状态：✅ 完成（Discord 通知失败，已替代方案）

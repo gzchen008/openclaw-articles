@@ -1,0 +1,130 @@
+# MumbleSDK CI/CD 质量门示例配置（可根据企业实际工具链调整）
+version: 1
+
+metadata:
+  name: "mumblesdk-quality-gates"
+  description: "与 ease_docs 的质量标准对齐的 CI 质量门样例（覆盖率/复杂度/重复率/静态规则/MumbleSDK 专项）"
+  owner: "ease-team"
+  applies_to: "Spring Boot + MumbleSDK 项目"
+
+tools:
+  sonar:
+    enabled: true
+    project_key: "your-project-key"   # 替换为企业 Sonar 项目键
+  jacoco:
+    report_glob: "**/target/site/jacoco/*.html"
+  spotbugs:
+    report_glob: "**/target/spotbugsXml.xml"
+  pmd:
+    report_glob: "**/target/pmd.xml"
+  checkstyle:
+    report_glob: "**/target/checkstyle-result.xml"
+
+quality_gates:
+  coverage:
+    min_line_coverage: 0.80        # 行覆盖率最低 80%
+    min_branch_coverage: 0.70      # 分支覆盖率最低 70%
+  tests:
+    min_pass_rate: 0.99            # 用例通过率 ≥ 99%
+    allow_flaky: false             # 禁止“雪花”用例
+  duplication:
+    max_duplication_percent: 5     # 代码重复率 ≤ 5%
+    max_duplication_lines: 200     # 重复行数阈值
+  complexity:
+    max_cyclomatic_per_method: 10  # 单方法圈复杂度 ≤ 10
+    max_cognitive_per_method: 15   # 认知复杂度 ≤ 15
+  maintainability:
+    min_rating: "A"                # 维护性评级最少 A
+  reliability:
+    min_rating: "A"                # 可靠性评级最少 A
+  security:
+    min_rating: "A"                # 安全性评级最少 A
+    disallow_open_hotspots: true   # 不允许未处置的安全热点
+
+  static_rules:
+    spotbugs:
+      max_high: 0                  # 高优先级缺陷必须为 0
+      max_medium: 5
+      max_low: 10
+    pmd:
+      max_priority1: 0             # P1 必须为 0
+      max_priority2: 2
+      max_priority3: 10
+    checkstyle:
+      max_errors: 0                # Error 为 0
+      max_warnings: 50
+
+  mumble_sdk_specific:
+    config:
+      properties_only: true                  # 禁用 YAML，仅允许 .properties
+      require_application_properties: true   # 必须存在 application-*.properties
+    logging:
+      require_mdc_fields:
+        - bizSeqNo
+        - txnSeqNo                           # MDC 必须包含业务/交易流水
+    web_controller:
+      must_extend: "MumbleAbstractBaseController"
+      must_use_execute_template: true        # 统一 execute(...) 模板范式
+      disallow_transactional_on_controller: true
+    service_layer:
+      must_use_transactional: true           # 服务层必须使用 @Transactional(rollbackFor = Exception.class)
+      must_generate_sequences:
+        - "BIZ"                              # 示意：业务流水
+        - "TXN"                              # 示意：交易流水
+      require_context_clear_in_finally: true # finally 中清理 MumbleContextUtil
+      lock_pattern:
+        require_try_lock: true               # tryLock 成功后执行业务
+        require_unlock_in_finally: true
+    dao_mapper_xml:
+      forbid_select_star: true               # 禁止 select *
+      require_base_result_map: true          # 强制使用 BaseResultMap
+      require_base_column_list: true         # 强制使用 Base_Column_List
+      require_jdbc_type_on_params: true      # 参数需声明 jdbcType
+      require_explicit_where: true           # WHERE 条件必须明确
+    dao_java:
+      require_throws_sql_exception: true     # DAO 接口/实现必须 throws SQLException
+      require_extends_abstract_simple_dao: true  # DAO 实现必须继承 AbstractSimpleDAO
+      require_try_with_mumble_sql_session: true  # 必须使用 try-with-resources 包裹 MumbleSqlSession
+    rmb_service:
+      must_use_mumble_rmb_service_annotation: true
+      must_use_mumble_service_method_annotation: true
+      require_context_clear_in_finally: true # RMB 服务也需清理上下文
+
+enforcement:
+  fail_build_on_violation: true              # 任一 ERROR 等级 Gate 违规直接失败
+  severity:
+    - gate: "coverage"
+      level: "ERROR"
+    - gate: "static_rules.spotbugs"
+      level: "ERROR"
+    - gate: "mumble_sdk_specific"
+      level: "ERROR"
+    - gate: "duplication"
+      level: "WARN"
+    - gate: "complexity"
+      level: "WARN"
+
+pipelines:
+  maven:
+    commands:
+      - mvn -q -DskipITs=false -Dmaven.test.failure.ignore=false clean verify
+      - mvn -q spotbugs:spotbugs pmd:pmd checkstyle:checkstyle
+    reports:
+      jacoco: "target/site/jacoco/index.html"
+      spotbugs: "target/spotbugsXml.xml"
+      pmd: "target/pmd.xml"
+      checkstyle: "target/checkstyle-result.xml"
+  gradle:
+    commands:
+      - ./gradlew clean build jacocoTestReport
+      - ./gradlew spotbugsMain pmdMain checkstyleMain
+    reports:
+      jacoco: "build/reports/jacoco/test/html/index.html"
+      spotbugs: "build/reports/spotbugs/main.xml"
+      pmd: "build/reports/pmd/main.xml"
+      checkstyle: "build/reports/checkstyle/main.html"
+
+notes:
+  - "将本文件复制到 CI 仓库或项目根目录的 .quality/ 目录，并在流水线读取阈值执行 Gate 判定。"
+  - "核心模块建议将 min_line_coverage 提升到 0.90；安全关键模块的 spotbugs/pmd 高优先级缺陷必须为 0。"
+  - "结合 scripts/quick_validate_mumblesdk.py 进行框架特定静态规则的补充校验。"

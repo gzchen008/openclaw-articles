@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.ActivityInfoMapper">
+
+  <!-- 强制：BaseResultMap -->
+  <resultMap id="BaseResultMap" type="com.example.dao.ActivityInfoDTO">
+    <id column="activity_id" jdbcType="VARCHAR" property="activityId"/>
+    <result column="activity_name" jdbcType="VARCHAR" property="activityName"/>
+    <result column="status" jdbcType="VARCHAR" property="status"/>
+    <result column="deleted" jdbcType="INTEGER" property="deleted"/>
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+  </resultMap>
+
+  <!-- 强制：Base_Column_List -->
+  <sql id="Base_Column_List">
+    activity_id, activity_name, status, deleted, created_time, updated_time
+  </sql>
+
+  <!-- 强制：禁止 select *；必须 WHERE；参数声明 jdbcType -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="string">
+    SELECT
+      <include refid="Base_Column_List"/>
+    FROM activity_info
+    <where>
+      activity_id = #{activityId, jdbcType=VARCHAR}
+      AND deleted = 0
+    </where>
+    LIMIT 1
+  </select>
+
+  <!-- 选择性插入：仅非空字段；必须 jdbcType -->
+  <insert id="insertSelective" parameterType="com.example.dao.ActivityInfoDTO" useGeneratedKeys="false">
+    INSERT INTO activity_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="activityId != null">activity_id,</if>
+      <if test="activityName != null">activity_name,</if>
+      <if test="status != null">status,</if>
+      deleted,
+      created_time,
+      updated_time
+    </trim>
+    <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+      <if test="activityId != null">#{activityId, jdbcType=VARCHAR},</if>
+      <if test="activityName != null">#{activityName, jdbcType=VARCHAR},</if>
+      <if test="status != null">#{status, jdbcType=VARCHAR},</if>
+      #{deleted, jdbcType=INTEGER},
+      #{createdTime, jdbcType=TIMESTAMP},
+      #{updatedTime, jdbcType=TIMESTAMP}
+    </trim>
+  </insert>
+
+  <!-- 软删除示例：必须 WHERE；参数 jdbcType -->
+  <update id="softDeleteByPrimaryKey" parameterType="string">
+    UPDATE activity_info
+    SET deleted = 1, updated_time = CURRENT_TIMESTAMP
+    <where>
+      activity_id = #{activityId, jdbcType=VARCHAR}
+      AND deleted = 0
+    </where>
+  </update>
+
+  <!-- 选择性更新示例：必须 WHERE；参数 jdbcType -->
+  <update id="updateSelective" parameterType="com.example.dao.ActivityInfoDTO">
+    UPDATE activity_info
+    <set>
+      <if test="activityName != null">activity_name = #{activityName, jdbcType=VARCHAR},</if>
+      <if test="status != null">status = #{status, jdbcType=VARCHAR},</if>
+      <if test="updatedTime != null">updated_time = #{updatedTime, jdbcType=TIMESTAMP},</if>
+    </set>
+    <where>
+      activity_id = #{activityId, jdbcType=VARCHAR}
+      AND deleted = 0
+    </where>
+  </update>
+
+</mapper>

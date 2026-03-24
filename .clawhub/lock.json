@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "self-improving": {
+      "version": "1.2.16",
+      "installedAt": 1773825038793
+    },
+    "find-skills": {
+      "version": "0.1.0",
+      "installedAt": 1773825046020
+    },
+    "agent-browser": {
+      "version": "0.2.0",
+      "installedAt": 1773825052831
+    },
+    "eastmoney-tools": {
+      "version": "1.0.1",
+      "installedAt": 1773825059403
+    },
+    "coding": {
+      "version": "1.0.3",
+      "installedAt": 1773825256573
+    },
+    "agentic-coding": {
+      "version": "1.0.0",
+      "installedAt": 1773825259422
+    },
+    "clawra": {
+      "version": "1.0.0",
+      "installedAt": 1773884110095
+    },
+    "self-improving-agent": {
+      "version": "3.0.5",
+      "installedAt": 1774004671536
+    },
+    "memory-tiering": {
+      "version": "1.0.0",
+      "installedAt": 1774008014013
+    }
+  }
+}

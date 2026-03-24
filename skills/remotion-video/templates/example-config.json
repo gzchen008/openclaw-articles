@@ -1,0 +1,74 @@
+{
+  "title": "OpenClaw Context Engine",
+  "subtitle": "让你的 AI 拥有无损记忆",
+  "scenes": [
+    {
+      "type": "cover",
+      "title": "OpenClaw Context Engine",
+      "data": {
+        "subtitle": "让你的 AI 拥有无损记忆"
+      },
+      "duration": 3
+    },
+    {
+      "type": "text",
+      "title": "😰 你遇到过这种情况吗？",
+      "data": {
+        "lines": [
+          "和 AI 聊了 100 轮，做了很多决策",
+          "突然想回到第 5 轮讨论的话题...",
+          "AI：「抱歉，我不记得了」"
+        ]
+      },
+      "duration": 5
+    },
+    {
+      "type": "text",
+      "title": "📦 Context Engine 是什么？",
+      "data": {
+        "lines": [
+          "独占插件插槽 - 同一时间只能激活一个引擎",
+          "上下文管理 - 组装发送给模型的所有内容",
+          "压缩与摄入 - 当接近 token 限制时压缩旧对话"
+        ]
+      },
+      "duration": 5
+    },
+    {
+      "type": "card",
+      "title": "🚀 无损记忆三种方案",
+      "data": {
+        "cards": [
+          { "title": "1️⃣ 分层上下文", "content": "活跃层 + 索引层 + 存储层", "color": "#4CAF50" },
+          { "title": "2️⃣ 图结构上下文", "content": "保留因果关系，追溯决策链", "color": "#2196F3" },
+          { "title": "3️⃣ 向量化上下文", "content": "语义搜索，跨会话检索", "color": "#9C27B0" }
+        ]
+      },
+      "duration": 5
+    },
+    {
+      "type": "comparison",
+      "title": "📊 Legacy vs 无损记忆",
+      "data": {
+        "comparisons": [
+          { "left": "压缩后丢失细节", "right": "完整保留所有信息" },
+          { "left": "无检索能力", "right": "向量搜索，语义检索" },
+          { "left": "简单任务场景", "right": "长期项目 + 复杂任务" }
+        ]
+      },
+      "duration": 5
+    },
+    {
+      "type": "cta",
+      "title": "🎯 如何使用？",
+      "data": {
+        "steps": [
+          "适用场景：长期项目、复杂任务、多文件协作",
+          "配置方式：plugins.slots.contextEngine = \"lossless\"",
+          "推荐技术栈：LanceDB + OpenAI Embeddings"
+        ]
+      },
+      "duration": 5
+    }
+  ]
+}

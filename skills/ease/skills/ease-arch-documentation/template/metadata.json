@@ -1,0 +1,22 @@
+{
+  "last_generation": {
+    "timestamp": "2025-11-19T21:03:37",
+    "branch": "main",
+    "commit_id": "auto_generated",
+    "generated_documents": [
+      "01_SYSTEM_OVERVIEW.md",
+      "02_CORE_MODULES.md",
+      "03_API_INTERFACE.md",
+      "04_DATA_MODEL.md",
+      "05_CONFIG_MANAGEMENT.md",
+      "06_UTILS_LIBRARIES.md"
+    ]
+  },
+  "version": "1.0.0",
+  "generator": "ECIF-Core Architecture Documentation Generator",
+  "project_info": {
+    "name": "ecif-core",
+    "version": "25.11.13",
+    "description": "ECIF-Core系统架构文档"
+  }
+}

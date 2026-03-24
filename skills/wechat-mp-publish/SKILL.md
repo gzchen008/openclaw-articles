@@ -114,17 +114,97 @@ python scripts/wechat_publisher.py list
 <img src="微信图片URL" />
 ```
 
-### 图片处理
+### 图片上传（重要）
 
-**重要：** 文章中的图片 URL 必须来自微信服务器！
+**⚠️ 关键规则：文章中的图片 URL 必须来自微信服务器！**
 
+外部 URL（如 GitHub、图床、CDN）会被微信过滤，导致图片无法显示。
+
+#### 两种图片类型
+
+| 类型 | 用途 | API | 限制 |
+|------|------|-----|------|
+| `thumb` | 文章封面缩略图 | `/material/add_material` | 64KB |
+| `image` | 文章内容中的图片 | `/media/uploadimg` | 无明确限制 |
+
+#### 图片上传流程
+
+**步骤 1：上传图片**
 ```bash
-# 1. 先上传图片
+# 上传图文内图片
 python scripts/wechat_publisher.py upload image.jpg --type image
-# 返回: {"url": "https://mmbiz.qpic.cn/..."}
 
-# 2. 在 HTML 中使用返回的 URL
-<img src="https://mmbiz.qpic.cn/..." />
+# 返回示例：
+# ✅ 上传成功!
+#    url: http://mmbiz.qpic.cn/sz_mmbiz_jpg/...
+```
+
+**步骤 2：在 HTML 中使用**
+```html
+<img src="http://mmbiz.qpic.cn/sz_mmbiz_jpg/..." style="max-width: 100%; display: block; margin: 16px auto;" />
+```
+
+**步骤 3：创建草稿**
+```bash
+python scripts/wechat_publisher.py draft --title "标题" --content article.html --thumb cover.jpg
+```
+
+#### 图片最佳实践
+
+1. **图片尺寸**
+   - 宽度：建议 900px（适配手机屏幕）
+   - 高度：无限制，但建议不超过 2000px
+   - 文件大小：建议 < 1MB
+
+2. **图片格式**
+   - 支持：JPG、PNG、GIF
+   - 推荐：JPG（照片）、PNG（截图/图表）
+
+3. **图片样式**
+   ```html
+   <img src="微信URL" style="max-width: 100%; display: block; margin: 16px auto;" />
+   ```
+
+4. **批量上传**
+   ```bash
+   # 上传多张图片
+   for img in images/*.jpg; do
+     python scripts/wechat_publisher.py upload "$img" --type image
+   done
+   ```
+
+#### 图片上传完整示例
+
+```python
+# Python 脚本示例
+import requests
+import os
+
+# 1. 上传图片
+def upload_image(image_path, token):
+    url = f"http://115.191.30.195/wechat/cgi-bin/media/uploadimg?access_token={token}"
+    files = {"media": open(image_path, "rb")}
+    resp = requests.post(url, files=files, timeout=60)
+    return resp.json()["url"]
+
+# 2. 替换 HTML 中的图片 URL
+def replace_image_urls(html_content, image_map):
+    for local_path, wechat_url in image_map.items():
+        html_content = html_content.replace(local_path, wechat_url)
+    return html_content
+
+# 3. 创建草稿
+def create_draft(title, content, thumb_media_id, token):
+    url = f"http://115.191.30.195/wechat/cgi-bin/draft/add?access_token={token}"
+    payload = {
+        "articles": [{
+            "title": title,
+            "content": content,
+            "thumb_media_id": thumb_media_id
+        }]
+    }
+    resp = requests.post(url, json=payload, timeout=30)
+    return resp.json()
 ```
 
 ### Markdown 转 HTML
@@ -174,7 +254,40 @@ open('article.html', 'w').write(html)
 
 ## 常见问题
 
-### 1. 发布后显示"提交成功"但没看到文章？
+### 1. 图片显示不出来？
+
+**原因**：
+- 使用了外部 URL（GitHub、图床、CDN）
+- 图片未上传到微信服务器
+- 图片 URL 过期
+
+**解决方案**：
+```bash
+# 1. 上传图片到微信
+python scripts/wechat_publisher.py upload image.jpg --type image
+
+# 2. 使用返回的微信 URL
+# ❌ 错误：<img src="https://github.com/user/repo/raw/main/image.jpg" />
+# ✅ 正确：<img src="http://mmbiz.qpic.cn/..." />
+```
+
+### 2. 上传图片失败？
+
+**常见错误**：
+- `invalid credential` → access_token 过期，删除 `/tmp/wechat_token.json` 重试
+- `media data missing` → 文件路径错误或文件损坏
+- `file size exceed` → 图片太大（thumb 类型限制 64KB）
+
+**解决方案**：
+```bash
+# 清除 token 缓存
+rm -f /tmp/wechat_token.json
+
+# 压缩图片（如果太大）
+convert input.jpg -resize 900x -quality 85 output.jpg
+```
+
+### 3. 发布后显示"提交成功"但没看到文章？
 
 发布是异步的，需要等待审核。配置回调 URL 可接收发布结果通知。
 

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw v2026.3.23 更新：浏览器稳定性大幅提升</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            max-width: 100%;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 25px;
+        }
+        ul {
+            padding-left: 25px;
+        }
+        li {
+            margin-bottom: 12px;
+        }
+        .highlight {
+            background: #f8f9fa;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .badge-fix {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+        }
+        .summary-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+        .summary-box h3 {
+            color: white;
+            margin-top: 0;
+        }
+        .summary-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .summary-box li::before {
+            content: "✓ ";
+            color: #ffd700;
+        }
+        .category {
+            margin: 30px 0;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        .category-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>OpenClaw v2026.3.23 更新：浏览器稳定性大幅提升</h1>
+
+<p><strong>发布时间：</strong>2026年3月24日</p>
+
+<div class="summary-box">
+    <h3>🚀 本次更新亮点</h3>
+    <ul>
+        <li>浏览器连接更稳定，macOS Chrome 附加流程优化</li>
+        <li>ClawHub 技能商店登录问题修复</li>
+        <li>消息工具支持飞书文件/图片附件发送</li>
+        <li>Mistral 模型配置自动修复</li>
+        <li>代理环境下的 OAuth 登录支持</li>
+    </ul>
+</div>
+
+<h2>🔧 浏览器与网络</h2>
+
+<div class="category">
+    <div class="category-title">Chrome 浏览器附加优化</div>
+    <ul>
+        <li><span class="badge badge-fix">修复</span> <strong>macOS Chrome 附加超时问题</strong>：修复了用户配置文件附加时的超时和重复授权问题，现在浏览器附加更加流畅</li>
+        <li><span class="badge badge-fix">修复</span> <strong>Linux 无头浏览器二次启动问题</strong>：解决了较慢的 Linux 环境下浏览器第二次启动失败的问题</li>
+    </ul>
+</div>
+
+<h2>🛒 ClawHub 技能商店</h2>
+
+<div class="category">
+    <div class="category-title">登录与认证修复</div>
+    <ul>
+        <li><span class="badge badge-fix">修复</span> <strong>macOS 登录状态保持</strong>：修复了 macOS 上 ClawHub 凭据读取问题，现在技能浏览和安装会正确使用登录状态</li>
+        <li><span class="badge badge-fix">修复</span> <strong>认证降级问题</strong>：解决了技能浏览时意外降级到未认证模式导致的 429 错误</li>
+    </ul>
+</div>
+
+<h2>💬 消息工具增强</h2>
+
+<div class="category">
+    <div class="category-title">Discord、Slack、飞书</div>
+    <ul>
+        <li><span class="badge badge-fix">修复</span> <strong>Discord 组件和 Slack 块可选</strong>：恢复了 <code>components</code> 和 <code>blocks</code> 的可选性</li>
+        <li><span class="badge badge-fix">修复</span> <strong>飞书文件/图片发送</strong>：修复了飞书消息工具发送文件和图片附件失败的问题</li>
+        <li><span class="badge badge-fix">修复</span> <strong>Telegram 消息优化</strong>：新增 <code>asDocument</code> 参数，改进了消息防重复机制</li>
+        <li><span class="badge badge-fix">修复</span> <strong>Discord 权限命令</strong>：特权命令现在会返回明确的未授权提示</li>
+    </ul>
+</div>
+
+<h2>🤖 模型与代理</h2>
+
+<div class="category">
+    <div class="category-title">模型配置优化</div>
+    <ul>
+        <li><span class="badge badge-fix">修复</span> <strong>Mistral 模型配置</strong>：降低了 Mistral 最大 token 默认值，<code>openclaw doctor --fix</code> 可自动修复旧配置</li>
+        <li><span class="badge badge-fix">修复</span> <strong>OpenRouter 定价刷新</strong>：修复了 <code>openrouter/auto</code> 定价递归刷新问题</li>
+        <li><span class="badge badge-fix">修复</span> <strong>代理环境 OAuth</strong>：OpenAI Codex 和 MiniMax 的 OAuth 登录现在支持代理环境</li>
+        <li><span class="badge badge-fix">修复</span> <strong>web_search 提供者</strong>：使用实际配置的搜索提供者而非默认值</li>
+    </ul>
+</div>
+
+<h2>⚡ 子代理与技能</h2>
+
+<div class="category">
+    <div class="category-title">运行时改进</div>
+    <ul>
+        <li><span class="badge badge-fix">修复</span> <strong>子代理超时误报</strong>：快速完成的子代理不再被错误报告为超时</li>
+        <li><span class="badge badge-fix">修复</span> <strong>技能 API Key 解析</strong>：修复了嵌入技能的 SecretRef 解析问题</li>
+        <li><span class="badge badge-fix">修复</span> <strong>Anthropic thinking 块顺序</strong>：保持了思考块的正确顺序</li>
+    </ul>
+</div>
+
+<h2>🔐 安全与稳定性</h2>
+
+<div class="category">
+    <div class="category-title">安全加固</div>
+    <ul>
+        <li><span class="badge badge-fix">修复</span> <strong>Shell 命令审批</strong>：加强了 shell 包装器的安全检查</li>
+        <li><span class="badge badge-fix">修复</span> <strong>Canvas 路由鉴权</strong>：Canvas 路由现在需要认证</li>
+        <li><span class="badge badge-fix">修复</span> <strong>网关锁冲突</strong>：修复了 launchd 和 systemd 下的崩溃循环问题</li>
+        <li><span class="badge badge-fix">修复</span> <strong>插件配置容错</strong>：过期的插件 ID 现在是警告而非致命错误</li>
+    </ul>
+</div>
+
+<h2>📦 安装与发布</h2>
+
+<ul>
+    <li><span class="badge badge-fix">修复</span> <strong>npm 包完整性</strong>：发布的 npm 包现在包含所有必要的插件和 Control UI 资源</li>
+    <li><span class="badge badge-fix">修复</span> <strong>Matrix 插件</strong>：修复了 Matrix 插件启动时的重复属性错误</li>
+    <li><span class="badge badge-fix">修复</span> <strong>内存插件</strong>：LanceDB 内存插件现在可以在全局 npm 安装后正常工作</li>
+</ul>
+
+<h2>📥 如何更新</h2>
+
+<div class="highlight">
+    <p><strong>推荐更新命令：</strong></p>
+    <p><code>npm install -g openclaw@latest</code></p>
+    <p>或使用：<code>openclaw update</code></p>
+</div>
+
+<p>本次更新包含 <strong>33 项修复</strong>，主要集中在浏览器稳定性、认证流程和消息工具的改进。如果你在使用浏览器附加、ClawHub 技能商店或飞书消息发送时遇到问题，这个版本值得立即更新！</p>
+
+<p style="color: #7f8c8d; margin-top: 40px; font-size: 14px;">
+    <strong>完整 Release Notes：</strong>
+    <a href="https://github.com/openclaw/openclaw/releases/tag/v2026.3.23">https://github.com/openclaw/openclaw/releases/tag/v2026.3.23</a>
+</p>
+
+</body>
+</html>

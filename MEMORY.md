@@ -7,10 +7,14 @@
 ## 📋 当前任务清单
 
 ### 1. 公众号内容创作（进行中）
-- **目标：** 28 天系列文章，每天一篇
-- **计划文件：** `wechat-content-plan.md`
-- **输出位置：** `articles/`（Markdown + Word）
-- **定时任务：** 每天 9:00 自动生成 + 推送到 GitHub
+- **目标：** AI 资讯深度解读（方案2）
+- **模式：** 每日抓取 AI 技术热点 → 深度分析文章
+- **输出位置：** `articles/`（HTML）
+- **定时任务：** 每天 9:00 自动生成 + 创建草稿
+- **本周文章（已上传草稿箱）：**
+  - 3/19: OpenClaw 故障排查手册 ✅
+  - 3/20: OpenClaw 性能优化秘籍 ✅
+  - 3/21: OpenClaw 安全与隐私保护指南 ✅
 
 ### 2. 每日工作回顾（进行中）
 - **目标：** 生成昨天的工作日报 + 运行统计
@@ -20,9 +24,17 @@
 
 ### 3. GitHub 开源项目推荐（进行中）
 - **目标：** 每天推荐一个高Star项目（AI/代码/Agent相关）
-- **输出方式：** Discord 私聊发送
-- **定时任务：** 每天 10:00 自动发送
-- **主题轮换：** Agent框架、代码工具、Skill库、开源模型等
+- **输出方式：** 飞书私聊发送（ou_c8b2454b01e8ab6e8957044ebae17f69）
+- **定时任务：** 每天 10:00 自动发送（c6936c17-1372-4acc-9615-6acde0f18e46）
+- **主题轮换（6个主题）**：
+  1. AI Agent框架
+  2. 代码助手/IDE插件
+  3. Skill/工具库
+  4. 开源大模型
+  5. 开发效率工具
+  6. 自动化工作流
+- **推荐记录**：
+  - 2026-03-21: Open SWE（主题：AI Agent框架）⭐ 7,657
 
 ### 4. 自我迭代研究（进行中）
 - **目标：** 每天研究新技能/新技术/能力提升
@@ -33,6 +45,12 @@
 - Discord 频道配置 ✅
 - 用户配对授权 ✅
 - 定时任务设置 ✅
+
+### 6. 群聊角色配置（方案A）
+- **位置**: `memory/groups/` 目录
+- **命名**: 按群 ID 命名，- **示例**: `memory/groups/oc_0727ae8dbdef462d79f55f73971d7b98.md`
+- **当前群**:
+  - `oc_0727ae8dbdef462d79f55f73971d7b98` - 老板的小妖精群（Clawra 角色）- **触发方式**: 收到群消息时自动加载对应配置
 
 ---
 
@@ -118,22 +136,70 @@
 | 发送工作日报 | 每天 12:00 | ✅ 已设置 |
 | 自我迭代研究 | 每天 20:00 | ✅ 已设置 |
 | 自动备份 | 每天 3:00 | ✅ 已设置 |
+| **OpenClaw 版本检查** | 每天 9:00 | ✅ 已设置 |
 | 更新 MEMORY.md | 每周 | 🔄 进行中 |
 | 整理 memory/ 文件 | 每周 | ⏳ 待开始 |
+
+### OpenClaw 版本检查任务
+
+**任务 ID**：`daily-openclaw-version-check`
+**触发时间**：每天 9:00 (Asia/Shanghai)
+**Agent**：content-lead
+**Model**：zai/glm-5
+
+**任务流程**：
+1. 检查 GitHub OpenClaw 最新版本
+2. 如果有新版本：
+   - 获取 Release Notes
+   - 生成公众号文章（articles/YYYY-MM-DD-openclaw-v版本号-update.md/.html）
+   - 生成 Remotion 视频（30秒横屏）
+   - 创建公众号草稿
+   - 发送飞书通知
+3. 如果无新版本：回复 HEARTBEAT_OK
+
+**创建日期**：2026-03-09
 
 ### 公众号文章进度
 
 **仓库**：`gzchen008/openclaw-articles`
-**当前进度**：13/28 篇 (46%)
+**当前进度**：15/28 篇 (54%)
 
 | 周次 | 主题 | 进度 |
 |------|------|------|
 | 第一周 | 入门系列 | ✅ 100% |
-| 第二周 | 进阶系列 | 🔄 71% |
+| 第二周 | 进阶系列 | ✅ 86% |
 | 第三周 | 场景系列 | 🔄 14% |
 | 第四周 | 高级系列 | ⏳ 0% |
 
 **计划文件**：`wechat-content-plan.md`
+
+**最新文章**：
+- 2026-03-23：OpenClaw v2026.3.22 重大更新：ClawHub 插件市场、Chrome MCP、安全加固 🚀
+- 2026-03-09：OpenClaw v2026.3.7 更新：这5个新功能让你爽到飞起 🚀
+
+---
+
+## 📚 新系列：OpenClaw 源码解读
+
+**系列名称**：OpenClaw 架构设计与源码剖析
+**规划文件**：`openclaw-source-code-series-plan.md`
+**文章数量**：8-10 篇
+**发布频率**：每周 2-3 篇
+**状态**：规划中
+
+**文章列表**：
+1. 从 0 到 1 理解 OpenClaw：Gateway-Client-Node 三层架构
+2. OpenClaw Agent Loop：从消息到回复的完整旅程
+3. OpenClaw 如何支持 20+ AI 模型？多模型架构设计
+4. OpenClaw Session 管理：如何保持 AI 长期记忆？
+5. OpenClaw 技能系统：如何实现可扩展的 AI 能力？
+6. OpenClaw 如何支持 20+ 消息平台？多渠道架构设计
+7. OpenClaw 安全设计：如何保护你的 AI 助手？
+8. OpenClaw Canvas：如何实现实时 AI 画布？
+
+**目标受众**：开发者、架构师、AI Agent 爱好者
+**技术深度**：源码级别解读 + 架构设计思考
+**实用价值**：如何借鉴 OpenClaw 设计，构建自己的 AI Agent 系统
 
 ---
 
@@ -170,6 +236,44 @@
 - 重视隐私和安全
 - 内容要求：实用 + 有趣
 - 公众号发布时间：每天一篇
+- **视频格式：默认竖版（9:16），除非明确要求横屏**
+- **简称**：cc = Claude Code（沟通时用简称）
+
+---
+
+## 📁 项目目录
+
+### 1. `~/project` - 通用项目目录
+包含多个项目：
+- **weclaw** - OpenClaw Docker 镜像（支持自定义内网 OpenAI 兼容模型）
+- **browser-use** - 浏览器自动化工具
+- **image-gen** - 图像生成
+- **vedio-gen** - 视频生成
+- **openclaw** - OpenClaw 源码
+- **ops-bot** - 运维机器人
+- **simple-proxy** - 简单代理
+- **testing-sandbox-system** - 测试沙箱系统
+- **wcs-docs-system** - WCS 文档系统
+- **wecom-kunlun** - 企业微信昆仑
+- **libsignal-node** - Signal 协议库
+
+### 2. `~/wbproject` - WeBank 云原生平台
+包含多个企业级项目：
+- **weauto** - CI/CD 系统（基于 K8s 的持续集成/部署平台）
+  - weauto-server - 后端服务（Go）
+  - weauto-web - 前端服务（Vue 3）
+  - ci-builder - CI 基础镜像
+  - deploy - K8s 部署文件
+- **ai-sandbox** - AI 沙箱实验平台
+- **wcs-java** - 容器资源管理系统（核心）
+- **wcs-admin-fe** - Vue 前端界面
+- **wcs-deploy** - 部署系统
+- **wcs-images** - 容器镜像
+- **wcs-installer** - 安装程序
+- **wcs-sysagent** - 系统代理
+- **wfaas** - 函数计算
+
+**查找规则**：用户说"找项目"时，直接从这两个目录查找
 
 ---
 
@@ -274,21 +378,25 @@ openclaw-backup help                # 显示帮助
 
 **功能：** Remotion 视频生成的完整规范文档
 
-**内容包括**：
-- 📐 分辨率标准（横屏 1920x1080 / 竖屏 1080x1920）
-- 🎬 视频结构标准（6个场景，30-31秒）
-- 🎨 设计规范（颜色、字体、动画）
-- 📁 文件组织和命名规范
-- 🔄 完整工作流程
-- 📊 文章转视频的内容提取
-- 🎯 质量检查清单
-- 🔧 常见问题解答
+**⚠️ 核心规则（绝不能违反）**：
+1. **只使用 opacity 淡入**：元素出现时只用 `opacity: 0 → 1`
+2. **禁止位置动画**：`translateY` / `translateX` / `transform` 移动动画会导致遮挡
+3. **禁止 scale 动画**：`scale` 动画会导致元素大小变化，可能超出边界
+4. **元素位置固定**：所有元素在场景中的位置始终不变，只是透明度变化
+5. **所有元素必须居中**：`justifyContent: 'center'` + `alignItems: 'center'` + `textAlign: 'center'`
+
+**为什么禁止位置动画**：
+- 上升/下降动画会导致元素在动画过程中相互遮挡
+- **用户反馈**：上升的组建画面变动有相互挡住
+- **解决方案**：所有元素固定位置，只淡入不移动
 
 **使用场景**：
 - 创建新的 Remotion 视频项目
 - 文章转视频制作
 - 横屏/竖屏视频切换
 - 视频模板复用
+
+**⚠️ 重要**：生成视频前必须先读取此文件！
 
 ---
 
@@ -448,4 +556,78 @@ python skills/wechat-analytics/scripts/wechat_analytics.py suggest
 
 ---
 
-*最后更新：2026-02-16*
+---
+
+## 📅 2026-03-03 自我迭代研究
+
+### 工具整合发现
+
+**飞书 API 能力**：
+- 56 个权限已授权，覆盖消息、文档、任务、Bitable
+- 可构建：日报机器人、任务同步、自动化工作流
+
+**OpenClaw 技能生态**：
+- 50+ 内置技能（Notion、GitHub、Discord、Slack 等）
+- 多 Agent 架构支持（Coordinator-Worker 模式）
+- 缺失技能：邮件处理、日历集成、数据分析、RSS 聚合
+
+**待开发**：
+1. 飞书日报生成器（Bitable 数据 → 群消息）
+2. 多 Agent 内容团队（Coordinator + Writer + Editor）
+3. GitHub → 飞书任务 → Discord 通知链路
+
+**问题**：
+- Discord 在国内被封锁，需要 VPN
+- 建议改用飞书作为主要通知渠道
+
+---
+
+## 📅 2026-03-13 自我迭代研究
+
+### 主题：最佳实践 - AI 助手设计对比
+
+**5个关键发现**：
+
+1. **Claude Artifacts → Canvas**：OpenClaw 有 Canvas 但利用率低，应自动推送预览
+2. **ChatGPT Memory → MEMORY.md**：ChatGPT 自动提取，OpenClaw 需手动维护，应智能更新
+3. **Gemini 多模态 → image tool**：收到图片应自动分析，无需显式请求
+4. **Computer Use → 设备控制**：browser/nodes 分散，应统一抽象层
+5. **GPTs → Skills**：Skills 开发者导向，应增加无代码配置向导
+
+**可执行**：
+1. Canvas 自动预览
+2. Memory 自动更新（heartbeat 时）
+3. 图片自动分析
+
+**核心洞察**：顶级 AI 助手都在做"无缝体验"——用户不需要知道用了什么工具，只想要结果。
+
+---
+
+## 📅 2026-03-05 自我迭代研究
+
+### 主题：工具整合 - OpenClaw 与外部服务集成
+
+**研究内容**：
+- 现有能力盘点：飞书（56权限）、GitHub（gh CLI）、Discord、浏览器/节点控制
+- 高价值方向：Notion（知识库）、Google Workspace（企业）、Linear/Jira（项目管理）
+- 实现模式：CLI 封装 vs REST API vs 混合模式
+- Skill 设计原则：渐进式加载、资源复用、优雅降级
+
+**可执行计划**：
+- **本周**：创建 Notion Skill 原型（数据库查询 + 页面创建）
+- **下周**：统一日历抽象层（Google + Apple Calendar）
+- **长期**：Webhook 接收器（外部事件推送）
+
+**技术笔记**：
+- 详细研究记录在 `memory/2026-03-05.md`
+- Discord 消息发送失败（fetch failed），需检查网络或认证
+- Web 搜索失败，可能是网络问题或 API 限制
+
+**下一步行动**：
+1. 研究 Notion API 文档与 `notion-cli`
+2. 设计统一 Calendar 接口抽象层
+3. 调查 OpenClaw 的 Webhook 支持能力
+
+---
+
+*最后更新：2026-03-05*

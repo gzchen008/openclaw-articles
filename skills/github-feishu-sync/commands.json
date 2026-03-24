@@ -1,0 +1,66 @@
+{
+  "name": "github-feishu-sync",
+  "version": "1.0.0",
+  "description": "GitHub仓库到飞书文档的自动同步工具",
+  "commands": {
+    "sync-github-feishu": {
+      "description": "同步GitHub仓库到飞书",
+      "usage": "sync-github-feishu [options]",
+      "options": {
+        "--repo": {
+          "description": "GitHub仓库名",
+          "required": true,
+          "example": "gzchen008/ai-user-guide"
+        },
+        "--folder-token": {
+          "description": "飞书文件夹Token",
+          "required": true,
+          "example": "OwM2fGLEJlBrOjdEUdQcmXmOnic"
+        },
+        "--full-sync": {
+          "description": "全量同步（默认增量）",
+          "required": false,
+          "type": "boolean"
+        },
+        "--delay": {
+          "description": "每次创建后等待秒数",
+          "required": false,
+          "default": 3,
+          "type": "number"
+        }
+      },
+      "examples": [
+        {
+          "description": "增量同步",
+          "command": "sync-github-feishu --repo gzchen008/ai-user-guide --folder-token OwM2fGLEJlBrOjdEUdQcmXmOnic"
+        },
+        {
+          "description": "全量同步",
+          "command": "sync-github-feishu --repo gzchen008/ai-user-guide --folder-token OwM2fGLEJlBrOjdEUdQcmXmOnic --full-sync"
+        }
+      ]
+    },
+    "sync-status": {
+      "description": "查看GitHub到飞书的同步状态",
+      "usage": "sync-status",
+      "examples": [
+        {
+          "description": "查看当前进度",
+          "command": "sync-status"
+        }
+      ]
+    }
+  },
+  "cron_tasks": {
+    "github-feishu-sync-daily": {
+      "schedule": "0 2 * * *",
+      "timezone": "Asia/Shanghai",
+      "description": "每天凌晨2点自动同步",
+      "command": "sync-github-feishu",
+      "params": {
+        "repo": "gzchen008/ai-user-guide",
+        "folder-token": "OwM2fGLEJlBrOjdEUdQcmXmOnic"
+      }
+    }
+  }
+}

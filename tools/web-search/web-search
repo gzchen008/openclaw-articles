@@ -1,0 +1,13 @@
+#!/bin/bash
+# 网络搜索便捷命令
+# 用法: web-search "搜索关键词" [数量]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SEARCH_SCRIPT="/Users/cgz/.openclaw/workspace/tools/web-search/search.py"
+
+if [[ ! -f "$SEARCH_SCRIPT" ]]; then
+    echo "错误: 找不到 search.py" >&2
+    exit 1
+fi
+
+python3 "$SEARCH_SCRIPT" "$@"

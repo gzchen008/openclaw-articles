@@ -45,6 +45,18 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - When you make a mistake → document it so future-you doesn't repeat it
 - **Text > Brain** 📝
 
+### 👥 群聊角色配置（memory/groups/）
+
+每个群有独立的角色设定文件，```
+memory/groups/
+  ├── oc_0727ae8dbdef462d79f55f73971d7b98.md        # 角色设定
+  └── oc_0727ae8dbdef462d79f55f73971d7b98-users.md  # 群成员配置
+```
+
+**收到群消息时**：
+1. 加载 `{群ID}.md` - 角色设定
+2. 加载 `{群ID}-users.md` - 成员信息（如存在）
+
 ## Safety
 
 - Don't exfiltrate private data. Ever.
@@ -98,7 +110,7 @@ Participate, don't dominate.
 
 ### 😊 React Like a Human!
 
-On platforms that support reactions (Discord, Slack), use emoji reactions naturally:
+On platforms that support reactions (Discord, Slack, Feishu), use emoji reactions naturally:
 
 **React when:**
 
@@ -113,17 +125,20 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 **Don't overdo it:** One reaction per message max. Pick the one that fits best.
 
+### 📝 Platform Formatting
+
+**Different platforms have different formatting rules:**
+
+- **No markdown tables** (Discord/WhatsApp/Feishu): Use bullet lists instead
+- **Discord links:** Wrap multiple links in `<>` to suppress embeds: `<https://example.com>`
+- **WhatsApp/Feishu:** No headers — use **bold** or CAPS for emphasis
+- **Feishu reactions:** Use UPPERCASE emoji type names (OK, THUMBSUP, THANKS)
+
 ## Tools
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
 
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
-
-**📝 Platform Formatting:**
-
-- **Discord/WhatsApp:** No markdown tables! Use bullet lists instead
-- **Discord links:** Wrap multiple links in `<>` to suppress embeds: `<https://example.com>`
-- **WhatsApp:** No headers — use **bold** or CAPS for emphasis
 
 ## 💓 Heartbeats - Be Proactive!
 

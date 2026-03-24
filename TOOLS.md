@@ -2,6 +2,14 @@
 
 Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
 
+## Web Search
+
+- **工具位置**: `tools/web-search/`
+- **快捷命令**: `~/.local/bin/web-search`
+- **Skill**: `skills/web-search/SKILL.md`
+- **特点**: 免费、多源、自动降级、支持中英日韩
+- **用法**: `web-search "关键词" -n 5`
+
 ## What Goes Here
 
 Things like:
@@ -34,50 +42,6 @@ Things like:
 ## Why Separate?
 
 Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
-
----
-
-### 📡 Tailscale - 远程访问 VPN
-
-**用途**：在任何地方访问 Mac mini（无需公网 IP）
-
-**设备列表**：
-| 设备 | Tailscale IP | 说明 |
-|------|-------------|------|
-| cgzmac-mini | `100.71.105.40` | Mac mini（本机） |
-| cgzmbp14 | `100.70.66.73` | MacBook Pro |
-
-**常用命令**：
-```bash
-# 启动 Tailscale App（首次需要登录）
-open /Applications/Tailscale.app
-
-# 连接 VPN
-tailscale up
-
-# 查看状态
-tailscale status
-
-# 查看本机 IP
-tailscale ip
-
-# 关闭连接
-tailscale down
-```
-
-**远程访问方式**：
-```bash
-# SSH 连接
-ssh cgz@100.71.105.40
-
-# 屏幕共享（VNC）
-open vnc://100.71.105.40
-```
-
-**注意**：
-- 不需要 sudo，直接用 `tailscale up/down`
-- 两台设备需登录同一 Tailscale 账号
-- 账号：cgznzb@（记不清完整邮箱，登录时查看）
 
 ---
 

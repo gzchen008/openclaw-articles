@@ -2,15 +2,19 @@
 
 ## 📐 分辨率标准
 
-### 横屏（默认）
+### 竖屏（默认）⭐
+- **分辨率**：1080x1920 (9:16)
+- **适用**：抖音、快手、小红书、微信视频号、Instagram Stories
+- **布局**：纵向卡片、上下排列、单列布局
+- **字体**：标题 48-64px，正文 24-32px
+
+### 横屏（特殊需求）
 - **分辨率**：1920x1080 (16:9)
 - **适用**：YouTube、B站、电脑播放
 - **布局**：横向卡片、左右排列
+- **字体**：标题 64-80px，正文 28-36px
 
-### 竖屏（手机播放）
-- **分辨率**：1080x1920 (9:16)
-- **适用**：抖音、快手、小红书、微信视频号、Instagram Stories
-- **布局**：纵向卡片、上下排列、2x2网格
+**⚠️ 重要：除非用户明确要求横屏，否则默认生成竖版视频！**
 
 ## 🎬 视频结构标准
 
@@ -107,12 +111,20 @@ npm run render
 cp out/video.mp4 ~/.openclaw/media/[filename].mp4
 ```
 
-### 5. 发送到 Discord
+### 5. 发送给用户（必须）
 ```bash
 # 使用 message tool
-# path: ~/.openclaw/media/[filename].mp4
-# target: channel:CHANNEL_ID
+# path: ~/.openclaw/workspace/remotion/[project-name]/out/video.mp4
+# target: 当前会话用户（自动回复）
+
+# 或发送到飞书
+# target: user:USER_ID
+# channel: feishu
 ```
+
+⚠️ **重要**：视频渲染完成后必须立即发送给用户，不要等用户询问。
+
+⚠️ **重要**：视频渲染完成后必须立即发送给用户，不要等用户询问。
 
 ## ⚙️ 配置参数
 
@@ -132,14 +144,16 @@ cp out/video.mp4 ~/.openclaw/media/[filename].mp4
   component={[VideoComponent]}
   durationInFrames={900}  // 30秒 @ 30fps
   fps={30}
-  width={1920}  // 横屏
-  height={1080} // 横屏
+  width={1080}  // 竖屏（默认）
+  height={1920} // 竖屏（默认）
 />
 ```
 
-**竖屏配置**：
+**横屏配置**（仅在明确要求时使用）：
 ```tsx
-  width={1080}  // 竖屏
+  width={1920}   // 横屏
+  height={1080}  // 横屏
+```
   height={1920} // 竖屏
 ```
 
@@ -162,17 +176,102 @@ cp out/video.mp4 ~/.openclaw/media/[filename].mp4
 
 ## 🎯 质量检查
 
+### ⚠️ 必须遵守的规范（绝不能违反）
+
+**布局规范**：
+- ✅ **所有元素必须居中**：使用 `justifyContent: 'center'` + `alignItems: 'center'`
+- ✅ **垂直居中**：`justifyContent: 'center'`（flex 主轴居中）
+- ✅ **水平居中**：`alignItems: 'center'`（flex 交叉轴居中）
+- ✅ **文字居中**：`textAlign: 'center'`
+- ❌ **禁止元素相互遮挡**：所有元素必须有明确的位置，不能重叠
+- ❌ **禁止元素超出边界**：所有内容必须在 1080x1920（竖屏）或 1920x1080（横屏）范围内
+
+**动画规范（极其重要）**：
+- ✅ **只使用 opacity 淡入**：元素出现时只用 `opacity: 0 → 1`
+- ❌ **禁止使用位置动画**：`translateY` / `translateX` / `transform` 移动动画会导致遮挡
+- ❌ **禁止使用 scale 动画**：`scale` 动画会导致元素大小变化，可能超出边界
+- ✅ **元素位置固定**：所有元素在场景中的位置始终不变，只是透明度变化
+- ✅ **错开淡入时间**：不同元素的淡入时间错开（至少 20 帧）
+
+**为什么禁止位置动画**：
+1. 上升/下降动画会导致元素在动画过程中相互遮挡
+2. 用户反馈：上升的组建画面变动有相互挡住
+3. 解决方案：所有元素固定位置，只淡入不移动
+
+**竖屏布局规范**：
+```tsx
+// 正确的竖屏场景模板
+<AbsoluteFill
+  style={{
+    backgroundColor: '#0a0a0a',
+    justifyContent: 'center',      // 垂直居中
+    alignItems: 'center',           // 水平居中
+    padding: 48,
+    fontFamily: 'system-ui, sans-serif',
+  }}
+>
+  {/* 内容容器 - 确保居中 */}
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',         // 子元素水平居中
+      justifyContent: 'center',     // 子元素垂直居中
+      width: '90%',
+      maxWidth: 960,                // 防止超出边界
+    }}
+  >
+    {/* 标题 */}
+    <div style={{ fontSize: 48, marginBottom: 40, textAlign: 'center' }}>
+      标题文字
+    </div>
+    
+    {/* 内容 - 错开动画时间 */}
+    <div style={{ fontSize: 28, opacity: contentOpacity, marginTop: 20 }}>
+      内容文字
+    </div>
+  </div>
+</AbsoluteFill>
+```
+
+**常见错误示例**：
+```tsx
+// ❌ 错误：没有居中
+<AbsoluteFill style={{ padding: 48 }}>
+  <div style={{ fontSize: 48 }}>标题</div>  // 没有居中
+</AbsoluteFill>
+
+// ✅ 正确：完全居中
+<AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
+  <div style={{ fontSize: 48, textAlign: 'center' }}>标题</div>
+</AbsoluteFill>
+
+// ❌ 错误：元素可能重叠
+<div style={{ position: 'absolute', top: 100 }}>元素1</div>
+<div style={{ position: 'absolute', top: 100 }}>元素2</div>  // 和元素1重叠
+
+// ✅ 正确：元素错开
+<div style={{ position: 'absolute', top: 100 }}>元素1</div>
+<div style={{ position: 'absolute', top: 200 }}>元素2</div>  // 错开 100px
+```
+
 ### 渲染前
 - [ ] 检查 Composition id 是否正确
 - [ ] 检查分辨率设置（横屏/竖屏）
 - [ ] 检查所有文字内容无错误
 - [ ] 检查动画时序合理
+- [ ] **检查所有元素是否居中**（justifyContent + alignItems）
+- [ ] **检查元素是否有重叠**（时间轴错开）
+- [ ] **检查元素是否超出边界**（使用 maxWidth 限制）
 
 ### 渲染后
 - [ ] 播放视频检查流畅度
 - [ ] 检查文字是否清晰可读
 - [ ] 检查动画效果是否符合预期
 - [ ] 检查文件大小（通常 1.5-3MB）
+- [ ] **检查所有元素是否居中显示**
+- [ ] **检查是否有元素相互遮挡**
+- [ ] **检查是否有元素超出屏幕边界**
 
 ## 📝 模板复用
 

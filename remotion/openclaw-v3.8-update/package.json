@@ -1,0 +1,20 @@
+{
+  "name": "openclaw-v3.8-update",
+  "version": "1.0.0",
+  "description": "OpenClaw v2026.3.8 Update Video",
+  "scripts": {
+    "start": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts OpenClawUpdate out/openclaw-v3.8-update.mp4 --browser-executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/player": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "typescript": "^5.0.0"
+  }
+}

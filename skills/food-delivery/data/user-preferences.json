@@ -1,0 +1,13 @@
+{
+  "taste_preference": ["川菜", "粤菜", "快餐", "面食"],
+  "budget_range": [20, 50],
+  "avoid": ["香菜"],
+  "favorites": [
+    {"name": "老乡鸡", "category": "中式快餐"},
+    {"name": "黄焖鸡米饭", "category": "盖浇饭"}
+  ],
+  "location": {
+    "city": "深圳",
+    "district": "南山区"
+  }
+}

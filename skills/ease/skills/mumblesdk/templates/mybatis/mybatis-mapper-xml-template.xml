@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+MyBatis Mapper XML 模板（符合 MumbleSDK 规范）
+
+关键强制规范：
+- 禁止使用 select *
+- 必须提供 BaseResultMap 与 Base_Column_List
+- 所有 #{...} 参数必须声明 jdbcType
+- WHERE 条件必须明确（使用 <where> 或显式 where）
+- 更新语句优先使用选择性更新（<set> 动态列）
+- 删除优先使用软删除（保留审计字段）
+- 批量插入使用 <foreach> 并控制批次大小
+
+使用说明：
+- 将 namespace、type、列名与属性替换为你的项目包名与实体字段
+- 与 DAO/Mapper 接口方法签名严格对齐（详见 templates/mybatis/mybatis-mapper-interface.md）
+- 根据数据库方言替换 CURRENT_TIMESTAMP/limit 语法等
+-->
+<mapper namespace="com.yourcompany.yourapp.mapper.ActivityInfoMapper">
+
+  <!-- 基础映射：实体字段与列的对应关系 -->
+  <resultMap id="BaseResultMap" type="com.yourcompany.yourapp.pojo.dto.ActivityInfoDTO">
+    <id column="activity_id"    jdbcType="VARCHAR"   property="activityId"/>
+    <result column="activity_name" jdbcType="VARCHAR" property="activityName"/>
+    <result column="status"     jdbcType="VARCHAR"   property="status"/>
+    <result column="deleted"    jdbcType="INTEGER"   property="deleted"/>
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+  </resultMap>
+
+  <!-- 基础列清单：所有查询统一引用 -->
+  <sql id="Base_Column_List">
+    activity_id, activity_name, status, deleted, created_time, updated_time
+  </sql>
+
+  <!-- 主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="string">
+    SELECT
+      <include refid="Base_Column_List"/>
+    FROM activity_info
+    WHERE activity_id = #{activityId, jdbcType=VARCHAR}
+      AND deleted = 0
+    LIMIT 1
+  </select>
+
+  <!-- 条件查询（示例） -->
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.yourcompany.yourapp.pojo.condition.ActivityInfoCondition">
+    SELECT
+      <include refid="Base_Column_List"/>
+    FROM activity_info
+    <where>
+      deleted = 0
+      <if test="activityId != null and activityId != ''">
+        AND activity_id = #{activityId, jdbcType=VARCHAR}
+      </if>
+      <if test="activityName != null and activityName != ''">
+        AND activity_name LIKE CONCAT('%', #{activityName, jdbcType=VARCHAR}, '%')
+      </if>
+      <if test="status != null and status != ''">
+        AND status = #{status, jdbcType=VARCHAR}
+      </if>
+      <if test="startTime != null">
+        AND created_time &gt;= #{startTime, jdbcType=TIMESTAMP}
+      </if>
+      <if test="endTime != null">
+        AND created_time &lt;= #{endTime, jdbcType=TIMESTAMP}
+      </if>
+    </where>
+    <if test="orderBy != null and orderBy != ''">
+      ORDER BY ${orderBy} <!-- 注意：orderBy 需严格白名单校验，避免 SQL 注入 -->
+    </if>
+    <if test="limit != null and limit &gt; 0">
+      LIMIT #{limit, jdbcType=INTEGER}
+    </if>
+    <if test="offset != null and offset &gt;= 0">
+      OFFSET #{offset, jdbcType=INTEGER}
+    </if>
+  </select>
+
+  <!-- 条件计数 -->
+  <select id="countByCondition" resultType="int" parameterType="com.yourcompany.yourapp.pojo.condition.ActivityInfoCondition">
+    SELECT COUNT(1)
+    FROM activity_info
+    <where>
+      deleted = 0
+      <if test="activityId != null and activityId != ''">
+        AND activity_id = #{activityId, jdbcType=VARCHAR}
+      </if>
+      <if test="activityName != null and activityName != ''">
+        AND activity_name LIKE CONCAT('%', #{activityName, jdbcType=VARCHAR}, '%')
+      </if>
+      <if test="status != null and status != ''">
+        AND status = #{status, jdbcType=VARCHAR}
+      </if>
+      <if test="startTime != null">
+        AND created_time &gt;= #{startTime, jdbcType=TIMESTAMP}
+      </if>
+      <if test="endTime != null">
+        AND created_time &lt;= #{endTime, jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </select>
+
+  <!-- 选择性插入 -->
+  <insert id="insertSelective" parameterType="com.yourcompany.yourapp.pojo.dto.ActivityInfoDTO">
+    INSERT INTO activity_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="activityId != null">activity_id,</if>
+      <if test="activityName != null">activity_name,</if>
+      <if test="status != null">status,</if>
+      deleted,
+      created_time,
+      updated_time
+    </trim>
+    <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+      <if test="activityId != null">#{activityId, jdbcType=VARCHAR},</if>
+      <if test="activityName != null">#{activityName, jdbcType=VARCHAR},</if>
+      <if test="status != null">#{status, jdbcType=VARCHAR},</if>
+      0,
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
+    </trim>
+  </insert>
+
+  <!-- 批量插入（注意批次大小与事务边界） -->
+  <insert id="insertBatch" parameterType="java.util.List">
+    INSERT INTO activity_info (
+      activity_id, activity_name, status, deleted, created_time, updated_time
+    )
+    VALUES
+    <foreach collection="list" item="item" separator=",">
+      (
+        #{item.activityId, jdbcType=VARCHAR},
+        #{item.activityName, jdbcType=VARCHAR},
+        #{item.status, jdbcType=VARCHAR},
+        0,
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+      )
+    </foreach>
+  </insert>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective" parameterType="com.yourcompany.yourapp.pojo.dto.ActivityInfoDTO">
+    UPDATE activity_info
+    <set>
+      <if test="activityName != null">activity_name = #{activityName, jdbcType=VARCHAR},</if>
+      <if test="status != null">status = #{status, jdbcType=VARCHAR},</if>
+      updated_time = CURRENT_TIMESTAMP
+    </set>
+    WHERE activity_id = #{activityId, jdbcType=VARCHAR}
+      AND deleted = 0
+  </update>
+
+  <!-- 全量更新（谨慎使用） -->
+  <update id="updateByPrimaryKey" parameterType="com.yourcompany.yourapp.pojo.dto.ActivityInfoDTO">
+    UPDATE activity_info
+    SET
+      activity_name = #{activityName, jdbcType=VARCHAR},
+      status = #{status, jdbcType=VARCHAR},
+      updated_time = CURRENT_TIMESTAMP
+    WHERE activity_id = #{activityId, jdbcType=VARCHAR}
+      AND deleted = 0
+  </update>
+
+  <!-- 软删除 -->
+  <update id="softDeleteByPrimaryKey" parameterType="string">
+    UPDATE activity_info
+    SET deleted = 1,
+        updated_time = CURRENT_TIMESTAMP
+    WHERE activity_id = #{activityId, jdbcType=VARCHAR}
+      AND deleted = 0
+  </update>
+
+  <!-- 按状态查询最近记录（示例） -->
+  <select id="selectRecentByStatus" resultMap="BaseResultMap">
+    SELECT
+      <include refid="Base_Column_List"/>
+    FROM activity_info
+    WHERE status = #{status, jdbcType=VARCHAR}
+      AND created_time BETWEEN #{startTime, jdbcType=TIMESTAMP} AND #{endTime, jdbcType=TIMESTAMP}
+      AND deleted = 0
+    ORDER BY created_time DESC
+    LIMIT #{limit, jdbcType=INTEGER}
+  </select>
+
+</mapper>

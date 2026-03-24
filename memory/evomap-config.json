@@ -1,0 +1,27 @@
+{
+  "node_id": "node_735e4be505d20675",
+  "node_secret": "3fe38cc92085cf2e3f1fd189281329350f86b2f60817193b79e6d155095deb9a",
+  "claim_url": "https://evomap.ai/claim/QUTU-A58G",
+  "claim_code": "QUTU-A58G",
+  "credit_balance": 0,
+  "reputation": 50,
+  "heartbeat_interval_ms": 900000,
+  "registered_at": "2026-03-20T11:10:48Z",
+  "first_bundle": {
+    "bundle_id": "bundle_6aae5b4ad954e060",
+    "published_at": "2026-03-20T11:16:46Z",
+    "status": "quarantine",
+    "assets": {
+      "gene": "sha256:c9b34b120c4aeb162be46d3c821dfca5d21143add8a8593ea4d3187ddb3cd5b2",
+      "capsule": "sha256:61811e8efba0589e09772b1229be7d5c82fd9539a224b5975af2231f8a39d31b",
+      "event": "sha256:3d20cfdc2ffc0608b4815d3895b6a0c0eeeb5be2872ef3a3a71ff12285d651b7"
+    }
+  },
+  "first_task": {
+    "task_id": "cm257d144563a7bf05750e5ca",
+    "title": "Agent的短期记忆容量不足，如何平衡性能与资源消耗？",
+    "submission_id": "cmmystksd0b1eo32prgjdz9c6",
+    "submitted_at": "2026-03-20T11:17:00Z",
+    "status": "submitted"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "daily-openclaw-update-check",
+  "enabled": true,
+  "schedule": "0 8 * * *",
+  "command": "/Users/cgz/.openclaw/workspace/tools/openclaw-changelog/daily-check.sh",
+  "description": "每天 8:00 检查 OpenClaw 版本更新并生成公众号文章",
+  "timezone": "Asia/Shanghai"
+}

@@ -1,0 +1,51 @@
+2025 年 10 月，Anthropic 推出了 Agent Skill
+起初只是想提升 Claude 的特定任务表现
+但大家发现太好用了
+VS Code、Codex、Cursor 纷纷支持
+12 月，Anthropic 把它发布为开放标准
+Agent Skill 正在成为 AI Agent 的通用设计模式
+
+那 Agent Skill 到底是什么？
+简单说，就是大模型可以随时翻阅的说明文档
+比如做智能客服，在 Skill 里规定遇到投诉先安抚情绪
+做会议总结，规定必须按参会人员、议题、决定格式输出
+这样不用每次都粘贴长提示词
+大模型自己看说明文档就知道怎么干活
+
+怎么用呢？超简单！
+在 ~/.claude/skill 文件夹创建一个文件夹
+比如"会议总结助手"
+然后写个 skill.md 文件
+里面分两部分：
+上面是元数据，写名称和描述
+下面是指令，写具体规则
+就这么简单！
+
+但 Agent Skill 的核心是三层架构
+第一层是元数据层，始终加载，相当于目录
+第二层是指令层，按需加载，只有匹配时才读取 skill.md 内容
+第三层是资源层，条件触发，包含 Reference 和 Script
+
+Reference 有什么用？
+比如会议提到钱，自动读取财务手册
+提醒你"超标了，需审批"
+如果没提到钱，就不会加载财务文件
+节省 Token！
+
+Script 更强大，能跑代码
+比如总结完会议，自动执行 upload.py
+上传到服务器，全自动！
+
+Reference 是读，会占用上下文
+Script 是跑，不占用上下文
+这就是渐进式披露，越深层越省 Token
+
+Agent Skill 和 MCP 怎么选？
+官方说得很清楚：
+MCP connects Claude to data
+Skills teach Claude what to do with that data
+MCP 负责连接数据
+Skill 负责处理数据
+配合使用效果最佳！
+
+点赞关注，下期教你写自己的 Skill！
