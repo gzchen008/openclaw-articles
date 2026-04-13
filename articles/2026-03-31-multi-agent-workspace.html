@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw 多Agent多Workspace实战：让AI团队协同工作</title>
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.8;
+  color: #333;
+  padding: 20px;
+  max-width: 100%;
+}
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 24px 0 16px 0;
+  color: #000;
+}
+h2 {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 20px 0 12px 0;
+  color: #000;
+}
+h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 16px 0 8px 0;
+  color: #000;
+}
+p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+pre {
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14px;
+}
+strong {
+  font-weight: bold;
+  color: #000;
+}
+em {
+  font-style: italic;
+}
+hr {
+  border: none;
+  border-top: 1px solid #e5e5e5;
+  margin: 24px 0;
+}
+</style>
+</head>
+<body>
+
+<h1>OpenClaw 多Agent多Workspace实战：让AI团队协同工作</h1>
+
+<p>一个 AI 助手不够用？那就来一支 AI 团队！</p>
+
+<p>今天教你用 OpenClaw 搭建<strong>多 Agent 多 Workspace</strong> 架构，让你的 AI 助手变成 AI 团队！</p>
+
+<hr/>
+
+<h2>一、什么是多 Agent 多 Workspace？</h2>
+
+<h3>单 Agent 的痛点</h3>
+
+<p>你是不是遇到过这些问题：</p>
+
+<p style="padding-left: 20px;">• ❌ <strong>权限混乱</strong>：AI 既能读写文件，又能执行命令，还能发消息，太危险了</p>
+<p style="padding-left: 20px;">• ❌ <strong>任务冲突</strong>：写代码的 AI 和发通知的 AI 争抢资源</p>
+<p style="padding-left: 20px;">• ❌ <strong>数据隔离</strong>：个人助理和工作助理混在一起，隐私堪忧</p>
+<p style="padding-left: 20px;">• ❌ <strong>性能瓶颈</strong>：一个 AI 处理所有任务，响应慢</p>
+
+<h3>多 Agent 多 Workspace 的解决方案</h3>
+
+<p><strong>多 Agent</strong>：</p>
+<p style="padding-left: 20px;">• 每个 Agent 有独立身份和权限</p>
+<p style="padding-left: 20px;">• 不同 Agent 负责不同任务</p>
+<p style="padding-left: 20px;">• Agent 之间可以协作</p>
+
+<p><strong>多 Workspace</strong>：</p>
+<p style="padding-left: 20px;">• 每个 Agent 有独立工作空间</p>
+<p style="padding-left: 20px;">• 数据和配置完全隔离</p>
+<p style="padding-left: 20px;">• 互不干扰，安全可控</p>
+
+<hr/>
+
+<h2>二、OpenClaw 的多 Agent 架构</h2>
+
+<h3>核心概念</h3>
+
+<p>OpenClaw 支持 <strong>3 种 Agent 类型</strong>：</p>
+
+<h4>1️⃣ Main Agent（主智能体）</h4>
+
+<p><strong>角色</strong>：你的私人助理<br/>
+<strong>特点</strong>：</p>
+<p style="padding-left: 20px;">• 完全权限（读写、执行、网络）</p>
+<p style="padding-left: 20px;">• 访问你的所有数据</p>
+<p style="padding-left: 20px;">• 响应你的所有消息</p>
+
+<p><strong>配置示例</strong>：</p>
+<pre><code>{
+  "id": "main",
+  "default": true,
+  "workspace": "~/.openclaw/workspace",
+  "sandbox": { "mode": "off" }
+}</code></pre>
+
+<h4>2️⃣ Specialized Agent（专用智能体）</h4>
+
+<p><strong>角色</strong>：专项任务专家<br/>
+<strong>特点</strong>：</p>
+<p style="padding-left: 20px;">• 受限权限（只读、仅消息等）</p>
+<p style="padding-left: 20px;">• 独立工作空间</p>
+<p style="padding-left: 20px;">• 绑定特定渠道（群聊、频道）</p>
+
+<p><strong>配置示例</strong>：</p>
+<pre><code>{
+  "id": "family",
+  "name": "Family Bot",
+  "workspace": "~/.openclaw/workspace-family",
+  "sandbox": { "mode": "all", "scope": "agent" },
+  "tools": {
+    "allow": ["read"],
+    "deny": ["exec", "write", "edit"]
+  }
+}</code></pre>
+
+<h4>3️⃣ Subagent（子智能体）</h4>
+
+<p><strong>角色</strong>：临时任务执行者<br/>
+<strong>特点</strong>：</p>
+<p style="padding-left: 20px;">• 从主 Agent 派生</p>
+<p style="padding-left: 20px;">• 执行完成后自动报告结果</p>
+<p style="padding-left: 20px;">• 后台运行，不阻塞主流程</p>
+
+<p><strong>使用场景</strong>：</p>
+<p style="padding-left: 20px;">• 长时间任务（代码审查、数据分析）</p>
+<p style="padding-left: 20px;">• 并行任务（同时搜索多个来源）</p>
+<p style="padding-left: 20px;">• 隔离任务（测试危险命令）</p>
+
+<hr/>
+
+<h2>三、实战案例：打造你的 AI 团队</h2>
+
+<h3>案例1：个人 + 工作双助理</h3>
+
+<p><strong>需求</strong>：</p>
+<p style="padding-left: 20px;">• 个人助理：处理私事，完全权限</p>
+<p style="padding-left: 20px;">• 工作助理：处理工作，受限权限</p>
+
+<p><strong>配置</strong>：</p>
+<pre><code>{
+  "agents": {
+    "list": [
+      {
+        "id": "personal",
+        "default": true,
+        "workspace": "~/.openclaw/workspace-personal",
+        "sandbox": { "mode": "off" },
+        "tools": { "profile": "default" }
+      },
+      {
+        "id": "work",
+        "workspace": "~/.openclaw/workspace-work",
+        "sandbox": {
+          "mode": "all",
+          "scope": "shared",
+          "workspaceRoot": "/tmp/work-sandboxes"
+        },
+        "tools": {
+          "allow": ["read", "write", "exec"],
+          "deny": ["browser", "gateway"]
+        }
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "agentId": "work",
+      "match": {
+        "provider": "feishu",
+        "accountId": "*",
+        "peer": { "kind": "group", "id": "oc_work_group" }
+      }
+    }
+  ]
+}</code></pre>
+
+<p><strong>效果</strong>：</p>
+<p style="padding-left: 20px;">• 飞书群聊 → 工作助理（沙箱隔离）</p>
+<p style="padding-left: 20px;">• 私聊 → 个人助理（完全权限）</p>
+
+<hr/>
+
+<h3>案例2：客服 + 销售双机器人</h3>
+
+<p><strong>需求</strong>：</p>
+<p style="padding-left: 20px;">• 客服机器人：回答常见问题，只读权限</p>
+<p style="padding-left: 20px;">• 销售机器人：跟进客户，可以发消息</p>
+
+<p><strong>配置</strong>：</p>
+<pre><code>{
+  "agents": {
+    "list": [
+      {
+        "id": "support",
+        "workspace": "~/.openclaw/workspace-support",
+        "sandbox": { "mode": "all" },
+        "tools": {
+          "profile": "messaging",
+          "allow": ["slack"]
+        }
+      },
+      {
+        "id": "sales",
+        "workspace": "~/.openclaw/workspace-sales",
+        "sandbox": { "mode": "off" },
+        "tools": {
+          "allow": ["read", "sessions_send", "message"],
+          "deny": ["exec", "write"]
+        }
+      }
+    ]
+  }
+}</code></pre>
+
+<hr/>
+
+<h3>案例3：使用子智能体并行处理</h3>
+
+<p><strong>场景</strong>：同时搜索多个技术文档</p>
+
+<p><strong>命令</strong>：</p>
+<pre><code>/subagents spawn main "搜索 React 18 新特性" --model glm-5
+/subagents spawn main "搜索 Vue 3.4 更新" --model glm-5
+/subagents spawn main "搜索 Next.js 14 功能" --model glm-5</code></pre>
+
+<p><strong>效果</strong>：</p>
+<p style="padding-left: 20px;">• 3 个子智能体并行搜索</p>
+<p style="padding-left: 20px;">• 主智能体继续响应用户</p>
+<p style="padding-left: 20px;">• 搜索完成后自动汇总结果</p>
+
+<hr/>
+
+<h2>四、多 Agent 协作模式</h2>
+
+<h3>模式1：路由分发</h3>
+
+<p><strong>场景</strong>：根据消息来源路由到不同 Agent</p>
+
+<p><strong>配置</strong>：</p>
+<pre><code>{
+  "bindings": [
+    {
+      "agentId": "personal",
+      "match": { "provider": "whatsapp", "accountId": "*" }
+    },
+    {
+      "agentId": "work",
+      "match": { "provider": "feishu", "accountId": "*" }
+    },
+    {
+      "agentId": "support",
+      "match": { "provider": "discord", "accountId": "*" }
+    }
+  ]
+}</code></pre>
+
+<p><strong>流程</strong>：</p>
+<p style="padding-left: 20px;">1. WhatsApp 消息 → personal Agent</p>
+<p style="padding-left: 20px;">2. 飞书消息 → work Agent</p>
+<p style="padding-left: 20px;">3. Discord 消息 → support Agent</p>
+
+<hr/>
+
+<h3>模式2：层级协作</h3>
+
+<p><strong>场景</strong>：主 Agent 调度子 Agent</p>
+
+<p><strong>流程</strong>：</p>
+<pre><code>用户请求
+   ↓
+Main Agent（决策）
+   ↓
+   ├→ Subagent A（执行任务1）
+   ├→ Subagent B（执行任务2）
+   └→ Subagent C（执行任务3）
+   ↓
+汇总结果返回用户</code></pre>
+
+<p><strong>优势</strong>：</p>
+<p style="padding-left: 20px;">• 主 Agent 专注决策</p>
+<p style="padding-left: 20px;">• 子 Agent 并行执行</p>
+<p style="padding-left: 20px;">• 结果自动汇总</p>
+
+<hr/>
+
+<h3>模式3：技能分工</h3>
+
+<p><strong>场景</strong>：不同 Agent 负责不同技能</p>
+
+<p><strong>配置</strong>：</p>
+<pre><code>{
+  "agents": {
+    "list": [
+      {
+        "id": "coder",
+        "tools": { "profile": "coding" }
+      },
+      {
+        "id": "writer",
+        "tools": { "profile": "content" }
+      },
+      {
+        "id": "analyst",
+        "tools": { "profile": "analytics" }
+      }
+    ]
+  }
+}</code></pre>
+
+<p><strong>效果</strong>：</p>
+<p style="padding-left: 20px;">• coder Agent：代码生成、调试</p>
+<p style="padding-left: 20px;">• writer Agent：内容创作、翻译</p>
+<p style="padding-left: 20px;">• analyst Agent：数据分析、报表</p>
+
+<hr/>
+
+<h2>五、安全最佳实践</h2>
+
+<h3>1️⃣ 沙箱隔离</h3>
+
+<p><strong>原则</strong>：不受信任的 Agent 必须沙箱隔离</p>
+
+<p><strong>配置</strong>：</p>
+<pre><code>{
+  "sandbox": {
+    "mode": "all",        // 所有操作都在沙箱
+    "scope": "agent",     // 每个 Agent 独立容器
+    "docker": {
+      "image": "openclaw/sandbox:latest"
+    }
+  }
+}</code></pre>
+
+<hr/>
+
+<h3>2️⃣ 工具限制</h3>
+
+<p><strong>原则</strong>：最小权限原则</p>
+
+<p><strong>只读 Agent</strong>：</p>
+<pre><code>{
+  "tools": {
+    "allow": ["read"],
+    "deny": ["exec", "write", "edit", "process"]
+  }
+}</code></pre>
+
+<p><strong>仅消息 Agent</strong>：</p>
+<pre><code>{
+  "tools": {
+    "allow": ["sessions_send", "message"],
+    "deny": ["exec", "write", "read"]
+  }
+}</code></pre>
+
+<hr/>
+
+<h3>3️⃣ 认证隔离</h3>
+
+<p><strong>原则</strong>：每个 Agent 独立认证</p>
+
+<p><strong>路径</strong>：</p>
+<pre><code>~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json</code></pre>
+
+<p><strong>注意</strong>：</p>
+<p style="padding-left: 20px;">• 凭证不共享</p>
+<p style="padding-left: 20px;">• 敏感数据隔离</p>
+<p style="padding-left: 20px;">• 定期轮换密钥</p>
+
+<hr/>
+
+<h2>六、常见问题</h2>
+
+<h3>Q1：Agent 之间如何通信？</h3>
+
+<p><strong>A</strong>：使用 <code>sessions_send</code> 工具：</p>
+<pre><code>sessions_send --session-key "agent:work:main" --message "任务完成"</code></pre>
+
+<h3>Q2：如何查看子智能体状态？</h3>
+
+<p><strong>A</strong>：使用 <code>/subagents</code> 命令：</p>
+<pre><code>/subagents list      # 列出所有子智能体
+/subagents log #1    # 查看日志
+/subagents kill #1   # 终止运行</code></pre>
+
+<h3>Q3：如何监控多 Agent 系统？</h3>
+
+<p><strong>A</strong>：使用 <code>openclaw agents</code> 命令：</p>
+<pre><code>openclaw agents list --bindings    # 查看 Agent 绑定
+openclaw status                     # 查看运行状态</code></pre>
+
+<hr/>
+
+<h2>七、总结：多 Agent 多 Workspace 的价值</h2>
+
+<h3>✅ 安全性</h3>
+
+<p style="padding-left: 20px;">• 权限隔离</p>
+<p style="padding-left: 20px;">• 沙箱保护</p>
+<p style="padding-left: 20px;">• 认证分离</p>
+
+<h3>✅ 效率</h3>
+
+<p style="padding-left: 20px;">• 并行处理</p>
+<p style="padding-left: 20px;">• 专项专精</p>
+<p style="padding-left: 20px;">• 资源优化</p>
+
+<h3>✅ 灵活性</h3>
+
+<p style="padding-left: 20px;">• 动态扩容</p>
+<p style="padding-left: 20px;">• 按需配置</p>
+<p style="padding-left: 20px;">• 场景定制</p>
+
+<h3>✅ 可维护性</h3>
+
+<p style="padding-left: 20px;">• 职责清晰</p>
+<p style="padding-left: 20px;">• 易于调试</p>
+<p style="padding-left: 20px;">• 独立升级</p>
+
+<hr/>
+
+<h2>写在最后</h2>
+
+<p>OpenClaw 的多 Agent 多 Workspace 架构，让你的 AI 助手从"一个人"变成"一支团队"。</p>
+
+<p><strong>核心思想</strong>：</p>
+<p style="padding-left: 20px;">• 专人专岗：每个 Agent 专注自己的任务</p>
+<p style="padding-left: 20px;">• 权限最小化：只给必要的权限</p>
+<p style="padding-left: 20px;">• 隔离运行：沙箱保护，互不干扰</p>
+
+<p><strong>下一步</strong>：</p>
+<p style="padding-left: 20px;">1. 规划你的 Agent 团队（需要几个 Agent？每个负责什么？）</p>
+<p style="padding-left: 20px;">2. 配置 Workspace 隔离</p>
+<p style="padding-left: 20px;">3. 设置工具权限</p>
+<p style="padding-left: 20px;">4. 测试协作流程</p>
+
+<p>记住：好的架构不是一次设计完成，而是在实践中不断优化！</p>
+
+<hr/>
+
+<p><em>你的 AI 团队正在等你召唤。开始构建你的多 Agent 王国吧！</em> 🏰</p>
+
+</body>
+</html>

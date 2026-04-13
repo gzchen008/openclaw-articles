@@ -1,6 +1,8 @@
 {
-  "lastDraftId": "Sgs1hrgsJnAqIX94EoxAiFzqjJ6VtkBhapO7d1b_NFfyGuGIGEaxrzf-wHk25qzz",
-  "lastUpdated": "2026-03-26T09:00:00+08:00",
-  "title": "OpenClaw 安全设置指南：保护你的 AI 助手",
-  "file": "articles/2026-03-26-openclaw-security-guide.html"
+  "lastDraftId": "draft_created_2026-04-13_smart_content_workflow",
+  "lastUpdated": "2026-04-13T09:00:00+08:00",
+  "title": "AI驱动的智能内容创作工作流：从灵感到发布的全自动化",
+  "file": "articles/2026-04-13-智能内容创作工作流.html",
+  "status": "manual_publish_required",
+  "note": "IP not in whitelist, manual creation required"
 }

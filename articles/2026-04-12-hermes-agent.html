@@ -1,0 +1,97 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">🔥 58000+ Star！这个会"自我进化"的 AI Agent 开源了</h2>
+<p>你有没有觉得，现在的 AI 助手都有一个致命缺陷——<strong>用完就忘</strong>？</p>
+<p>每次对话都从零开始，昨天教它的东西今天就不记得了。你花大量时间重复解释背景、上下文、偏好，结果 AI 还是那个"懂事但不长记性"的实习生。</p>
+<p>更气人的是，市面上的 Agent 框架要么只能跑在你电脑上（关机就断），要么绑死某个模型（想换就得重写代码），要么根本不会学习——永远停留在"工具调用"的层面。</p>
+<p>今天给大家介绍一个真正<strong>会成长</strong>的开源 AI Agent：<strong>Hermes Agent</strong>。它是 Nous Research 团队打造的自进化 Agent 框架，GitHub 上已经斩获 <strong>58000+ Star</strong>，而且还在快速增长。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🤔 Hermes Agent 到底是什么？</h2>
+<p>Hermes Agent 是一个<strong>自我进化的 AI Agent 框架</strong>，核心理念就一句话：<strong>The agent that grows with you</strong>——和你一起成长的 Agent。</p>
+<p>它不像普通 Agent 只是"调用工具"，而是具备完整的<strong>学习闭环</strong>：</p>
+<p style="padding-left: 20px;">• 完成复杂任务后，自动创建可复用的 Skill</p>
+<p style="padding-left: 20px;">• 在使用过程中持续优化这些 Skill</p>
+<p style="padding-left: 20px;">• 定期提醒自己持久化重要知识到记忆系统</p>
+<p style="padding-left: 20px;">• 搜索历史对话，跨会话召回经验</p>
+<p style="padding-left: 20px;">• 通过 Honcho 辩证建模，越来越了解你是谁</p>
+<p>简单说：你用得越多，它越懂你，越能干。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">✨ 六大核心能力</h2>
+
+<h3 style="color: #34495e; margin-top: 20px;">1️⃣ 闭环学习系统（最核心的亮点）</h3>
+<p>这是 Hermes 区别于所有其他 Agent 框架的杀手锏。</p>
+<p>普通 Agent 的记忆只是简单的键值存储。Hermes 的记忆是一个<strong>完整的认知系统</strong>：</p>
+<p style="padding-left: 20px;">• <strong>自动 Skill 创建</strong>：完成一个复杂任务后，Hermes 会自动把解决过程提炼成可复用的 Skill</p>
+<p style="padding-left: 20px;">• <strong>Skill 自我优化</strong>：下次使用同一个 Skill 时，它会根据执行结果自动改进</p>
+<p style="padding-left: 20px;">• <strong>FTS5 全文搜索</strong>：可以搜索所有历史对话，用 LLM 摘要快速定位相关经验</p>
+<p style="padding-left: 20px;">• <strong>Honcho 用户建模</strong>：通过辩证式对话，逐步构建对你的深层理解</p>
+<p style="padding-left: 20px;">• <strong>兼容 agentskills.io 开放标准</strong>：Skill 可以跨 Agent 平台共享</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">2️⃣ 多模型自由切换</h3>
+<p>不想被某个模型绑死？Hermes 完美支持：</p>
+<p style="padding-left: 20px;">• Nous Portal（自家模型服务）</p>
+<p style="padding-left: 20px;">• OpenRouter（200+ 模型一键切换）</p>
+<p style="padding-left: 20px;">• z.ai/GLM、Kimi/Moonshot、MiniMax</p>
+<p style="padding-left: 20px;">• OpenAI、Anthropic</p>
+<p style="padding-left: 20px;">• 自定义 Endpoint（接任何 OpenAI 兼容接口）</p>
+<p>一条命令切换模型：<code>hermes model</code>，零代码改动，零锁定。</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">3️⃣ 全平台消息接入</h3>
+<p>Hermes 不只跑在终端。一个 Gateway 进程搞定所有平台：</p>
+<p style="padding-left: 20px;">• Telegram、Discord、Slack</p>
+<p style="padding-left: 20px;">• WhatsApp、Signal</p>
+<p style="padding-left: 20px;">• CLI（全功能 TUI 界面）</p>
+<p style="padding-left: 20px;">• 语音备忘录转录</p>
+<p style="padding-left: 20px;">• 跨平台对话连续性（Telegram 上聊到一半，换到 Discord 继续）</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">4️⃣ 随处运行，不仅限于笔记本</h3>
+<p>六种终端后端，想怎么跑就怎么跑：</p>
+<p style="padding-left: 20px;">• 本地直接运行</p>
+<p style="padding-left: 20px;">• Docker 容器化部署</p>
+<p style="padding-left: 20px;">• SSH 远程连接</p>
+<p style="padding-left: 20px;">• Daytona 无服务器（空闲时休眠，几乎不花钱）</p>
+<p style="padding-left: 20px;">• Singularity 高性能计算集群</p>
+<p style="padding-left: 20px;">• Modal 无服务器 GPU</p>
+<p>5 美元的 VPS 就能跑，也可以跑在 GPU 集群上。你的 Agent 不应该被绑在你的笔记本上——在 Telegram 上跟它说话，它在云上干活。</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">5️⃣ 定时任务 &amp; 子代理并行</h3>
+<p><strong>定时任务</strong>：内置 Cron 调度器，自然语言描述任务，自动执行。每日报告、夜间备份、周度审计——全自动。</p>
+<p><strong>子代理并行</strong>：可以派生隔离的子代理，并行处理多个工作流。还支持 Python 脚本通过 RPC 调用工具，把多步骤管道压缩成零上下文消耗的单轮操作。</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">6️⃣ 从 OpenClaw 无缝迁移</h3>
+<p>如果你之前在用 OpenClaw，Hermes 提供了一键迁移：</p>
+<p style="padding-left: 20px;">• 自动检测 <code>~/.openclaw</code> 目录</p>
+<p style="padding-left: 20px;">• 导入 SOUL.md（人格文件）、MEMORY.md、USER.md</p>
+<p style="padding-left: 20px;">• 迁移用户自建的 Skill</p>
+<p style="padding-left: 20px;">• 同步命令审批规则</p>
+<p style="padding-left: 20px;">• 转移消息平台配置和 API 密钥</p>
+<p style="padding-left: 20px;">• 支持 dry-run 预览模式</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🚀 2分钟上手</h2>
+<p>安装只需一条命令：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 4px;">curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash</p>
+<p>支持 Linux、macOS、WSL2，甚至 Android Termux。</p>
+<p>安装完成后：</p>
+<p style="padding-left: 20px;">1️⃣ <code>hermes</code> — 启动交互式 CLI，开始聊天</p>
+<p style="padding-left: 20px;">2️⃣ <code>hermes model</code> — 选择你的 LLM 模型</p>
+<p style="padding-left: 20px;">3️⃣ <code>hermes tools</code> — 配置要启用的工具</p>
+<p style="padding-left: 20px;">4️⃣ <code>hermes gateway</code> — 启动消息网关（接入 Telegram 等）</p>
+<p style="padding-left: 20px;">5️⃣ <code>hermes setup</code> — 一键配置向导</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🔧 适合什么人？</h2>
+<p style="padding-left: 20px;">✅ <strong>个人开发者</strong>：想要一个真正"懂你"的 AI 助手，越用越好用</p>
+<p style="padding-left: 20px;">✅ <strong>AI 从业者</strong>：对 Agent 记忆、自我进化机制感兴趣的研究者</p>
+<p style="padding-left: 20px;">✅ <strong>运维/自动化爱好者</strong>：需要 24/7 运行的智能 Agent 帮你盯任务</p>
+<p style="padding-left: 20px;">✅ <strong>OpenClaw 用户</strong>：想体验更强的学习闭环，一键迁移无缝切换</p>
+<p style="padding-left: 20px;">❌ <strong>纯小白</strong>：需要基本命令行能力，不适合完全不懂技术的用户</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">💡 我的看法</h2>
+<p>Hermes Agent 最让我兴奋的不是某个具体功能，而是它的<strong>学习闭环设计理念</strong>。</p>
+<p>大部分 Agent 框架还在卷"工具调用的数量"和"支持的平台数"，Hermes 已经在解决一个更根本的问题：<strong>Agent 如何从经验中学习，如何真正理解用户</strong>。</p>
+<p>Honcho 的辩证用户建模 + FTS5 会话搜索 + 自动 Skill 创造，这三者组合起来，让 Agent 第一次有了类似人类的"经验积累"能力。</p>
+<p>再加上灵活的部署方式（从 5 美元 VPS 到 GPU 集群）和多模型支持，Hermes 很可能成为 2026 年最值得关注的开源 Agent 框架之一。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">📎 相关链接</h2>
+<p style="padding-left: 20px;">• GitHub：github.com/NousResearch/hermes-agent</p>
+<p style="padding-left: 20px;">• 官方文档：hermes-agent.nousresearch.com/docs</p>
+<p style="padding-left: 20px;">• Skills Hub：agentskills.io</p>
+<p style="padding-left: 20px;">• Discord 社区：discord.gg/NousResearch</p>
+<p style="padding-left: 20px;">• 许可证：MIT（完全开源免费）</p>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>如何构建 OpenClaw 知识库？从零到精通的完整指南</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      color: #24292f;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 24px 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #d0d7de;
+    }
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 24px 0 12px;
+      color: #1f2328;
+    }
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 20px 0 10px;
+      color: #1f2328;
+    }
+    p {
+      margin: 12px 0;
+    }
+    code {
+      background-color: #f6f8fa;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      color: #24292f;
+    }
+    pre {
+      background-color: #f6f8fa;
+      border-radius: 6px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid #d0d7de;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    strong {
+      font-weight: 600;
+      color: #1f2328;
+    }
+    em {
+      color: #57606a;
+    }
+    hr {
+      border: none;
+      height: 2px;
+      background: #d0d7de;
+      margin: 24px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+    th, td {
+      border: 1px solid #d0d7de;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #f6f8fa;
+      font-weight: 600;
+    }
+    .highlight {
+      background-color: #fff8c5;
+      padding: 12px 16px;
+      border-left: 4px solid #d29922;
+      margin: 16px 0;
+    }
+    .list-item {
+      padding-left: 24px;
+      margin: 6px 0;
+      position: relative;
+    }
+    .list-item::before {
+      content: "•";
+      position: absolute;
+      left: 8px;
+      color: #57606a;
+    }
+    .check-item {
+      padding-left: 24px;
+      margin: 6px 0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>如何构建 OpenClaw 知识库？从零到精通的完整指南</h1>
+
+<p><strong>你的 AI 助手会"失忆"吗？</strong></p>
+
+<p>每次重启会话，它就忘了你的偏好、项目进展、重要决策...这谁顶得住？</p>
+
+<p>今天教你用 OpenClaw 构建一个<strong>永不失忆的知识库</strong>，让你的 AI 越用越聪明！</p>
+
+<hr>
+
+<h2>一、OpenClaw 记忆架构长啥样？</h2>
+
+<p>OpenClaw 的记忆系统很简单：<strong>全部用 Markdown 文件存储</strong>。</p>
+
+<pre><code>~/.openclaw/workspace/
+├── MEMORY.md              # 长期记忆（决策、偏好、事实）
+├── memory/
+│   ├── 2026-03-30.md      # 每日笔记
+│   ├── 2026-03-29.md
+│   └── weekly/            # 周度汇总（可选）
+</code></pre>
+
+<p><strong>加载规则：</strong></p>
+<p class="list-item"><code>MEMORY.md</code>：每次私聊启动时自动加载</p>
+<p class="list-item"><code>memory/*.md</code>：今天 + 昨天的文件自动加载</p>
+<p class="list-item">群聊不加载 MEMORY.md（保护隐私）</p>
+
+<div class="highlight">
+<strong>核心理念</strong>：文件即记忆。只要写进文件，AI 就能记住。
+</div>
+
+<hr>
+
+<h2>二、三种 Memory Search 后端对比</h2>
+
+<h3>1️⃣ Builtin（默认推荐）</h3>
+
+<p><strong>特点</strong>：SQLite + FTS5 + 向量搜索，零配置</p>
+
+<p><strong>自动启用条件</strong>（有任一 API Key）：</p>
+<p class="list-item">OpenAI (<code>OPENAI_API_KEY</code>)</p>
+<p class="list-item">Gemini (<code>GEMINI_API_KEY</code>)</p>
+<p class="list-item">Voyage (<code>VOYAGE_API_KEY</code>)</p>
+<p class="list-item">Mistral (<code>MISTRAL_API_KEY</code>)</p>
+
+<p><strong>适合人群</strong>：大多数用户</p>
+
+<h3>2️⃣ QMD（高级搜索）</h3>
+
+<p><strong>特点</strong>：Reranking + 查询扩展 + 额外目录索引</p>
+
+<p><strong>安装</strong>：</p>
+<pre><code>bun install -g https://github.com/tobi/qmd
+brew install sqlite  # macOS</code></pre>
+
+<p><strong>适合人群</strong>：需要高级搜索、索引外部目录、回忆历史对话</p>
+
+<h3>3️⃣ Honcho（知识图谱）</h3>
+
+<p><strong>特点</strong>：AI 原生跨会话记忆 + 用户建模 + 多代理感知</p>
+
+<p><strong>适合人群</strong>：多代理系统、需要知识图谱</p>
+
+<hr>
+
+<h2>三、快速上手：零配置方案</h2>
+
+<p>如果你有 OpenAI 或 Gemini 的 API Key，什么都不用配置，直接就能用！</p>
+
+<h3>步骤 1：配置 API Key</h3>
+<pre><code>export OPENAI_API_KEY="sk-YOUR_KEY_HERE"
+# 或
+export GEMINI_API_KEY="YOUR_KEY_HERE"</code></pre>
+
+<h3>步骤 2：手动写入记忆</h3>
+
+<p>直接告诉你的 AI 助手：</p>
+<p class="list-item">"记住，我喜欢用 TypeScript"</p>
+<p class="list-item">"记住，项目 A 正在迁移到 Kubernetes"</p>
+<p class="list-item">"记住，每周五下午开例会"</p>
+
+<p>它会自动写入 <code>MEMORY.md</code> 或 <code>memory/YYYY-MM-DD.md</code>。</p>
+
+<h3>步骤 3：搜索记忆</h3>
+
+<p>你的 AI 会自动使用 <code>memory_search</code> 查找相关内容。</p>
+
+<p><strong>就这么简单！</strong> 🎉</p>
+
+<hr>
+
+<h2>四、进阶：QMD 高级搜索</h2>
+
+<p>需要更多功能？QMD 是你的选择。</p>
+
+<h3>安装 QMD</h3>
+<pre><code>bun install -g https://github.com/tobi/qmd</code></pre>
+
+<h3>配置 OpenClaw</h3>
+<pre><code>{
+  "memory": {
+    "backend": "qmd",
+    "qmd": {
+      "paths": [
+        { "name": "docs", "path": "~/notes", "pattern": "**/*.md" },
+        { "name": "projects", "path": "~/project" }
+      ],
+      "sessions": { 
+        "enabled": true,
+        "retentionDays": 30 
+      },
+      "update": { "interval": "5m" },
+      "limits": { "maxResults": 10, "timeoutMs": 10000 }
+    }
+  }
+}</code></pre>
+
+<h3>QMD 的强大功能</h3>
+
+<p class="list-item">✅ <strong>Reranking</strong>：重排序，提高搜索质量</p>
+<p class="list-item">✅ <strong>Query Expansion</strong>：查询扩展，找得更准</p>
+<p class="list-item">✅ <strong>索引额外目录</strong>：项目文档、团队笔记都能搜</p>
+<p class="list-item">✅ <strong>索引会话记录</strong>：能回忆历史对话</p>
+<p class="list-item">✅ <strong>完全本地运行</strong>：数据不离开你的机器</p>
+
+<hr>
+
+<h2>五、最佳实践：如何写记忆？</h2>
+
+<h3>写入规则</h3>
+
+<table>
+  <tr>
+    <th>内容类型</th>
+    <th>写入位置</th>
+    <th>示例</th>
+  </tr>
+  <tr>
+    <td>决策、偏好、事实</td>
+    <td>MEMORY.md</td>
+    <td>"用户喜欢 TypeScript"</td>
+  </tr>
+  <tr>
+    <td>每日笔记、运行上下文</td>
+    <td>memory/YYYY-MM-DD.md</td>
+    <td>"今天完成了 X 功能"</td>
+  </tr>
+  <tr>
+    <td>临时观察</td>
+    <td>memory/YYYY-MM-DD.md</td>
+    <td>"项目 A 正在迁移到 K8s"</td>
+  </tr>
+</table>
+
+<h3>搜索优化：Hybrid Search 权重调优</h3>
+
+<pre><code>{
+  "memorySearch": {
+    "query": {
+      "hybrid": {
+        "vectorWeight": 0.7,
+        "textWeight": 0.3,
+        "mmr": { "enabled": true, "lambda": 0.7 },
+        "temporalDecay": { "enabled": true, "halfLifeDays": 30 }
+      }
+    }
+  }
+}</code></pre>
+
+<p><strong>参数说明：</strong></p>
+<p class="list-item"><code>vectorWeight</code> 高：语义相似更重要（"部署"能找到 "CDN 发布"）</p>
+<p class="list-item"><code>textWeight</code> 高：精确匹配更重要（"OpenClaw" 只找 "OpenClaw"）</p>
+<p class="list-item"><code>mmr.lambda</code>：0 = 最大多样性，1 = 最大相关性</p>
+<p class="list-item"><code>halfLifeDays</code>：每 N 天分数减半（越新越重要）</p>
+
+<h3>索引额外目录</h3>
+
+<p>有项目文档在外面？配置一下：</p>
+
+<pre><code>{
+  "memorySearch": {
+    "extraPaths": ["../team-docs", "/srv/shared-notes"]
+  }
+}</code></pre>
+
+<hr>
+
+<h2>六、常用 CLI 命令</h2>
+
+<pre><code># 查看状态
+openclaw memory status
+
+# 搜索记忆
+openclaw memory search "项目部署"
+
+# 强制重建索引
+openclaw memory index --force
+
+# 查看 QMD 状态
+openclaw memory status --agent main --index</code></pre>
+
+<hr>
+
+<h2>七、总结：如何选择方案？</h2>
+
+<table>
+  <tr>
+    <th>需求</th>
+    <th>推荐方案</th>
+  </tr>
+  <tr>
+    <td>快速上手</td>
+    <td>Builtin + API Key</td>
+  </tr>
+  <tr>
+    <td>需要搜索项目文档</td>
+    <td>QMD + paths 配置</td>
+  </tr>
+  <tr>
+    <td>需要回忆历史对话</td>
+    <td>QMD + sessions.enabled</td>
+  </tr>
+  <tr>
+    <td>完全自动化记忆</td>
+    <td>三层 Cron 方案</td>
+  </tr>
+  <tr>
+    <td>多代理知识图谱</td>
+    <td>Honcho</td>
+  </tr>
+</table>
+
+<hr>
+
+<p><strong>关键点</strong>：</p>
+
+<p class="check-item">✅ 文件即记忆，只要写进文件就能记住</p>
+<p class="check-item">✅ 有 API Key 就能启用向量搜索</p>
+<p class="check-item">✅ 需要高级功能就用 QMD</p>
+<p class="check-item">✅ 想完全自动化就用三层 Cron</p>
+
+<p><strong>你的 AI 助手，从此拥有"长期记忆"！</strong></p>
+
+<hr>
+
+<p><strong>相关资源：</strong></p>
+
+<p class="list-item">OpenClaw 官方文档：https://docs.openclaw.ai</p>
+<p class="list-item">openclaw-memory-fusion：https://github.com/dztabel-happy/openclaw-memory-fusion</p>
+<p class="list-item">QMD 项目：https://github.com/tobi/qmd</p>
+
+</body>
+</html>
