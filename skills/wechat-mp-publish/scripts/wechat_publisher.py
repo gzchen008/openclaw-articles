@@ -325,6 +325,40 @@ class WeChatPublisher:
         resp = requests.post(url, data=json_data, headers=headers, timeout=30)
         return resp.json()
     
+    def get_all_drafts(self, max_count: int = 100) -> list:
+        """
+        获取全部草稿（自动分页）
+        
+        Args:
+            max_count: 最多获取多少篇（默认100）
+        
+        Returns:
+            所有草稿列表
+        """
+        all_items = []
+        offset = 0
+        page_size = 20
+        
+        while offset < max_count:
+            data = self.get_draft_list(offset=offset, count=page_size)
+            items = data.get("item", [])
+            
+            if not items:
+                break
+            
+            all_items.extend(items)
+            
+            # 如果返回数量少于 page_size，说明没有更多了
+            if len(items) < page_size:
+                break
+            
+            offset += page_size
+            
+            # 避免请求过快
+            time.sleep(0.5)
+        
+        return all_items
+    
     def delete_draft(self, media_id: str) -> bool:
         """删除草稿"""
         url = f"{self.base_url}/draft/delete?access_token={self.token}"
@@ -378,6 +412,13 @@ def main():
     # list 命令
     list_parser = subparsers.add_parser("list", help="列出草稿")
     list_parser.add_argument("--count", "-n", type=int, default=10, help="数量")
+    
+    # delete 命令
+    delete_parser = subparsers.add_parser("delete", help="删除草稿")
+    delete_parser.add_argument("--media-id", "-m", help="单个草稿 media_id")
+    delete_parser.add_argument("--keep-latest", "-k", type=int, help="保留最新 N 篇，删除其他所有草稿")
+    delete_parser.add_argument("--before-date", "-b", help="删除指定日期之前的草稿（格式：YYYY-MM-DD，如 2026-03-20）")
+    delete_parser.add_argument("--dry-run", action="store_true", help="只显示将要删除的草稿，不实际删除")
     
     args = parser.parse_args()
     
@@ -497,15 +538,144 @@ def main():
             print(f"\n🎉 全部完成!")
         
         elif args.command == "list":
+            from datetime import datetime
             result = publisher.get_draft_list(count=args.count)
             items = result.get("item", [])
             print(f"📋 草稿列表 (共 {result.get('total_count', 0)} 篇)")
             print("-" * 50)
             for item in items:
+                update_time = item.get("update_time", 0)
+                if update_time > 0:
+                    date_str = datetime.fromtimestamp(update_time).strftime("%Y-%m-%d %H:%M")
+                else:
+                    date_str = "未知"
                 for article in item.get("content", {}).get("news_item", []):
-                    print(f"  • {article.get('title')}")
+                    print(f"  • [{date_str}] {article.get('title')}")
                     print(f"    media_id: {item.get('media_id')}")
                     print()
+        
+        elif args.command == "delete":
+            from datetime import datetime
+            
+            if args.media_id:
+                # 删除单个草稿
+                print(f"🗑️  删除草稿: {args.media_id}")
+                success = publisher.delete_draft(args.media_id)
+                if success:
+                    print(f"✅ 删除成功!")
+                else:
+                    print(f"❌ 删除失败!")
+            
+            elif args.before_date:
+                # 按日期删除（删除指定日期之前的草稿）
+                try:
+                    cutoff_date = datetime.strptime(args.before_date, "%Y-%m-%d")
+                except ValueError:
+                    print(f"❌ 日期格式错误，请使用 YYYY-MM-DD 格式（如 2026-03-20）")
+                    return
+                
+                print(f"📋 获取全部草稿（自动分页）...")
+                items = publisher.get_all_drafts(max_count=200)
+                total = len(items)
+                
+                # 筛选要删除的草稿（创建时间早于 cutoff_date）
+                to_delete = []
+                for item in items:
+                    update_time = item.get("update_time", 0)
+                    if update_time > 0:
+                        item_date = datetime.fromtimestamp(update_time)
+                        if item_date < cutoff_date:
+                            to_delete.append(item)
+                
+                print(f"\n📊 统计:")
+                print(f"   总草稿数: {total}")
+                print(f"   截止日期: {args.before_date}")
+                print(f"   将删除: {len(to_delete)} 篇（创建于 {args.before_date} 之前）")
+                
+                if len(to_delete) == 0:
+                    print(f"\n✅ 没有需要删除的草稿")
+                    return
+                
+                if args.dry_run:
+                    print(f"\n⚠️  Dry-run 模式，以下草稿将被删除:")
+                    for i, item in enumerate(to_delete, 1):
+                        update_time = item.get("update_time", 0)
+                        item_date = datetime.fromtimestamp(update_time).strftime("%Y-%m-%d %H:%M")
+                        for article in item.get("content", {}).get("news_item", []):
+                            print(f"  {i}. [{item_date}] {article.get('title')}")
+                            print(f"     media_id: {item.get('media_id')}")
+                    return
+                
+                # 实际删除
+                print(f"\n🗑️  开始删除...")
+                success_count = 0
+                for i, item in enumerate(to_delete, 1):
+                    media_id = item.get("media_id")
+                    try:
+                        update_time = item.get("update_time", 0)
+                        item_date = datetime.fromtimestamp(update_time).strftime("%Y-%m-%d")
+                        title = item.get("content", {}).get("news_item", [{}])[0].get("title", "无标题")
+                        print(f"  [{i}/{len(to_delete)}] [{item_date}] 删除: {title}")
+                        success = publisher.delete_draft(media_id)
+                        if success:
+                            success_count += 1
+                        else:
+                            print(f"     ⚠️  删除失败")
+                        time.sleep(0.5)
+                    except Exception as e:
+                        print(f"     ❌ 错误: {e}")
+                
+                print(f"\n✅ 完成! 成功删除 {success_count}/{len(to_delete)} 篇")
+            
+            elif args.keep_latest:
+                # 批量删除（保留最新 N 篇）
+                print(f"📋 获取草稿列表...")
+                result = publisher.get_draft_list(count=100)
+                items = result.get("item", [])
+                total = len(items)
+                
+                if args.keep_latest >= total:
+                    print(f"✅ 当前草稿数 ({total}) ≤ 保留数 ({args.keep_latest})，无需删除")
+                    return
+                
+                # 要删除的草稿（跳过前 keep_latest 篇）
+                to_delete = items[args.keep_latest:]
+                
+                print(f"\n📊 统计:")
+                print(f"   总草稿数: {total}")
+                print(f"   保留: {args.keep_latest} 篇")
+                print(f"   将删除: {len(to_delete)} 篇")
+                
+                if args.dry_run:
+                    print(f"\n⚠️  Dry-run 模式，以下草稿将被删除:")
+                    for i, item in enumerate(to_delete, 1):
+                        for article in item.get("content", {}).get("news_item", []):
+                            print(f"  {i}. {article.get('title')}")
+                            print(f"     media_id: {item.get('media_id')}")
+                    return
+                
+                # 实际删除
+                print(f"\n🗑️  开始删除...")
+                success_count = 0
+                for i, item in enumerate(to_delete, 1):
+                    media_id = item.get("media_id")
+                    try:
+                        title = item.get("content", {}).get("news_item", [{}])[0].get("title", "无标题")
+                        print(f"  [{i}/{len(to_delete)}] 删除: {title}")
+                        success = publisher.delete_draft(media_id)
+                        if success:
+                            success_count += 1
+                        else:
+                            print(f"     ⚠️  删除失败")
+                        time.sleep(0.5)
+                    except Exception as e:
+                        print(f"     ❌ 错误: {e}")
+                
+                print(f"\n✅ 完成! 成功删除 {success_count}/{len(to_delete)} 篇")
+            
+            else:
+                print("❌ 请指定 --media-id、--keep-latest 或 --before-date")
+                delete_parser.print_help()
     
     except Exception as e:
         print(f"❌ 错误: {e}", file=sys.stderr)

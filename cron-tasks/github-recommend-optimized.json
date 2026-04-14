@@ -1,0 +1,24 @@
+{
+  "id": "github-recommend-optimized",
+  "enabled": true,
+  "schedule": "0 8 * * *",
+  "timezone": "Asia/Shanghai",
+  "agent": "weixin",
+  "model": "zai/glm-4.7-flash",
+  "command": "node /Users/cgz/.openclaw/workspace-weixin/scripts/github-recommend-optimized.js",
+  "description": "每日8:00推荐优质GitHub开源项目",
+  "timeout": 300000,
+  "retryPolicy": {
+    "maxRetries": 2,
+    "retryDelay": 60000
+  },
+  "deduplication": {
+    "enabled": true,
+    "windowHours": 24
+  },
+  "env": {
+    "TARGET_CHANNEL": "feishu",
+    "TARGET_USER": "ou_c8b2454b01e8ab6e8957044ebae17f69",
+    "STATE_FILE": "/Users/cgz/.openclaw/workspace-weixin/memory/github-recommend-state.json"
+  }
+}

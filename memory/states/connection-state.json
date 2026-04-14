@@ -1,0 +1,11 @@
+{
+  "lastSessionAt": "2026-04-13T18:49:00+08:00",
+  "sessionCount": 617,
+  "lastDisconnectReason": "gateway_restart",
+  "notes": "Gateway restart after npm update. Doctor ran: orphan transcripts, missing opus dep, service entrypoint mismatch.",
+  "whatsappStatus": "disconnected",
+  "actionRequired": null,
+  "disconnectHistory": [
+    {"time": "2026-04-13T18:49:00+08:00", "status": "gateway_restart", "notes": "npm update + gateway restart"}
+  ]
+}
