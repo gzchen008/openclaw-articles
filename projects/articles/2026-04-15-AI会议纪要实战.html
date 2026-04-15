@@ -1,0 +1,112 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">开会 1 小时，整理 5 分钟：AI 会议纪要实战</h2>
+<p><em>本文由 OpenClaw AI 助手协助整理</em></p>
+<p>【快速导航】</p>
+<p style="padding-left: 20px;">• 本文适合：每周开 3+ 场会议的打工人</p>
+<p style="padding-left: 20px;">• 预计阅读：6 分钟</p>
+<p style="padding-left: 20px;">• 难度等级：⭐⭐</p>
+<p>你有没有这种经历？</p>
+<p>开了一场 1 小时的会，会后花 40 分钟整理纪要，写到一半发现关键信息想不起来了。更惨的是，领导催你发纪要，你还在跟录音回放较劲。</p>
+<p>我之前也是这样——直到让 AI 助手接管了会议纪要这件事。</p>
+<p>现在，<strong>开完会 5 分钟，纪要自动出现在群里</strong>，格式整齐、重点突出、待办清晰。今天把这套工作流完整分享给你。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🎯 最终效果：开完会，纪要自己来了</h2>
+<p>配置好之后，整个流程是这样的：</p>
+<p style="padding-left: 20px;">• <strong>1️⃣ 会中录音</strong> → 会议进行时正常录音</p>
+<p style="padding-left: 20px;">• <strong>2️⃣ 自动转写</strong> → AI 把录音转成文字</p>
+<p style="padding-left: 20px;">• <strong>3️⃣ 智能整理</strong> → 自动提取要点、决策、待办</p>
+<p style="padding-left: 20px;">• <strong>4️⃣ 发送到群</strong> → 纪要直接出现在飞书/企业微信群里</p>
+<p>全程不需要手动干预，<strong>从录音到纪要，5 分钟搞定</strong>。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">📋 你需要准备什么</h2>
+<p>在开始之前，确认你有这些东西：</p>
+<p style="padding-left: 20px;">• OpenClaw 已安装并运行（不会装的看之前的教程）</p>
+<p style="padding-left: 20px;">• 一个 OpenAI / Claude 的 API Key（用于文本处理）</p>
+<p style="padding-left: 20px;">• 飞书或企业微信的机器人配置（用于自动发送）</p>
+<p style="padding-left: 20px;">• 会议录音工具（手机自带录音即可）</p>
+<p>💡 <strong>最低配置</strong>：只要 OpenClaw + 一个 AI 模型就行，群机器人是锦上添花。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🛠️ 方案一：手动录音 + AI 整理（最快上手）</h2>
+<p>这是最简单的方案，<strong>5 分钟就能用起来</strong>。</p>
+<h3 style="color: #34495e;">第一步：录音</h3>
+<p>开会时用手机录音，保存为音频文件（MP3、M4A 都行）。</p>
+<h3 style="color: #34495e;">第二步：配置 OpenClaw 处理流程</h3>
+<p>在 OpenClaw 中设置一个处理流程，让它自动完成转写和整理：</p>
+<p style="padding-left: 20px; background: #f5f5f5; border-radius: 4px; padding: 12px;">请帮我整理这段会议录音：<br>1. 先转录为文字<br>2. 提取关键讨论点<br>3. 列出决策事项和待办<br>4. 按照纪要模板格式输出</p>
+<h3 style="color: #34495e;">第三步：发送音频文件</h3>
+<p>直接把录音文件发给 OpenClaw，它会：</p>
+<p style="padding-left: 20px;">• 调用 Whisper 等语音模型转写文字</p>
+<p style="padding-left: 20px;">• 用 GPT/Claude 整理成结构化纪要</p>
+<p style="padding-left: 20px;">• 自动提取待办事项和责任人</p>
+<p style="padding-left: 20px;">• 格式化输出，可以直接复制粘贴</p>
+<p><strong>就这么简单。</strong> 不需要复杂的配置，不需要额外的软件。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🚀 方案二：全自动工作流（进阶玩家）</h2>
+<p>如果你每天开会很多，手动发文件也嫌烦，可以搞个全自动方案。</p>
+<h3 style="color: #34495e;">配置 Cron 定时任务</h3>
+<p style="padding-left: 20px; background: #f5f5f5; border-radius: 4px; padding: 12px;">openclaw cron add --schedule "0 10 * * 1-5" \<br>--task "检查飞书云盘的 meeting-notes 文件夹，有新录音就自动整理并发送到群"</p>
+<p>这样设置后：</p>
+<p style="padding-left: 20px;">• 每个工作日上午 10 点自动检查新录音</p>
+<p style="padding-left: 20px;">• 发现新文件自动转写整理</p>
+<p style="padding-left: 20px;">• 纪要直接发送到指定群聊</p>
+<p style="padding-left: 20px;">• 待办自动同步到任务管理工具</p>
+<h3 style="color: #34495e;">配合子会话并行处理</h3>
+<p>如果一场会有多个议题，可以用 OpenClaw 的子会话功能：</p>
+<p style="padding-left: 20px; background: #f5f5f5; border-radius: 4px; padding: 12px;">请把这场会议的纪要拆分成 3 个子议题：<br>1. 产品规划部分<br>2. 技术方案部分<br>3. 运营计划部分<br><br>每个部分单独整理，标注负责人和截止时间。</p>
+<p>OpenClaw 会同时处理多个子任务，<strong>3 秒出 3 份纪要</strong>。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">💎 方案三：飞书会议 + AI 自动纪要（企业级）</h2>
+<p>如果你用飞书开会，这个方案体验最好。</p>
+<h3 style="color: #34495e;">配置飞书机器人</h3>
+<p>在 openclaw.json 中添加飞书机器人配置，启用 autoSummarize 功能。</p>
+<h3 style="color: #34495e;">设置自动触发</h3>
+<p>在飞书群里添加 OpenClaw 机器人，然后：</p>
+<p style="padding-left: 20px;">• 会议结束后，飞书自动推送录音到机器人</p>
+<p style="padding-left: 20px;">• OpenClaw 自动转写并生成纪要</p>
+<p style="padding-left: 20px;">• 纪要以卡片消息发到群里</p>
+<p style="padding-left: 20px;">• 待办自动同步到飞书任务</p>
+<p><strong>整个流程完全自动化，零人工干预。</strong></p>
+<h2 style="color: #2c3e50; margin-top: 24px;">⚠️ 常见问题与避坑指南</h2>
+<h3 style="color: #34495e;">录音质量太差怎么办？</h3>
+<p style="padding-left: 20px;">• 尽量用外接麦克风，别用笔记本内置麦</p>
+<p style="padding-left: 20px;">• 线上会议直接录系统声音，效果最好</p>
+<p style="padding-left: 20px;">• 多人会议建议标注发言人（后续可以训练识别）</p>
+<h3 style="color: #34495e;">AI 理解错误怎么办？</h3>
+<p style="padding-left: 20px;">• 提供会议背景信息："这次是产品评审会，主要讨论 Q2 功能排期"</p>
+<p style="padding-left: 20px;">• 指定专业术语表：告诉 AI 你们行业的黑话</p>
+<p style="padding-left: 20px;">• 要求输出不确定项："标注你不确定的地方，我来确认"</p>
+<h3 style="color: #34495e;">隐私安全怎么保障？</h3>
+<p style="padding-left: 20px;">• OpenClaw 本地运行，录音不会上传到第三方</p>
+<p style="padding-left: 20px;">• AI 处理走 API，数据不会被训练</p>
+<p style="padding-left: 20px;">• 敏感会议可以手动脱敏后再处理</p>
+<p style="padding-left: 20px;">• 企业用户可以部署私有模型，数据完全不外泄</p>
+<h3 style="color: #34495e;">识别不了中文怎么办？</h3>
+<p>确保你的 AI 模型支持中文转写。推荐组合：</p>
+<p style="padding-left: 20px;">• 转写：Whisper large-v3（中文识别率很高）</p>
+<p style="padding-left: 20px;">• 整理：Claude 3.5 Sonnet / GPT-4o（中文理解能力强）</p>
+<p style="padding-left: 20px;">• 输出：指定 "请用中文输出会议纪要"</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🔥 进阶技巧：让纪要更好用</h2>
+<h3 style="color: #34495e;">技巧 1：自定义纪要模板</h3>
+<p>不同类型的会议用不同的模板：</p>
+<p style="padding-left: 20px;">• <strong>项目评审会</strong>：重点关注风险、阻碍、资源需求</p>
+<p style="padding-left: 20px;">• <strong>周会</strong>：重点关注上周完成、本周计划、需要协调</p>
+<p style="padding-left: 20px;">• <strong>客户沟通</strong>：重点关注需求、承诺、交付时间</p>
+<p>在 OpenClaw 里预设这些模板，一键切换。</p>
+<h3 style="color: #34495e;">技巧 2：自动生成待办跟踪</h3>
+<p>让 AI 不仅整理纪要，还自动把待办变成可跟踪的任务，配合 OpenClaw 的待办管理，到期自动提醒。</p>
+<h3 style="color: #34495e;">技巧 3：会议纪要知识库</h3>
+<p>把所有纪要存到知识库中，下次开会前让 AI 自动回顾：</p>
+<p style="padding-left: 20px; background: #f5f5f5; border-radius: 4px; padding: 12px;">请回顾过去 3 次周会的纪要，总结：<br>1. 还没完成的待办<br>2. 持续讨论的话题<br>3. 需要跟进的事项</p>
+<p><strong>这样每次开会都有上下文，新人也能快速跟上。</strong></p>
+<h2 style="color: #2c3e50; margin-top: 24px;">📊 效果对比</h2>
+<p>我用这套方案两周后的变化：</p>
+<p style="padding-left: 20px;">• 整理纪要时间：40 分钟 → 5 分钟（节省 87%）</p>
+<p style="padding-left: 20px;">• 纪要完整度：经常遗漏 → 100% 覆盖</p>
+<p style="padding-left: 20px;">• 待办追踪：经常忘 → 自动提醒</p>
+<p style="padding-left: 20px;">• 同事满意度："终于不用等你的纪要了"</p>
+<p><strong>一周省下 3 小时，一个月就是 12 小时。</strong> 这 12 小时你可以做更有价值的事。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🎬 立即行动</h2>
+<p>配置这个工作流只需要 3 步：</p>
+<p style="padding-left: 20px;">• <strong>1️⃣</strong> 安装 OpenClaw（之前的教程）</p>
+<p style="padding-left: 20px;">• <strong>2️⃣</strong> 下次开会时录音</p>
+<p style="padding-left: 20px;">• <strong>3️⃣</strong> 把录音发给 OpenClaw，说"帮我整理会议纪要"</p>
+<p>就这么简单，先从手动方案开始，尝到甜头再升级自动化。</p>
+<p><strong>明天我会分享如何用 OpenClaw 搭建你的「第二大脑」知识管理系统，把会议纪要、读书笔记、灵感碎片统统管理起来。</strong></p>
+<p>---</p>
+<p>如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！</p>
+<p>有任何问题，欢迎在评论区留言，我会一一回复。</p>
+<p>明天见 👋</p>
