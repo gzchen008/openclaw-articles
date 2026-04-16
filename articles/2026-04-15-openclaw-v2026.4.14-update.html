@@ -1,0 +1,41 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">🧠 主动记忆：再也不用手动"记住这个"</h2>
+<p>以前用 OpenClaw，你得手动说"记住这个"或者"搜索记忆"才能调取历史信息。现在，新的 <strong>Active Memory 插件</strong>会在每次对话前自动运行一个记忆子代理，帮你拉取相关的偏好、上下文和历史细节。</p>
+<p><strong>核心能力：</strong></p>
+<p style="padding-left: 20px;">• 支持三种上下文模式：消息级、最近对话级、全量上下文</p>
+<p style="padding-left: 20px;">• /verbose 实时查看记忆召回状态</p>
+<p style="padding-left: 20px;">• 高级提示词/思考模式覆盖，可精细调优</p>
+<p style="padding-left: 20px;">• 可选的转录持久化，方便调试</p>
+<p style="padding-left: 20px;">• 支持混合搜索（语义+词法），召回更精准</p>
+<p>配置方式非常简单，在 openclaw.json 中启用 Active Memory 插件即可。官方文档：https://docs.openclaw.ai/concepts/active-memory</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🤖 Codex 原生支持 + LM Studio 本地模型</h2>
+<p>OpenClaw 现在内置了 <strong>Codex 提供者</strong>，codex/gpt-* 模型会自动使用 Codex 管理的认证、原生线程、模型发现和压缩，而 openai/gpt-* 继续走标准 OpenAI 路径。一条命令就能接入最新的 GPT-5.4 Codex 能力。</p>
+<p>同时新增内置 <strong>LM Studio 提供者</strong>，支持一键接入本地 OpenAI 兼容模型、运行时模型发现、流式预加载和记忆搜索嵌入向量。配合之前的 Ollama 支持，OpenClaw 的本地化能力越来越强。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🔒 安全加固：三个关键修复</h2>
+<p>这个版本在安全方面投入巨大：</p>
+<p style="padding-left: 20px;">• <strong>Shell 注入防御升级</strong>：移除 busybox/toybox 安全白名单，扩大 shell 包装器检测，阻止 env-argv 注入</p>
+<p style="padding-left: 20px;">• <strong>审批授权修复</strong>：空审批者列表不再被当作"已授权"</p>
+<p style="padding-left: 20px;">• <strong>浏览器安全全面加固</strong>：SSRF、主机名白名单、CDP 发现等全面收紧</p>
+<p style="padding-left: 20px;">• <strong>插件加载精确化</strong>：只加载清单声明的必要运行时，缩小攻击面</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🎙️ macOS Talk Mode 本地 MLX 语音</h2>
+<p>macOS 用户迎来实验性的本地 MLX 语音提供者，支持明确提供者选择、本地语音播放、打断处理和系统语音回退。Talk Mode 现在可以完全本地运行，不需要外部 API。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🔧 其他重要改进</h2>
+<p style="padding-left: 20px;">• <strong>执行策略命令</strong>：新增 openclaw exec-policy 命令，管理命令执行审批配置</p>
+<p style="padding-left: 20px;">• <strong>网关命令发现</strong>：新增 commands.list RPC，远程客户端可发现所有可用命令</p>
+<p style="padding-left: 20px;">• <strong>私有网络支持</strong>：新增 allowPrivateNetwork 配置，内网部署更方便</p>
+<p style="padding-left: 20px;">• <strong>Dreaming 改进</strong>：梦境事件精确消费、置信度计算修复、时区支持</p>
+<p style="padding-left: 20px;">• <strong>QA 测试增强</strong>：Multipass 虚拟机运行器、Telegram 实时 QA、Convex 凭据池</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">📋 全渠道稳定性修复</h2>
+<p>几乎所有消息渠道都做了稳定性提升：</p>
+<p style="padding-left: 20px;">• <strong>WhatsApp</strong>：连接所有权集中化，媒体不再静默丢弃</p>
+<p style="padding-left: 20px;">• <strong>Telegram</strong>：审批回调独立序列化，话题消息正确路由</p>
+<p style="padding-left: 20px;">• <strong>Discord</strong>：重连前清除过期心跳，防止僵尸回调</p>
+<p style="padding-left: 20px;">• <strong>Matrix</strong>：提及门控修复，支持非 OpenClaw 客户端</p>
+<p style="padding-left: 20px;">• <strong>飞书</strong>：allowlist 规范化，不再跨命名空间匹配</p>
+<p style="padding-left: 20px;">• <strong>Teams/iMessage/Slack</strong>：全面修复媒体、SSO、线程等</p>
+<p>消息投递去重标准化覆盖了 Telegram、Discord、Slack、WhatsApp、Matrix、LINE、飞书等几乎所有渠道。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🚀 立即升级</h2>
+<p>升级只需两步：</p>
+<p style="padding-left: 20px;">1. npm update -g openclaw</p>
+<p style="padding-left: 20px;">2. openclaw gateway restart</p>
+<p>特别建议以下场景升级：记忆系统（Active Memory 是革命性体验）、Codex 原生支持、本地模型双引擎、安全敏感场景。</p>
+<p style="color: #888; font-size: 14px; margin-top: 20px;">版本 2026.4.14 | 发布日期 2026-04-14 | 60+ 社区贡献者 | 用 OpenClaw，让你的 AI 助手真正记住你是谁 🧠</p>

