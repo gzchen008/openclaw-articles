@@ -1,0 +1,107 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">程序员必备：Slack 里的 AI 编程助手</h2>
+<p style="color: #888; font-size: 14px; border-left: 3px solid #3498db; padding-left: 12px;">本文由 OpenClaw AI 助手协助整理 ｜ 预计阅读：6 分钟 ｜ 难度：⭐⭐</p>
+<p>你有没有经历过这种场景？</p>
+<p>团队 Slack 群里有人甩了一段报错日志，@你问怎么解决。你正忙着写代码，但还是得切过去看一眼。看完发现问题不复杂，但要解释清楚又得打一大段字。等你打完，对方已经去喝茶了。</p>
+<p>要是有个 AI 能直接在 Slack 里帮你回复技术问题，甚至帮你写代码、Review PR，是不是爽翻了？</p>
+<p>今天我们就来搞定这件事——<strong>用 OpenClaw 把 AI 编程助手接入 Slack</strong>，让你的开发团队拥有一个 24 小时在线的技术大牛。</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">🎯 最终效果：AI 在 Slack 里能做什么？</h2>
+<p>接入完成后，你的 Slack 工作区会有一个 AI 成员，它能：</p>
+<p style="padding-left: 20px;">• 🔍 自动回答技术问题（语法、API 用法、报错排查）</p>
+<p style="padding-left: 20px;">• 💻 根据需求直接生成代码片段</p>
+<p style="padding-left: 20px;">• 🔧 帮忙 Debug，分析错误日志并给出修复建议</p>
+<p style="padding-left: 20px;">• 📝 总结讨论内容，生成会议纪要</p>
+<p style="padding-left: 20px;">• 🤖 配合 CI/CD，自动报告构建状态</p>
+<p>最关键的是——<strong>它不只是 ChatGPT 的套壳</strong>。通过 OpenClaw 的 Skills 系统，你可以让它读取项目代码、执行命令、操作 GitHub，真正做到"懂你的项目"。</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">⚡ 5 分钟接入教程</h2>
+<h3 style="color: #3498db;">第一步：创建 Slack App</h3>
+<p>登录 <a href="https://api.slack.com/apps">Slack API 官网</a>，点击「Create New App」→「From scratch」。</p>
+<p>填写 App 名称（比如 <code>DevBot</code>）和你的工作区。</p>
+<p style="padding-left: 20px;">• App Name: DevBot（随便取，团队能认出来就行）</p>
+<p style="padding-left: 20px;">• Workspace: 选你的开发工作区</p>
+<p>创建完成后，进入 App 设置页面，记住 <strong>Signing Secret</strong>（后面要用）。</p>
+<h3 style="color: #3498db;">第二步：配置 Bot 权限</h3>
+<p>在左侧菜单找到「OAuth & Permissions」，添加以下 Bot Token Scopes：</p>
+<p style="padding-left: 20px;">• <code>chat:write</code> — 发送消息</p>
+<p style="padding-left: 20px;">• <code>app_mentions:read</code> — 读取 @提及</p>
+<p style="padding-left: 20px;">• <code>channels:history</code> — 读取频道消息</p>
+<p style="padding-left: 20px;">• <code>groups:history</code> — 读取私有频道消息</p>
+<p style="padding-left: 20px;">• <code>files:read</code> — 读取文件（可选，用于分析代码文件）</p>
+<p>点击「Install to Workspace」，安装后获取 <strong>Bot User OAuth Token</strong>（以 <code>xoxb-</code> 开头）。</p>
+<h3 style="color: #3498db;">第三步：启用 Event Subscriptions</h3>
+<p>在左侧菜单找到「Event Subscriptions」，打开开关。</p>
+<p>Request URL 填你的 OpenClaw Gateway 地址：</p>
+<p style="padding-left: 20px; background: #f5f5f5; padding: 10px; border-radius: 4px;"><code>https://你的域名/slack/events</code></p>
+<p>Subscribe to Bot Events 添加：</p>
+<p style="padding-left: 20px;">• <code>app_mention</code> — 有人 @Bot 时触发</p>
+<p style="padding-left: 20px;">• <code>message.channels</code> — 频道消息（可选）</p>
+<p style="padding-left: 20px;">• <code>message.groups</code> — 私有频道消息（可选）</p>
+<h3 style="color: #3498db;">第四步：配置 OpenClaw</h3>
+<p>编辑 OpenClaw 配置文件（<code>~/.openclaw/openclaw.json</code>），添加 Slack channel：</p>
+<p style="padding-left: 20px; background: #f5f5f5; padding: 10px; border-radius: 4px; font-family: monospace;">{<br>&nbsp;&nbsp;"channels": {<br>&nbsp;&nbsp;&nbsp;&nbsp;"slack": {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"adapter": "slack",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"adapterConfig": {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"botToken": "xoxb-your-bot-token-here",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"signingSecret": "your-signing-secret-here"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;}<br>}</p>
+<p>然后重启 Gateway：</p>
+<p style="padding-left: 20px; background: #f5f5f5; padding: 10px; border-radius: 4px;"><code>openclaw gateway restart</code></p>
+<h3 style="color: #3498db;">第五步：邀请 Bot 到频道</h3>
+<p>在 Slack 里，打开你想让 AI 加入的频道，输入：</p>
+<p style="padding-left: 20px; background: #f5f5f5; padding: 10px; border-radius: 4px;"><code>/invite @DevBot</code></p>
+<p>搞定！现在你可以 <code>@DevBot</code> 提问了。</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">💡 实战场景演示</h2>
+<h3 style="color: #3498db;">场景 1：代码 Review 助手</h3>
+<p>你在 Slack 里发：</p>
+<p style="padding-left: 20px; background: #f5f5f5; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 13px;">@DevBot 帮我看看这段代码有什么问题：<br><br>function getUser(id) {<br>&nbsp;&nbsp;const user = db.query('SELECT * FROM users WHERE id = ' + id);<br>&nbsp;&nbsp;return user;<br>}</p>
+<p>AI 回复：</p>
+<blockquote style="border-left: 4px solid #3498db; padding: 12px 16px; background: #f0f7ff; margin: 12px 0;">这段代码存在 <strong>SQL 注入漏洞</strong>。直接拼接用户输入到 SQL 语句中，攻击者可以通过构造特殊 ID 来执行任意 SQL。<br><br>修复建议：使用参数化查询：<br><code>const user = db.query('SELECT * FROM users WHERE id = ?', [id]);</code></blockquote>
+<h3 style="color: #3498db;">场景 2：错误日志分析</h3>
+<p>你丢一段报错：</p>
+<p style="padding-left: 20px; background: #f5f5f5; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 13px;">@DevBot 这个报错怎么解决？<br>TypeError: Cannot read properties of undefined (reading 'map')<br>at UserList (src/components/UserList.jsx:15)</p>
+<p>AI 回复：</p>
+<blockquote style="border-left: 4px solid #3498db; padding: 12px 16px; background: #f0f7ff; margin: 12px 0;">这个错误说明 <code>users</code> 属性为 <code>undefined</code>，导致调用 <code>.map()</code> 失败。常见原因：<br><br>1. 父组件没有传递 <code>users</code> prop<br>2. API 请求还没返回数据，组件已经渲染<br><br>修复方法：添加默认值和可选链<br><code>function UserList({ users = [] }) { return users.map(...) }</code></blockquote>
+<h3 style="color: #3498db;">场景 3：技术方案讨论</h3>
+<p>直接在群里问架构问题：</p>
+<p style="padding-left: 20px; background: #f5f5f5; padding: 10px; border-radius: 4px;">@DevBot 我们要在项目里加一个实时通知功能，WebSocket 和 SSE 哪个更合适？</p>
+<p>AI 会根据你的项目上下文给出对比分析和建议，而不是泛泛而谈。</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">🚀 进阶玩法：让 AI 真正"懂"你的项目</h2>
+<h3 style="color: #3498db;">配置 Skills 让 AI 能力翻倍</h3>
+<p><strong>GitHub 集成</strong>：AI 能直接查 Issue、Review PR、检查 CI 状态</p>
+<p style="padding-left: 20px; background: #f5f5f5; padding: 10px; border-radius: 4px;"><code>clawhub install github</code></p>
+<p><strong>代码库访问</strong>：让 AI 读取项目代码，回答更精准。在 AGENTS.md 中配置项目路径，AI 就能在回答问题时参考实际代码。</p>
+<p><strong>定时报告</strong>：每天早上自动推送项目状态</p>
+<p style="padding-left: 20px; background: #f5f5f5; padding: 10px; border-radius: 4px;"><code>openclaw cron add --name "daily-standup" --schedule "0 9 * * 1-5" --message "查看 GitHub PR 和 Issue，在 #dev 频道发送站会摘要"</code></p>
+<h3 style="color: #3498db;">多模型策略</h3>
+<p>不同场景用不同模型，省钱又高效：</p>
+<p style="padding-left: 20px;">• 日常问答 → 用快速模型（响应快、成本低）</p>
+<p style="padding-left: 20px;">• 代码 Review → 用强推理模型（分析准确）</p>
+<p style="padding-left: 20px;">• 架构讨论 → 用最强模型（思考深入）</p>
+<p>在 OpenClaw 中配置模型路由即可实现。</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">⚠️ 常见问题避坑</h2>
+<h3 style="color: #3498db;">1. Bot 不回复？</h3>
+<p>检查以下几点：</p>
+<p style="padding-left: 20px;">• Gateway 是否在运行：<code>openclaw gateway status</code></p>
+<p style="padding-left: 20px;">• Event Subscriptions URL 是否验证通过</p>
+<p style="padding-left: 20px;">• Bot 是否已被邀请到对应频道</p>
+<p style="padding-left: 20px;">• 查看日志：<code>openclaw gateway logs</code></p>
+<h3 style="color: #3498db;">2. 响应速度慢？</h3>
+<p style="padding-left: 20px;">• 切换到更快的模型（如 GPT-4o-mini）</p>
+<p style="padding-left: 20px;">• 减少上下文长度，避免加载过多历史消息</p>
+<p style="padding-left: 20px;">• 检查网络延迟（尤其是用海外模型 API 时）</p>
+<h3 style="color: #3498db;">3. 安全顾虑？</h3>
+<p>OpenClaw 是 <strong>本地部署</strong>，所有数据经过你自己的服务器：</p>
+<p style="padding-left: 20px;">• Slack 消息通过你自己的 Gateway 转发</p>
+<p style="padding-left: 20px;">• 不经过任何第三方中转</p>
+<p style="padding-left: 20px;">• API Key 存在你本地，不上传云端</p>
+<p style="padding-left: 20px;">• 可以配置只响应特定频道，忽略敏感频道</p>
+<h3 style="color: #3498db;">4. 免费额度够用吗？</h3>
+<p>Slack API 本身免费。AI 模型调用费用取决于你选的模型：</p>
+<p style="padding-left: 20px;">• GPT-4o-mini：约 ¥0.01/次，日常使用一个月几十块</p>
+<p style="padding-left: 20px;">• Claude 3.5 Sonnet：约 ¥0.05/次，质量更高</p>
+<p style="padding-left: 20px;">• 也可以接入本地模型（Ollama），完全免费</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">📝 总结</h2>
+<p>一个 Slack 里的 AI 编程助手，能带来的改变远比你想象的大：</p>
+<p style="padding-left: 20px;">• 🚀 新人入职不用反复问老员工，直接问 AI</p>
+<p style="padding-left: 20px;">• ⚡ 报错排查从半小时缩短到 30 秒</p>
+<p style="padding-left: 20px;">• 📋 会议纪要、周报、技术文档自动生成</p>
+<p style="padding-left: 20px;">• 🔄 CI/CD 状态自动推送，不用盯着 GitHub</p>
+<p>5 分钟配置，长期受益。现在就去试试吧！</p>
+<hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+<p>如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！</p>
+<p>有任何问题，欢迎在评论区留言，我会一一回复。</p>
+<p>明天我们聊聊一个更酷的话题：<strong>让 AI 帮你「逛」网页</strong> 👋</p>

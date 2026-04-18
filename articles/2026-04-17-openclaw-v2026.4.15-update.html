@@ -1,0 +1,49 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">OpenClaw 2026.4.15：Claude Opus 4.7 默认登场 + Gemini 语音合成</h2>
+<p>你还在手动切换最新的 Claude 模型吗？OpenClaw 已经帮你搞定了。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">一句话总结</h2>
+<p>OpenClaw 2026.4.15 正式发布，两大核心变化：<strong>Anthropic 全线默认升级到 Claude Opus 4.7</strong>，以及<strong>全新 Gemini TTS 语音合成支持</strong>。同时修复了超过 20 个稳定性与安全问题。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🚀 两大新功能</h2>
+<h2 style="color: #2c3e50; margin-top: 24px;">1. Claude Opus 4.7 成为默认模型</h2>
+<p>这次更新最重磅的变化——OpenClaw 中所有 Anthropic 相关的默认模型选择、<code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">opus</code> 别名、Claude CLI 默认配置以及内置图片理解能力，全部升级到 <strong>Claude Opus 4.7</strong>。</p>
+<p>这意味着什么？</p>
+<p style="padding-left: 20px;">• 不再需要手动配置最新模型名称</p>
+<p style="padding-left: 20px;">• <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">opus</code> 别名自动指向最新最强版本</p>
+<p style="padding-left: 20px;">• 图片理解开箱即用，无需额外配置</p>
+<p style="padding-left: 20px;">• Claude CLI 用户自动获得最新体验</p>
+<p>如果你之前在配置文件里写了具体的模型版本号，现在可以简化为直接使用 <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">opus</code> 别名，以后更新模型时无需手动修改配置。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">2. Gemini TTS 语音合成</h2>
+<p>Google Gemini 语音合成能力正式集成到 OpenClaw 的 <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">google</code> 插件中。这不是简单的文字转语音，而是一套完整的语音解决方案：</p>
+<p style="padding-left: 20px;">• 支持多种语音选择，找到最适合你场景的声音</p>
+<p style="padding-left: 20px;">• WAV 格式回复输出，适配各种播放场景</p>
+<p style="padding-left: 20px;">• PCM 电话语音输出，专门为语音通话场景优化</p>
+<p style="padding-left: 20px;">• 完整的配置文档和设置引导</p>
+<p>对于使用 OpenClaw Talk Mode 的用户来说，这是又一个高质量本地/云端语音选择。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🔧 重要修复亮点</h2>
+<p>除了两个新功能，这次更新还包含大量修复，以下是最值得关注的：</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">稳定性修复</h2>
+<p style="padding-left: 20px;">• <strong>Skills 列表排序稳定化</strong>：技能列表现在按名称排序，不再因为配置顺序不同导致 prompt 缓存频繁失效，响应更快</p>
+<p style="padding-left: 20px;">• <strong>上下文和记忆预算优化</strong>：默认 prompt token 预算被缩减，长对话 session 拉取的上下文更精简</p>
+<p style="padding-left: 20px;">• <strong>CLI 升级不再卡死</strong>：npm 全局升级后，旧的打包文件会被自动清理</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">安全修复</h2>
+<p style="padding-left: 20px;">• <strong>本地 MEDIA 信任锚定</strong>：修复了自定义工具名称与内置工具冲突时可能继承本地媒体信任权限的问题</p>
+<p style="padding-left: 20px;">• <strong>客户端工具名称冲突检测</strong>：冲突的工具名称会返回明确错误，避免混淆</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">Codex 用户必看</h2>
+<p style="padding-left: 20px;">• <strong>Codex 模型传输层修复</strong>：旧版配置会自动修复为正确的传输路径，不再出现 HTML/Cloudflare 错误</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">BlueBubbles 用户必看</h2>
+<p style="padding-left: 20px;">• <strong>图片附件下载恢复</strong>：Node 22+ 环境下的入站图片附件下载已修复</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🛠 升级指南</h2>
+<p>升级非常简单，一行命令搞定：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 12px; border-radius: 6px; border-left: 3px solid #2c3e50;">openclaw update</p>
+<p>或者通过 npm：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 12px; border-radius: 6px; border-left: 3px solid #2c3e50;">npm install -g openclaw@latest</p>
+<p>升级后建议运行一次健康检查：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 12px; border-radius: 6px; border-left: 3px solid #2c3e50;">openclaw doctor</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">升级后检查清单</h2>
+<p style="padding-left: 20px;">• 如果使用了 Anthropic 模型，确认 <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">opus</code> 别名正常工作</p>
+<p style="padding-left: 20px;">• 如果使用了自定义工具，检查是否有名称冲突警告</p>
+<p style="padding-left: 20px;">• 运行 <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">openclaw doctor</code> 确认配置健康</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">💡 写在最后</h2>
+<p>2026.4.15 是一个"小版本大变化"的典型 OpenClaw 更新——功能列表不长，但每个变化都直接影响日常使用体验。Claude Opus 4.7 的默认集成让所有人自动获得最新模型能力，Gemini TTS 则为语音交互场景提供了更多选择。</p>
+<p>如果你还在用旧版本，建议尽快升级。升级命令只有一行，但带来的体验提升是实实在在的。</p>
+<p style="color: #999; margin-top: 24px; font-size: 14px;">OpenClaw —— 让 AI 助手真正融入你的工作流</p>
+<p style="color: #999; font-size: 14px;">项目地址：<a href="https://github.com/nicepkg/openclaw" style="color: #2c3e50;">github.com/nicepkg/openclaw</a> | 文档：<a href="https://docs.openclaw.ai" style="color: #2c3e50;">docs.openclaw.ai</a></p>
