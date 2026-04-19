@@ -1,0 +1,80 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">你有没有这种经历：开了一个小时的会，信息量巨大，散会后光整理纪要就要花大半个小时？更要命的是，隔两天再看笔记，发现当时记的重点已经模糊了。</h2>
+<p>如果有个 AI 助手，能实时听会、自动整理纪要、甚至帮你提取行动项和责任人，是不是会轻松很多？</p>
+<p>今天就来聊聊：如何用 OpenClaw 打造一套 AI 会议纪要工作流，把整理纪要的时间从 30 分钟压缩到 5 分钟。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">📌 为什么需要 AI 会议纪要？</h2>
+<p>先看看传统整理会议纪要的痛点：</p>
+<p><strong>记不全。</strong> 开会时一边听一边记，手速跟不上嘴速，重要细节容易遗漏。</p>
+<p><strong>理不清。</strong> 会后对着凌乱的笔记，要花大量时间重新组织语言、梳理逻辑。</p>
+<p><strong>追不到。</strong> 行动项散落在聊天记录、邮件、文档各处，事后很难追踪谁负责什么。</p>
+<p>AI 会议纪要的核心价值，就是把「听 → 记 → 理 → 发」这条链路自动化，让你只需要审核确认，而不是从零开始。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🎯 最终效果：一键生成结构化纪要</h2>
+<p>用 OpenClaw 搭建的会议纪要流程，最终效果是这样的：</p>
+<p><strong>输入：</strong>一段会议录音（或文字记录）</p>
+<p><strong>输出：</strong></p>
+<p style="padding-left: 20px;">📋 会议摘要（200 字以内概括全貌）</p>
+<p style="padding-left: 20px;">🎯 关键议题（每个议题的讨论要点和结论）</p>
+<p style="padding-left: 20px;">✅ 行动项（谁、做什么、什么时间前完成）</p>
+<p style="padding-left: 20px;">❓ 待确认事项（需要后续跟进的问题）</p>
+<p>整个过程，从提交录音到拿到完整纪要，大约 5 分钟。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🛠️ 搭建步骤：从零到一</h2>
+<h3 style="color: #34495e; margin-top: 20px;">1️⃣ 基础准备：确保 OpenClaw 已配置</h3>
+<p>如果你还没有安装 OpenClaw，一行命令搞定：</p>
+<p style="padding-left: 20px; background: #f5f5f5; border-radius: 4px; font-family: monospace;">npx openclaw@latest init</p>
+<p>安装完成后，在飞书、Discord、Slack 或 Telegram 任一平台配置好你的 AI 助手。具体配置方法可以参考之前的入门系列文章。</p>
+<h3 style="color: #34495e; margin-top: 20px;">2️⃣ 会议记录方式选择</h3>
+<p>根据你的会议场景，有三种方式把会议内容交给 AI：</p>
+<p><strong>方式一：直接粘贴文字记录</strong></p>
+<p>如果你的会议有文字记录（比如飞书会议自动转写），直接把文字发给 AI 助手：</p>
+<p style="padding-left: 20px; background: #f5f5f5; border-radius: 4px; font-family: monospace;">请帮我整理以下会议记录，生成结构化会议纪要：[粘贴会议文字记录]</p>
+<p><strong>方式二：上传录音文件</strong></p>
+<p>把会议录音文件发给 AI 助手，OpenClaw 会自动调用语音转文字服务，然后整理纪要。</p>
+<p><strong>方式三：实时对话记录</strong></p>
+<p>如果是在飞书群或 Discord 频道里开的文字会议，AI 助手可以直接读取聊天记录来生成纪要，不需要手动粘贴。</p>
+<h3 style="color: #34495e; margin-top: 20px;">3️⃣ 定制你的纪要模板</h3>
+<p>不同团队对纪要格式要求不同。你可以告诉 AI 你想要的格式：</p>
+<p style="padding-left: 20px; background: #f5f5f5; border-radius: 4px; font-family: monospace;">以后整理会议纪要时，请按以下格式输出：<br><br>## 会议信息<br>- 时间：<br>- 参会人：<br>- 主题：<br><br>## 会议摘要<br>[200字以内概括]<br><br>## 关键议题<br>### 议题一：[标题]<br>- 讨论要点：<br>- 结论/决策：<br><br>## 行动项<br>| 任务 | 负责人 | 截止日期 |<br><br>## 待确认事项</p>
+<p>把这段话发给你的 AI 助手，它会记住这个偏好，以后每次都用这个格式整理。</p>
+<h3 style="color: #34495e; margin-top: 20px;">4️⃣ 一键触发：用 Cron 定时整理</h3>
+<p>如果你有固定的周会、日会，可以设置 Cron 任务自动提醒整理纪要：</p>
+<p style="padding-left: 20px; background: #f5f5f5; border-radius: 4px; font-family: monospace;">openclaw cron add --schedule "0 10 * * 1" \\<br>&nbsp;&nbsp;--prompt "提醒：请整理本周周会的会议纪要"</p>
+<p>这会在每周一上午 10 点自动提醒你整理上周的会议纪要。</p>
+<h3 style="color: #34495e; margin-top: 20px;">5️⃣ 进阶：自动发送给参会人</h3>
+<p>整理好的纪要，可以让 AI 直接发到对应的飞书群或 Slack 频道：</p>
+<p style="padding-left: 20px; background: #f5f5f5; border-radius: 4px; font-family: monospace;">请把整理好的纪要发送到 #产品周会 频道</p>
+<p>OpenClaw 支持多平台发送，一个指令就能把纪要同步到所有需要的人。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">💡 实战案例：产品周会纪要</h2>
+<p>来看一个真实的例子。假设你刚开完一场 40 分钟的产品周会，讨论了三个议题：</p>
+<p><strong>原始记录（节选）：</strong></p>
+<p style="padding-left: 20px; background: #f5f5f5; border-radius: 4px; font-style: italic;">张三：这个迭代我们优先做支付功能的优化，用户反馈支付流程太复杂了。<br>李四：同意，另外搜索功能的 bug 也需要尽快修复，已经有 20 多个用户投诉了。<br>王五：支付优化的技术方案我周二前给出来，搜索 bug 王六今天就能修。<br>张三：好，那搜索 bug 今天修完，支付方案周二出，我们周三再对一下。</p>
+<p><strong>AI 生成的纪要：</strong></p>
+<p><strong>会议摘要：</strong>本周产品周会讨论了支付功能优化、搜索 bug 修复两项重点工作。支付优化由王五负责技术方案，周二前完成；搜索 bug 由王六当天修复。周三安排跟进会议。</p>
+<p><strong>关键议题：</strong></p>
+<p style="padding-left: 20px;"><strong>支付功能优化：</strong>用户反馈流程复杂，需简化。技术方案由王五负责，周二前输出。</p>
+<p style="padding-left: 20px;"><strong>搜索功能 bug 修复：</strong>已收到 20+ 用户投诉，王六当天完成修复。</p>
+<p><strong>行动项：</strong></p>
+<p style="padding-left: 20px;">王六 → 修复搜索 bug → 今天</p>
+<p style="padding-left: 20px;">王五 → 输出支付优化技术方案 → 周二前</p>
+<p style="padding-left: 20px;">张三 → 周三组织跟进会议 → 周三</p>
+<p>是不是比你自己整理快多了？而且结构清晰，行动项一目了然。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">⚠️ 避坑指南：5 个常见问题</h2>
+<p><strong>❌ 问题一：AI 漏掉了重要信息</strong></p>
+<p>解决：在提交时补充一句提示，比如「重点关注技术方案和时间节点」。AI 会优先提取你关注的内容。</p>
+<p><strong>❌ 问题二：会议太长，AI 处理不完整</strong></p>
+<p>解决：长会议建议分段提交，或者先用语音转文字工具（如飞书妙记）转成文字，再交给 AI 整理。OpenClaw 对长文本支持很好，但分段处理效果更佳。</p>
+<p><strong>❌ 问题三：专业术语 AI 理解不准</strong></p>
+<p>解决：在 SOUL.md 或记忆文件中提前录入团队常用的专业术语和缩写，AI 就不会搞混了。</p>
+<p><strong>❌ 问题四：纪要格式不稳定</strong></p>
+<p>解决：把格式模板写进记忆文件，AI 每次都会遵循。也可以在 Cron 任务中固定使用同一个 prompt 模板。</p>
+<p><strong>❌ 问题五：担心会议内容泄露</strong></p>
+<p>解决：OpenClaw 支持本地部署，数据不需要上传到第三方。如果是敏感会议，可以用本地模型（如通过 Ollama 运行的模型）来处理，数据完全不离开你的机器。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🚀 行动建议</h2>
+<p>现在就开始试试吧：</p>
+<p style="padding-left: 20px;">1️⃣ 下次开会时，用飞书/Zoom 的自动转写功能生成文字记录</p>
+<p style="padding-left: 20px;">2️⃣ 把文字记录发给你的 OpenClaw AI 助手</p>
+<p style="padding-left: 20px;">3️⃣ 用上面提供的模板，生成你的第一份 AI 会议纪要</p>
+<p style="padding-left: 20px;">4️⃣ 根据效果调整模板，直到格式完全符合你的需求</p>
+<p>一旦你习惯了 AI 整理纪要的方式，就再也回不去了。省下来的时间，去喝杯咖啡不好吗？☕</p>
+<hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;">
+<p>如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！</p>
+<p>有任何问题，欢迎在评论区留言，我会一一回复。</p>
+<p>明天见 👋</p>
