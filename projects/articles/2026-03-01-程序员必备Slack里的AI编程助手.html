@@ -1,0 +1,182 @@
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">程序员必备：Slack 里的 AI 编程助手</strong></p>
+
+<p style="margin: 8px 0;">你有没有想过，Slack 频道里有个 24 小时在线的 AI 编程助手，能帮你写代码、查 Bug、解释技术概念？</p>
+
+<p style="margin: 8px 0;">今天教你用 OpenClaw，把 AI 助手装进 Slack。</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🎯 最终效果 ━</p>
+
+<p style="margin: 8px 0;">配置完成后，你的 Slack AI 助手可以：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">✅ 自动回答技术问题</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 帮你写代码片段</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 解释报错信息</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 做代码审查</p>
+<p style="margin: 4px 0; padding-left: 20px;">✅ 发送定时提醒</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 📝 准备工作 ━</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">1. 创建 Slack App</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">1️⃣ 访问 <a href="https://api.slack.com/apps" style="color: #0366d6;">Slack API</a></p>
+<p style="margin: 4px 0; padding-left: 20px;">2️⃣ 点击 <strong style="font-weight: 600;">Create New App</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">3️⃣ 选择 <strong style="font-weight: 600;">From scratch</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">4️⃣ 填写 App 名称和工作区</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">2. 配置权限</strong></p>
+
+<p style="margin: 8px 0;">在 <strong style="font-weight: 600;">OAuth & Permissions</strong> 页面添加以下权限：</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">Bot Token Scopes</strong>：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">app_mentions:read</code> - 读取 @提及</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">chat:write</code> - 发送消息</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">channels:history</code> - 读取频道历史</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">groups:history</code> - 读取私聊历史</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">im:history</code> - 读取私信历史</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">3. 安装到工作区</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">1️⃣ 点击 <strong style="font-weight: 600;">Install to Workspace</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">2️⃣ 授权权限</p>
+<p style="margin: 4px 0; padding-left: 20px;">3️⃣ 复制 <strong style="font-weight: 600;">Bot User OAuth Token</strong>（以 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">xoxb-</code> 开头）</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">4. 获取 Signing Secret</strong></p>
+
+<p style="margin: 8px 0;">在 <strong style="font-weight: 600;">Basic Information</strong> 页面找到 <strong style="font-weight: 600;">Signing Secret</strong>，复制备用。</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ ⚙️ 配置 OpenClaw ━</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">1. 添加 Slack 渠道</strong></p>
+
+<p style="margin: 8px 0;">编辑 OpenClaw 配置文件：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "channels": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "slack": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "enabled": true,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "botToken": "xoxb-YOUR_BOT_TOKEN_HERE",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "signingSecret": "YOUR_SIGNING_SECRET_HERE"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">2. 启用 Event Subscriptions</strong></p>
+
+<p style="margin: 8px 0;">在 Slack App 设置中：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">1️⃣ 进入 <strong style="font-weight: 600;">Event Subscriptions</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">2️⃣ 开启 <strong style="font-weight: 600;">Enable Events</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">3️⃣ 填写 Request URL：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">https://your-gateway-url/slack/events</code></p>
+<p style="margin: 4px 0; padding-left: 20px;">4️⃣ 订阅事件：<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">app_mention</code>、<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">message.channels</code></p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">3. 重启 Gateway</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw gateway restart</p>
+</section>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">4. 测试连接</strong></p>
+
+<p style="margin: 8px 0;">在 Slack 频道里 @你的 Bot，看是否收到回复。</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🤖 进阶功能 ━</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">编程助手模式</strong></p>
+
+<p style="margin: 8px 0;">配置系统提示，让 AI 专注编程：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "channels": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "slack": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "enabled": true,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "systemPrompt": "你是一个专业的编程助手。回答技术问题要简洁准确，代码要带注释。"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">代码审查</strong></p>
+
+<p style="margin: 8px 0;">在频道里发代码，让 AI 帮你 Review：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">@Bot 请帮我审查这段代码：</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">```python</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">def process_data(data):</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    return data.strip().lower()</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">```</p>
+</section>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">定时提醒</strong></p>
+
+<p style="margin: 8px 0;">用 Cron 发送每日站会提醒：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "name": "daily-standup",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "schedule": "0 10 * * 1-5",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "action": "message",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "channel": "slack",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "target": "#general",</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "message": "🔔 站会时间到！请分享：昨天做了什么、今天计划做什么、有什么阻碍。"</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ ⚠️ 常见问题 ━</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">Q: Bot 不回复 @提及？</strong></p>
+
+<p style="margin: 8px 0;">检查以下几点：</p>
+<p style="margin: 4px 0; padding-left: 20px;">1. Bot Token 和 Signing Secret 是否正确</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. Event Subscriptions 是否启用</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. Request URL 是否可访问</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. Bot 是否在频道里（需要邀请加入）</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">Q: 如何让 Bot 响应所有消息（不只是 @提及）？</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. 在 <strong style="font-weight: 600;">Event Subscriptions</strong> 添加 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">message.channels</code> 事件</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. 在 <strong style="font-weight: 600;">OAuth & Permissions</strong> 添加 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">channels:history</code> 权限</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. 在频道设置中允许 Bot 读取消息</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">Q: 如何限制 Bot 只在特定频道工作？</strong></p>
+
+<p style="margin: 8px 0;">在 OpenClaw 配置中添加白名单：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  "channels": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    "slack": {</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "enabled": true,</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">      "allowedChannels": ["C12345678", "C87654321"]</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">    }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">  }</p>
+<p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">}</p>
+</section>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">Q: 如何获取频道 ID？</strong></p>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. 右键点击频道名 → <strong style="font-weight: 600;">Copy Link</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">2. 链接最后一段就是频道 ID（如 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">C12345678</code>）</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 🚀 下一步 ━</p>
+
+<p style="margin: 8px 0;">配置好 Slack AI 助手后，你可以：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. 结合 Skills 开发自动化工作流</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. 接入 GitHub、Jira 等工具</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. 用 Cron 做定时报告推送</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. 多平台统一管理（Slack + Discord + Telegram）</p>
+
+<p style="margin: 16px 0;">明天教你 <strong style="font-weight: 600;">浏览器自动化</strong>，让 AI 帮你「逛」网页 💻</p>
+
+<hr style="margin: 20px 0; border: none; border-top: 1px solid #e1e4e8;">
+
+<p style="margin: 8px 0;">如果这篇文章对你有帮助，欢迎 <strong style="font-weight: 600;">点赞、在看、转发</strong> 三连支持！</p>
+
+<p style="margin: 8px 0;">有任何问题，欢迎在评论区留言，我会一一回复。</p>
+
+<p style="margin: 8px 0;">明天见 👋</p>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>OpenClaw 技能系统：如何实现可扩展的 AI 能力？</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.8; color: #333; max-width: 100%; padding: 20px;">
+
+<h1 style="font-size: 24px; font-weight: bold; margin: 24px 0 16px 0; color: #000;">OpenClaw 技能系统：如何实现可扩展的 AI 能力？</h1>
+
+<p style="margin: 16px 0; color: #666; font-style: italic;">这篇文章是「OpenClaw 源码解读系列」第 5 篇。上一篇我们聊了 Session 管理与上下文工程，今天深入技能系统的设计哲学。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">你有没有想过，一个 AI 助手是怎么学会新技能的？</h2>
+
+<p style="margin: 12px 0;">不是靠训练——那太慢、太贵。真正的方式是<strong style="font-weight: 600;">插件化扩展</strong>：给 AI 装上"工具说明书"，它就知道怎么用新工具了。</p>
+
+<p style="margin: 12px 0;">OpenClaw 的技能系统就是这样一套优雅的扩展机制。今天我们来拆解它的设计。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🛠️ 技能是什么？</h2>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">一个技能 = 一个目录 + 一个 SKILL.md 文件</strong></p>
+
+<p style="margin: 12px 0;">最简单的技能长这样：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">skills/<br/>
+└── hello-world/<br/>
+    └── SKILL.md</p>
+</section>
+
+<p style="margin: 12px 0;">SKILL.md 里写着：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">---<br/>
+name: hello_world<br/>
+description: A simple skill that says hello.<br/>
+---<br/>
+<br/>
+# Hello World Skill<br/>
+<br/>
+When the user asks for a greeting, say "Hello from your custom skill!".</p>
+</section>
+
+<p style="margin: 12px 0;">就这么简单。</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">没有复杂的配置，没有注册表，没有编译。</strong> 写完就能用。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🏗️ 三层加载机制</h2>
+
+<p style="margin: 12px 0;">OpenClaw 从三个地方加载技能，优先级从高到低：</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="background: #f6f8fa;">
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">位置</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">优先级</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">用途</th>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">&lt;workspace&gt;/skills/</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;"><strong style="font-weight: 600;">最高</strong></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">当前 Agent 专属技能</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">~/.openclaw/skills</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">中</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">所有 Agent 共享的本地技能</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">Bundled（内置）</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">最低</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">OpenClaw 自带的 50+ 技能</td>
+  </tr>
+</table>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px;"><strong style="font-weight: 600;">为什么这样设计？</strong><br/><br/>
+<strong style="font-weight: 600;">Bundled</strong>：开箱即用，零配置<br/><br/>
+<strong style="font-weight: 600;">Managed</strong>：你自己装的技能，所有项目都能用<br/><br/>
+<strong style="font-weight: 600;">Workspace</strong>：项目专属，比如某个项目需要访问特定 API</p>
+
+<p style="margin: 12px 0;">如果同名技能存在多处，<strong style="font-weight: 600;">高优先级覆盖低优先级</strong>。这样你可以：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">• 覆盖内置技能（修复 bug 或定制行为）<br/>
+• 为不同项目配置不同版本</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">📦 技能格式：AgentSkills 标准</h2>
+
+<p style="margin: 12px 0;">OpenClaw 遵循 <a href="https://agentskills.io" style="color: #0366d6;">AgentSkills</a> 规范，核心是 YAML frontmatter：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">---<br/>
+name: discord<br/>
+description: Use when you need to control Discord from OpenClaw<br/>
+metadata: {"openclaw":{"emoji":"🎮","requires":{"config":["channels.discord"]}}}<br/>
+---<br/>
+<br/>
+# Discord Actions<br/>
+<br/>
+[技能使用说明...]</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">关键字段</strong>：</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="background: #f6f8fa;">
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">字段</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">必填</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">说明</th>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">name</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">✅</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">技能唯一标识</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">description</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">✅</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">何时使用（Agent 会根据这个判断）</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">metadata</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">❌</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">OpenClaw 扩展配置（gating、安装器等）</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">homepage</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">❌</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">技能官网链接</td>
+  </tr>
+</table>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🔒 Gating：技能准入控制</h2>
+
+<p style="margin: 12px 0;">不是所有技能都应该被加载。OpenClaw 用 <strong style="font-weight: 600;">gating 机制</strong> 过滤：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">---<br/>
+metadata:<br/>
+  {<br/>
+    "openclaw": {<br/>
+      "requires": {<br/>
+        "bins": ["summarize"],        # 需要 CLI 工具<br/>
+        "env": ["DISCORD_BOT_TOKEN"], # 需要环境变量<br/>
+        "config": ["channels.discord"] # 需要配置项<br/>
+      }<br/>
+    }<br/>
+  }<br/>
+---</p>
+</section>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px;"><strong style="font-weight: 600;">只有满足所有条件，技能才会被加载。</strong></p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">常见 Gating 规则</strong>：</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="background: #f6f8fa;">
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">条件</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">含义</th>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">bins: ["claude"]</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">系统必须安装 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">claude</code> 命令</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">env: ["OPENAI_API_KEY"]</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">必须设置环境变量</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">config: ["channels.discord"]</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">OpenClaw 配置中必须启用 Discord</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">os: ["darwin"]</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">仅 macOS 可用</td>
+  </tr>
+</table>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px;"><strong style="font-weight: 600;">为什么这样设计？</strong><br/><br/>
+避免技能加载失败。比如你没有安装 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">summarize</code> CLI，这个技能就不应该出现，否则 Agent 会调用失败。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🚀 一键安装：Installer 机制</h2>
+
+<p style="margin: 12px 0;">OpenClaw 内置安装器，用户点一下就能装好依赖：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">---<br/>
+metadata:<br/>
+  {<br/>
+    "openclaw": {<br/>
+      "install": [<br/>
+        {<br/>
+          "id": "brew",<br/>
+          "kind": "brew",<br/>
+          "formula": "steipete/tap/summarize",<br/>
+          "bins": ["summarize"],<br/>
+          "label": "Install summarize (brew)"<br/>
+        }<br/>
+      ]<br/>
+    }<br/>
+  }<br/>
+---</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">支持的安装器类型</strong>：</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="background: #f6f8fa;">
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">Kind</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">用途</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">示例</th>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">brew</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">Homebrew 包</td>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">formula: "python@3.11"</code></td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">node</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">npm 全局包</td>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">package: "clawhub"</code></td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">go</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">Go 包</td>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">package: "github.com/user/cli"</code></td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">download</code></td>
+    <td style="border: 1px solid #ddd; padding: 10px;">直接下载</td>
+    <td style="border: 1px solid #ddd; padding: 10px;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">url: "https://..."</code></td>
+  </tr>
+</table>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px;"><strong style="font-weight: 600;">智能选择</strong>：如果同时提供 brew 和 node，OpenClaw 会优先用 brew（macOS 更稳定）。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🌐 ClawHub：技能生态中心</h2>
+
+<p style="margin: 12px 0;"><a href="https://clawhub.com" style="color: #0366d6;">ClawHub</a> 是 OpenClaw 的技能市场。</p>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">安装技能</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 搜索<br/>
+clawhub search "discord"<br/>
+<br/>
+# 安装到当前项目<br/>
+clawhub install discord-skill<br/>
+<br/>
+# 安装特定版本<br/>
+clawhub install discord-skill --version 1.2.3</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">更新技能</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;"># 更新单个<br/>
+clawhub update discord-skill<br/>
+<br/>
+# 更新全部<br/>
+clawhub update --all</p>
+</section>
+
+<p style="margin: 12px 0;"><strong style="font-weight: 600;">发布技能</strong>：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">clawhub publish ./my-skill --slug my-skill --name "My Skill" --version 1.0.0</p>
+</section>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🎯 实战：写一个技能</h2>
+
+<p style="margin: 12px 0;">假设你要让 OpenClaw 访问公司的内部 API。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">Step 1：创建目录</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">mkdir -p ~/.openclaw/workspace/skills/company-api</p>
+</section>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">Step 2：写 SKILL.md</strong></p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">---<br/>
+name: company_api<br/>
+description: Access company internal API for user data and reports.<br/>
+metadata:<br/>
+  {<br/>
+    "openclaw": {<br/>
+      "requires": { "env": ["COMPANY_API_KEY"] },<br/>
+      "primaryEnv": "COMPANY_API_KEY"<br/>
+    }<br/>
+  }<br/>
+---<br/>
+<br/>
+# Company API Skill<br/>
+<br/>
+Use the `exec` tool to call the company API.<br/>
+<br/>
+## Get User Info<br/>
+<br/>
+```bash<br/>
+curl -H "Authorization: Bearer $COMPANY_API_KEY" \<br/>
+  https://api.company.com/users/{user_id}<br/>
+```<br/>
+<br/>
+## Generate Report<br/>
+<br/>
+```bash<br/>
+curl -X POST -H "Authorization: Bearer $COMPANY_API_KEY" \<br/>
+  -d '{"type": "monthly"}' \<br/>
+  https://api.company.com/reports<br/>
+```</p>
+</section>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">Step 3：配置 API Key</strong></p>
+
+<p style="margin: 12px 0;">在 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">~/.openclaw/openclaw.json</code> 中：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">{<br/>
+  "skills": {<br/>
+    "entries": {<br/>
+      "company_api": {<br/>
+        "apiKey": "YOUR_API_KEY_HERE"<br/>
+      }<br/>
+    }<br/>
+  }<br/>
+}</p>
+</section>
+
+<p style="margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">Step 4：刷新技能</strong></p>
+
+<p style="margin: 12px 0;">重启 Gateway 或新建 Session，技能就生效了。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🔧 高级特性</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px;"><strong style="font-weight: 600;">环境变量注入</strong><br/><br/>
+技能可以定义需要的环境变量。环境变量只在 Agent 运行时注入，结束后恢复。不会污染系统环境。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px;"><strong style="font-weight: 600;">Slash 命令</strong><br/><br/>
+设置 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">user-invocable: true</code>，用户可以直接调用：<br/><br/>
+<code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">/summarize https://example.com</code></p>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px;"><strong style="font-weight: 600;">工具直连</strong><br/><br/>
+设置 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">command-dispatch: tool</code>，命令直接转发给工具，不经过模型。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">📊 Token 消耗</h2>
+
+<p style="margin: 12px 0;">技能会增加 System Prompt 的长度。公式：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">总字符 = 195 + Σ (97 + name + description + location)</p>
+</section>
+
+<p style="margin: 8px 0; padding-left: 20px;">• <strong style="font-weight: 600;">基础开销</strong>：195 字符（只要有 ≥1 个技能）<br/>
+• <strong style="font-weight: 600;">每个技能</strong>：97 字符 + 字段长度</p>
+
+<p style="margin: 12px 0;">估算：<strong style="font-weight: 600;">每个技能约 24 tokens</strong>（按 OpenAI tokenizer）</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🎨 设计哲学总结</h2>
+
+<p style="margin: 12px 0;">OpenClaw 技能系统的设计原则：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">简单优先</strong>：一个文件就是一个技能<br/>
+2. <strong style="font-weight: 600;">渐进增强</strong>：从最简单的开始，需要时再加 metadata<br/>
+3. <strong style="font-weight: 600;">安全可控</strong>：gating 机制防止无效加载<br/>
+4. <strong style="font-weight: 600;">生态开放</strong>：ClawHub 让技能可共享、可版本化<br/>
+5. <strong style="font-weight: 600;">Agent 友好</strong>：description 帮助 Agent 正确判断何时使用</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">下篇预告</h2>
+
+<p style="margin: 12px 0;">下一篇我们聊 <strong style="font-weight: 600;">多渠道消息路由</strong>：OpenClaw 如何同时支持 WhatsApp、Telegram、Discord、飞书等 20+ 平台？</p>
+
+<hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;">
+
+<p style="margin: 16px 0; color: #666; text-align: center;">如果觉得有用，点个"在看"吧 👇</p>
+
+</body>
+</html>

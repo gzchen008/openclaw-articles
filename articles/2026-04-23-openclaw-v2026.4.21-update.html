@@ -1,0 +1,37 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">OpenClaw v2026.4.21 更新：图像生成全面升级 gpt-image-2，还有关键安全修复</h2>
+<p>上周 v2026.4.20 的重磅更新还没消化完，OpenClaw 又发新版了！这次虽然更新项不多，但每一条都直击要害。</p>
+<p>大家好，又到了 OpenClaw 更新解读时间。距离上次 v2026.4.20 的大版本更新才过去一天，团队就推出了 v2026.4.21。别看版本号只跳了一位，这次的更新含金量可不小——图像生成模型默认升级、关键安全修复、还有开发者的日常痛点解决。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🎨 图像生成：全面拥抱 gpt-image-2</h2>
+<h3 style="color: #34495e;">升级了什么？</h3>
+<p>OpenClaw 从这一版开始，将内置的图像生成提供商默认升级到了 <strong>gpt-image-2</strong>。这意味着：</p>
+<p style="padding-left: 20px;">• 所有新安装的 OpenClaw 实例默认使用 gpt-image-2 生成图片</p>
+<p style="padding-left: 20px;">• 支持 2K 和 4K 分辨率的 OpenAI 尺寸提示</p>
+<p style="padding-left: 20px;">• 图像生成工具的元数据和文档同步更新</p>
+<p style="padding-left: 20px;">• 直播媒体冒烟测试也切换到了 gpt-image-2</p>
+<h3 style="color: #34495e;">对普通用户意味着什么？</h3>
+<p>简单来说，你让 AI 画图的时候，出来的图会更清晰、更精准。特别是之前受限于分辨率的朋友，现在可以直接生成 2K 甚至 4K 级别的图像了。</p>
+<p>而且，如果图像生成失败了，现在 gateway 日志里会清楚地记录是哪个 provider/model 出了问题——以前这些错误会被静默吞掉，后面的 provider 成功了就不了了之。现在排查问题方便多了。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🔒 安全修复：Owner 命令权限加固</h2>
+<p>这次最值得关注的是安全修复。之前在 <code>enforceOwnerForCommands=true</code> 的配置下，如果 <code>commands.ownerAllowFrom</code> 没有设置，系统会把通配符 <code>allowFrom</code> 或空的 owner 候选列表当作"足够了"来处理——这导致非 owner 的发送者可以通过宽松的回退路径执行 owner 专属命令。</p>
+<p><strong>现在：</strong>系统严格要求 owner 身份验证（owner 候选匹配或内部 <code>operator.admin</code> 权限），不再接受通配符或空列表作为替代。这个修复对所有多用户部署环境都很重要。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🛠️ 其他实用修复</h2>
+<h3 style="color: #34495e;">插件诊断修复</h3>
+<p>之前用 <code>openclaw doctor</code> 修复打包安装中缺失的渠道/提供商依赖时，会走不通。现在 doctor 路径能正确修复捆绑插件的运行时依赖了。也就是说，如果你之前遇到插件装不上的问题，跑一遍 <code>openclaw doctor</code> 可能就解决了。</p>
+<h3 style="color: #34495e;">Slack 线程保持</h3>
+<p>修复了一个 Slack 相关的 bug：当调用方提供 <code>threadTs</code> 时，运行时出站发送现在能正确保持在目标 Slack 线程中。之前通用运行时发送可能会"跳出"线程，消息发到错误的位置。</p>
+<h3 style="color: #34495e;">浏览器工具修复</h3>
+<p>之前如果你传了一个无效的无障碍引用给浏览器操作，系统会傻等到超时才报错。现在会立即拒绝无效引用，不用再白白等待了。</p>
+<h3 style="color: #34495e;">npm 安装清理</h3>
+<p>修复了一个让强迫症很不舒服的问题：npm 安装时会拉入已弃用的 <code>node-domexception</code>。现在通过在根 <code>package.json</code> 的 <code>overrides</code> 中镜像别名解决了。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">📋 升级建议</h2>
+<p><strong>所有用户建议升级</strong>，特别是：</p>
+<p style="padding-left: 20px;">• 多用户部署环境：安全修复很重要，建议尽快升级</p>
+<p style="padding-left: 20px;">• 重度使用图像生成的用户：gpt-image-2 默认升级带来显著质量提升</p>
+<p style="padding-left: 20px;">• Slack 用户：线程消息修复让你不再丢失对话上下文</p>
+<p>升级命令一如既往地简单：</p>
+<p style="padding-left: 20px; background: #f5f5f5; padding: 12px; border-radius: 6px;"><code>npm update -g openclaw</code></p>
+<p>升级完成后可以跑一下 <code>openclaw doctor</code> 确认一切正常。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">💬 写在最后</h2>
+<p>v2026.4.21 虽然是个小版本，但"小而精"。图像生成默认升级到 gpt-image-2 是个大趋势信号——OpenAI 的图像生成能力在快速迭代，OpenClaw 紧跟步伐。安全修复则体现了团队对权限模型的持续打磨。</p>
+<p>如果你还在用 v2026.4.20 或更早的版本，建议趁这个机会一并升级。毕竟，更好的图片质量、更安全的权限控制、更少的安装警告——没有理由说不。</p>
+<p style="color: #888; font-size: 14px; margin-top: 20px;">参考链接：<br/>OpenClaw 官方文档：https://docs.openclaw.ai<br/>npm 包地址：https://www.npmjs.com/package/openclaw</p>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.card {
+  width: 1080px;
+  height: 1080px;
+  padding: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  page-break-after: always;
+}
+.card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+h1 { font-size: 72px; font-weight: 800; color: white; margin-bottom: 60px; text-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.subtitle { font-size: 48px; color: white; opacity: 0.9; margin-bottom: 40px; }
+.items { display: flex; flex-direction: column; gap: 30px; }
+.item { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 35px 45px; border-radius: 20px; }
+.item-title { font-size: 42px; font-weight: 700; color: white; margin-bottom: 15px; }
+.item-desc { font-size: 32px; color: rgba(255,255,255,0.9); line-height: 1.5; }
+.emoji { font-size: 48px; margin-right: 20px; }
+</style>
+</head>
+<body>
+
+<div class="card card-1">
+  <div class="subtitle">OpenClaw 智能家居</div>
+  <h1>为什么需要 AI + 智能家居？</h1>
+  <div class="items">
+    <div class="item">
+      <div class="item-title"><span class="emoji">🗣️</span>自然语言控制</div>
+      <div class="item-desc">说什么都能听懂，不再受固定指令限制</div>
+    </div>
+    <div class="item">
+      <div class="item-title"><span class="emoji">🤖</span>智能场景推荐</div>
+      <div class="item-desc">AI 根据你的习惯，自动设计自动化规则</div>
+    </div>
+    <div class="item">
+      <div class="item-title"><span class="emoji">🏠</span>统一管理</div>
+      <div class="item-desc">一个入口控制所有品牌设备</div>
+    </div>
+    <div class="item">
+      <div class="item-title"><span class="emoji">💡</span>主动建议</div>
+      <div class="item-desc">AI 会主动提出优化方案，省电又省心</div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-2">
+  <div class="subtitle">5 分钟上手</div>
+  <h1>配置步骤</h1>
+  <div class="items">
+    <div class="item">
+      <div class="item-title">1️⃣ 安装 Home Assistant</div>
+      <div class="item-desc">Docker 一键部署，或用树莓派</div>
+    </div>
+    <div class="item">
+      <div class="item-title">2️⃣ 接入智能设备</div>
+      <div class="item-desc">支持 2000+ 设备，小米/涂鸦/Yeelight 都行</div>
+    </div>
+    <div class="item">
+      <div class="item-title">3️⃣ 配置 OpenClaw</div>
+      <div class="item-desc">通过 REST API 或 Skills 封装</div>
+    </div>
+    <div class="item">
+      <div class="item-title">4️⃣ 创建智能场景</div>
+      <div class="item-desc">回家模式、睡眠模式、电影模式...</div>
+    </div>
+    <div class="item">
+      <div class="item-title">5️⃣ 开始语音控制</div>
+      <div class="item-desc">说一句话，全屋响应</div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-3">
+  <div class="subtitle">进阶玩法</div>
+  <h1>更多可能</h1>
+  <div class="items">
+    <div class="item">
+      <div class="item-title"><span class="emoji">🎤</span>语音控制</div>
+      <div class="item-desc">早上好 → 打开窗帘、启动咖啡机、播报天气</div>
+    </div>
+    <div class="item">
+      <div class="item-title"><span class="emoji">📊</span>能耗监控</div>
+      <div class="item-desc">"这个月电费多少？" AI 帮你分析用电</div>
+    </div>
+    <div class="item">
+      <div class="item-title"><span class="emoji">🔔</span>智能提醒</div>
+      <div class="item-desc">检测暴雨自动关窗，会议前渐亮唤醒</div>
+    </div>
+    <div class="item">
+      <div class="item-title"><span class="emoji">🌍</span>远程控制</div>
+      <div class="item-desc">出差在外也能控制家里温度和设备</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

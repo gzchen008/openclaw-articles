@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>从选题到成稿：OpenClaw 如何帮我日更公众号</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #34495e;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: Monaco, Consolas, monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: Monaco, Consolas, monospace;
+            font-size: 0.85em;
+        }
+        pre code {
+            background: transparent;
+            padding: 0;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .tip-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        strong {
+            color: #2c3e50;
+        }
+        hr {
+            border: none;
+            border-top: 2px solid #eee;
+            margin: 40px 0;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+        .meta-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .cta-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .cta-box h3 {
+            color: white;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <article>
+        <h1>从选题到成稿：OpenClaw 如何帮我日更公众号</h1>
+        
+        <div class="meta-box">
+            <p><em>本文由 OpenClaw AI 助手协助整理</em></p>
+            <p><strong>【快速导航】</strong></p>
+            <ul>
+                <li>本文适合：公众号运营者、内容创作者、想要日更但没时间的人</li>
+                <li>预计阅读：5 分钟</li>
+                <li>难度等级：⭐⭐</li>
+            </ul>
+        </div>
+
+        <h2><span class="emoji">🎯</span> 你有没有这样的困扰？</h2>
+        
+        <p>每天想着要日更公众号，但一到写文章就犯难：</p>
+        
+        <ul>
+            <li>❌ 不知道今天写什么选题</li>
+            <li>❌ 好不容易有了想法，写了一半卡住了</li>
+            <li>❌ 排版、找素材又要花半天</li>
+            <li>❌ 写一篇3000字的文章，从构思到发布要3-4个小时</li>
+        </ul>
+        
+        <p>结果就是：<strong>想日更，但真的太累了。</strong></p>
+        
+        <p>但如果我告诉你，<strong>我现在每天写公众号只需要30分钟</strong>呢？</p>
+        
+        <p>从选题、成稿、排版，全部由 AI 助手协助完成。而且不是那种"AI味"很重的文章，而是有我风格的、有温度的内容。</p>
+        
+        <p>今天就来分享我的秘密武器：<strong>OpenClaw 日更工作流</strong>。</p>
+
+        <h2><span class="emoji">📊</span> 最终效果展示</h2>
+        
+        <p>自从用 OpenClaw 帮我日更，我的效率提升了 <strong>6 倍</strong>：</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>环节</th>
+                    <th>以前</th>
+                    <th>现在</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>选题</td>
+                    <td>30分钟 - 1小时</td>
+                    <td>5分钟</td>
+                </tr>
+                <tr>
+                    <td>大纲</td>
+                    <td>20分钟</td>
+                    <td>2分钟</td>
+                </tr>
+                <tr>
+                    <td>初稿</td>
+                    <td>1-2小时</td>
+                    <td>10分钟</td>
+                </tr>
+                <tr>
+                    <td>修改润色</td>
+                    <td>30分钟</td>
+                    <td>10分钟</td>
+                </tr>
+                <tr>
+                    <td>排版发布</td>
+                    <td>20分钟</td>
+                    <td>5分钟</td>
+                </tr>
+                <tr>
+                    <td><strong>总计</strong></td>
+                    <td><strong>3-4小时</strong></td>
+                    <td><strong>30分钟</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <p>关键是，<strong>质量没有下降，反而更稳定了</strong>。</p>
+
+        <h2><span class="emoji">🛠️</span> 第一步：用 OpenClaw 做选题库</h2>
+        
+        <p>日更最大的敌人是"不知道写什么"。</p>
+        
+        <p>我让 OpenClaw 帮我维护一个<strong>选题库</strong>，每周自动更新：</p>
+        
+        <h3>操作方法</h3>
+        
+        <p><strong>1. 告诉 OpenClaw 你的公众号定位：</strong></p>
+        <pre><code>我的公众号是关于 [你的领域] 的，目标读者是 [你的读者画像]，
+请帮我生成 10 个选题，要求：
+1. 符合近期热点
+2. 有实用价值
+3. 标题吸引人</code></pre>
+        
+        <p><strong>2. OpenClaw 会生成选题列表，我选 3-5 个作为本周计划</strong></p>
+        
+        <p><strong>3. 把选题保存到 <code>content-plan.md</code>，每天自动提醒</strong></p>
+        
+        <h3>进阶技巧：定时生成选题</h3>
+        
+        <p>用 OpenClaw 的 Cron 功能，每周自动生成新选题：</p>
+        
+        <pre><code>{
+  "name": "weekly-content-plan",
+  "schedule": { "kind": "cron", "expr": "0 9 * * 1" },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "请根据本周热点，生成10个公众号选题建议..."
+  },
+  "sessionTarget": "isolated"
+}</code></pre>
+
+        <h2><span class="emoji">✍️</span> 第二步：从大纲到初稿（10分钟搞定）</h2>
+        
+        <p>有了选题，下一步就是写文章。</p>
+        
+        <p>我的流程是这样的：</p>
+        
+        <h3>1. 让 OpenClaw 生成大纲（1分钟）</h3>
+        
+        <pre><code>请为《[选题]》这篇文章生成一个详细大纲，要求：
+1. 开头有钩子，3秒内抓住注意力
+2. 中间结构清晰，有小标题
+3. 结尾有行动号召</code></pre>
+        
+        <p>OpenClaw 会给出类似这样的大纲：</p>
+        
+        <pre><code>## 为什么XXX很重要？（痛点）
+## 常见的3个误区
+## 我的解决方案（核心干货）
+## 具体操作步骤
+## 总结 + 行动号召</code></pre>
+        
+        <h3>2. 逐段扩写成初稿（5分钟）</h3>
+        
+        <p>大纲确定后，我不会让 AI 一次性写完——那样出来的文章太"机器味"。</p>
+        
+        <p>我选择<strong>分段写</strong>：</p>
+        
+        <pre><code>请根据大纲的"为什么XXX很重要"部分，写200字开头，要求：
+1. 用一个痛点场景切入
+2. 语言口语化，像在聊天
+3. 不要用"首先、其次、最后"这种词</code></pre>
+        
+        <p>然后继续下一段。</p>
+        
+        <h3>3. 加入个人案例（2分钟）</h3>
+        
+        <p>这是让文章"有灵魂"的关键。</p>
+        
+        <p>在核心干货部分，我会告诉 OpenClaw：</p>
+        
+        <pre><code>请在第三段加入一个真实案例：
+"上周我遇到一个读者，他的情况是..."</code></pre>
+        
+        <p>这样文章就有了<strong>真实感</strong>，读者会觉得"这是活生生的人在写"。</p>
+
+        <h2><span class="emoji">🎨</span> 第三步：排版与优化（5分钟）</h2>
+        
+        <p>初稿完成后，让 OpenClaw 帮我：</p>
+        
+        <h3>1. 自动添加排版元素</h3>
+        
+        <pre><code>请帮我优化这篇文章的排版：
+1. 添加适当的 emoji（但不要太多）
+2. 重点句子加粗
+3. 添加小标题
+4. 检查段落是否太长（超过4行就分段）</code></pre>
+        
+        <h3>2. 检查标题吸引力</h3>
+        
+        <pre><code>请给这篇文章起3个标题，要求：
+1. 包含数字或疑问句
+2. 有痛点或悬念
+3. 不超过20个字</code></pre>
+        
+        <p>OpenClaw 会给出多个选项，我选一个最满意的。</p>
+        
+        <h3>3. 生成摘要和封面文案</h3>
+        
+        <pre><code>请生成：
+1. 一句话摘要（50字内）
+2. 封面文案（不超过10个字）</code></pre>
+
+        <h2><span class="emoji">⏰</span> 第四步：定时发布（全自动）</h2>
+        
+        <p>最后，我用 OpenClaw 的 Cron 功能，实现<strong>全自动发布</strong>：</p>
+        
+        <pre><code>{
+  "name": "daily-article-publish",
+  "schedule": { "kind": "cron", "expr": "0 9 * * *" },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "根据 content-plan.md 生成今天的文章，保存到 articles/ 目录"
+  },
+  "sessionTarget": "isolated"
+}</code></pre>
+        
+        <p>每天早上 9 点，OpenClaw 自动：</p>
+        <ol>
+            <li>读取选题计划</li>
+            <li>生成文章</li>
+            <li>保存到指定目录</li>
+            <li>发送通知提醒我检查</li>
+        </ol>
+        
+        <p>我只需要<strong>最后审核一遍</strong>，就可以发布了。</p>
+
+        <h2><span class="emoji">💡</span> 5 个进阶技巧</h2>
+        
+        <div class="tip-box">
+            <h3>技巧 1：建立你的"写作风格库"</h3>
+            <p>创建一个 <code>writing-style.md</code>，记录你的写作习惯：</p>
+            <pre><code># 我的写作风格
+
+## 常用开场白
+- "你有没有这样的困扰？"
+- "想象一下..."
+
+## 常用结尾
+- "现在就去试试吧"
+- "明天见 👋"
+
+## 禁用词
+- 不要用"首先、其次、最后"
+- 不要用"综上所述"</code></pre>
+            <p>每次写文章时，让 OpenClaw 参考这个文件。</p>
+        </div>
+        
+        <div class="tip-box">
+            <h3>技巧 2：用子会话并行写多篇文章</h3>
+            <p>如果要批量生产内容，可以用 OpenClaw 的<strong>子会话功能</strong>：</p>
+            <pre><code>请启动3个子任务，同时写3篇文章：
+1. 《...》
+2. 《...》
+3. 《...》</code></pre>
+            <p>3篇文章同时生成，10分钟后全部完成。</p>
+        </div>
+        
+        <div class="tip-box">
+            <h3>技巧 3：素材库自动整理</h3>
+            <p>写文章时用到的案例、数据、金句，让 OpenClaw 自动整理：</p>
+            <pre><code>请把这篇文章中的金句提取出来，保存到 quotes.md</code></pre>
+            <p>下次写文章时，可以直接引用：</p>
+            <pre><code>请从 quotes.md 中选一句相关的金句，加到这篇文章的开头</code></pre>
+        </div>
+        
+        <div class="tip-box">
+            <h3>技巧 4：A/B 测试标题</h3>
+            <p>让 OpenClaw 同时生成多个标题版本：</p>
+            <pre><code>请为这篇文章生成5个标题：
+- 2个痛点型
+- 2个数字型
+- 1个悬念型</code></pre>
+            <p>然后选一个最吸引人的。</p>
+        </div>
+        
+        <div class="tip-box">
+            <h3>技巧 5：定期复盘</h3>
+            <p>每周让 OpenClaw 分析你的文章数据：</p>
+            <pre><code>请分析本周3篇文章的共同点：
+1. 哪些标题点击率高？
+2. 哪些开场白效果好？
+3. 下周可以优化的点？</code></pre>
+            <p>持续迭代，越写越好。</p>
+        </div>
+
+        <h2><span class="emoji">🚨</span> 常见问题</h2>
+        
+        <h3>Q1：AI写的文章会不会很"机器味"？</h3>
+        <p><strong>A：</strong> 会！但可以避免。</p>
+        <p>关键在于：</p>
+        <ol>
+            <li><strong>分段写</strong>，不要一次性生成全文</li>
+            <li><strong>加入个人案例</strong>，让内容有温度</li>
+            <li><strong>用自己的话润色</strong>，AI 只是辅助</li>
+        </ol>
+        <p>我的经验是：<strong>AI 负责框架和初稿，我负责注入灵魂。</strong></p>
+        
+        <h3>Q2：日更会不会影响质量？</h3>
+        <p><strong>A：</strong> 不会，反而更稳定。</p>
+        <p>因为有了固定的流程和模板，每篇文章都有基本的质量保证。</p>
+        <p>而且，<strong>高频输出的反馈更快</strong>——你很快就能知道读者喜欢什么，不喜欢什么。</p>
+        
+        <h3>Q3：OpenClaw和其他AI工具有什么区别？</h3>
+        <p><strong>A：</strong> 最大的区别是<strong>记忆和自动化</strong>。</p>
+        <ul>
+            <li>ChatGPT：每次对话都是新的，需要重复说明背景</li>
+            <li>OpenClaw：有长期记忆，知道你的写作风格、选题偏好</li>
+        </ul>
+        <p>而且 OpenClaw 可以<strong>定时执行任务</strong>，实现真正的自动化日更。</p>
+
+        <h2><span class="emoji">🎯</span> 总结：日更不是靠毅力，是靠系统</h2>
+        
+        <p>很多人觉得日更很难，是因为<strong>全靠自己的意志力</strong>。</p>
+        
+        <p>但如果你有一个 AI 助手帮你：</p>
+        <ul>
+            <li><span class="emoji">📝</span> 自动生成选题</li>
+            <li><span class="emoji">✍️</span> 协助写成初稿</li>
+            <li><span class="emoji">🎨</span> 自动排版优化</li>
+            <li><span class="emoji">⏰</span> 定时提醒发布</li>
+        </ul>
+        
+        <p>日更就不再是一件痛苦的事，而是一个<strong>自动化的习惯</strong>。</p>
+        
+        <p><strong>30分钟，一篇高质量文章，你也可以做到。</strong></p>
+
+        <div class="cta-box">
+            <h3><span class="emoji">🔥</span> 现在就开始</h3>
+            <ol>
+                <li>安装 OpenClaw（如果还没有）</li>
+                <li>创建你的 <code>content-plan.md</code> 选题库</li>
+                <li>写下你的第一篇 AI 辅助文章</li>
+            </ol>
+            <p><strong>今天就开始，明天你就能看到效果。</strong></p>
+        </div>
+
+        <hr>
+
+        <p>如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！</p>
+        
+        <p>有任何问题，欢迎在评论区留言，我会一一回复。</p>
+        
+        <p>明天见 <span class="emoji">👋</span></p>
+
+        <hr>
+
+        <p><em>本文由 OpenClaw AI 助手协助整理</em><br>
+        <em>发布日期：2026-02-16</em></p>
+    </article>
+</body>
+</html>

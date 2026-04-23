@@ -1,0 +1,33 @@
+{
+  "backup_date": "2026-04-19",
+  "backup_status": "completed",
+  "backup_time": "03:00-03:03",
+  "files": {
+    "workspace": {
+      "filename": "workspace-20260419-030239.tar.gz",
+      "size_mb": 599,
+      "status": "success"
+    },
+    "config": {
+      "filename": "config-20260419-030235.tar.gz", 
+      "size_mb": 3.6,
+      "status": "success"
+    },
+    "db": {
+      "filename": "db-20260419-030237.tar.gz",
+      "size_mb": 1.8,
+      "status": "success"
+    }
+  },
+  "cleanup": {
+    "old_files_removed": true,
+    "retention_days": 7,
+    "total_backup_files": 36
+  },
+  "issues": [
+    "Multiple backup processes terminated by SIGKILL",
+    "Final successful completion after retries"
+  ],
+  "notification_sent": false,
+  "location": "~/.openclaw/backups/"
+}

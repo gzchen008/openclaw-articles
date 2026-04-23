@@ -1,0 +1,12 @@
+{
+  "identifier": "0ZQAU7",
+  "title": "[task] <0ZQAU7> 项目清理与内容更新",
+  "task_content": "## 问题描述\n行内项目内容清理与更新任务，包括：\n- 删除不再需要的媒体文件、工具文件、研究文件\n- 添加新文章和memory文件\n- 更新项目结构和配置文件\n- 优化项目状态，提高维护性\n\n## 环境信息\n- 项目：openclaw-articles\n- 操作系统：macOS\n- 用户：cgz\n- 分支：main\n\n## 附加信息\n- 任务识别码：0ZQAU7\n- 提交时间：2026-04-22 09:16:00\n- 原始命令：提交行内的 ease skill 异步 task\n\n### 更新统计\n**修改文件：** 4个核心配置文件（IDENTITY.md, MEMORY.md, SOUL.md, USER.md）\n**删除文件：** 约150个不再需要的媒体、工具、研究文件\n**新增文件：** 新文章和daily memory文件\n**操作类型：** 项目清理、结构优化、内容更新\n\n### 清理目标\n- 清理重复、过时的媒体文件（images/, videos/）\n- 删除未使用的工具和脚本\n- 更新项目配置和文档\n- 保持项目结构清晰和高效",
+  "submission_time": "2026-04-22 09:16:00",
+  "issue_type": 5,
+  "username": "cgz",
+  "project_name": "openclaw-articles",
+  "branch": "main",
+  "original_command": "提交行内的 ease skill 异步 task",
+  "status": "submitted"
+}

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif; line-height: 1.6; color: #24292f; max-width: 100%; margin: 0; padding: 20px;">
+
+<p style="margin: 0 0 16px 0; font-size: 16px;">你是不是也遇到过这些问题？</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ Claude Code 用着用着上下文爆了，任务被截断</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 不知道哪个 Agent 在跑，等半天没反应</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ Token 用了多少？还剩多少？心里没数</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ❌ 工具调用记录看不清，排查问题困难</p>
+
+<p style="margin: 16px 0 8px 0; font-size: 16px;">今天推荐一个<strong>开源神器</strong>，让这些问题全部消失 👇</p>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">🎯 Claude HUD - 实时监控面板</h2>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;"><strong>一句话介绍：</strong> Claude Code 原生状态栏插件，实时显示一切重要信息。</p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">能看到什么？</h3>
+
+<table style="width: 100%; border-collapse: collapse; margin: 8px 0;">
+<tr style="background-color: #f6f8fa;">
+<td style="border: 1px solid #d0d7de; padding: 8px; font-weight: bold;">显示内容</td>
+<td style="border: 1px solid #d0d7de; padding: 8px; font-weight: bold;">作用</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;"><strong>项目路径</strong></td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">知道自己在哪个项目（可配置1-3层目录）</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;"><strong>上下文健康度</strong></td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">实时显示上下文使用率（绿→黄→红）</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;"><strong>工具活动</strong></td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">实时看到读写、搜索等操作</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;"><strong>Agent 追踪</strong></td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">看到哪个子 Agent 在跑、在做什么</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;"><strong>Todo 进度</strong></td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">任务完成进度实时更新</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;"><strong>Token 用量</strong></td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">精确显示已用/剩余（非估算）</td>
+</tr>
+</table>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">🖼️ 实际效果</h2>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">默认显示（2行）</h3>
+
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>[Opus | Max] │ my-project git:(main*)
+Context █████░░░░░ 45% │ Usage ██░░░░░░░░ 25% (1h 30m / 5h)</code></pre>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>第一行：</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 模型名称（Opus/Max）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 计划类型</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 项目路径</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Git 分支</p>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>第二行：</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 上下文进度条（绿→黄→红）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Token 使用率和剩余时间</p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">可选显示（3-5行）</h3>
+
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>◐ Edit: auth.ts | ✓ Read ×3 | ✓ Grep ×2        ← 工具活动
+◐ explore [haiku]: Finding auth code (2m 15s)    ← Agent 状态
+▸ Fix authentication bug (2/5)                   ← Todo 进度</code></pre>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>工具活动行：</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 实时显示正在执行的操作</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 读写、搜索、编辑等一目了然</p>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>Agent 状态行：</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 哪个子 Agent 在跑</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 运行时间</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 当前任务</p>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>Todo 进度行：</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 任务清单</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 完成数量</p>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">🚀 3步安装</h2>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">Step 1: 添加市场源</h3>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;">在 Claude Code 里输入：</p>
+
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>/plugin marketplace add jarrodwatts/claude-hud</code></pre>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">Step 2: 安装插件</h3>
+
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>/plugin install claude-hud</code></pre>
+
+<p style="margin: 8px 0; padding: 12px; background-color: #fff5f5; border-left: 4px solid #f66; font-size: 15px;"><strong>⚠️ Linux 用户注意：</strong><br>
+如果遇到 <code>EXDEV: cross-device link not permitted</code> 错误，先执行：<br>
+<code>mkdir -p ~/.cache/tmp &&amp; TMPDIR=~/.cache/tmp claude</code></p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">Step 3: 配置状态栏</h3>
+
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>/claude-hud:setup</code></pre>
+
+<p style="margin: 16px 0; padding: 12px; background-color: #f0fff4; border-left: 4px solid #28a745; font-size: 16px;"><strong>✅ 完成！</strong> 立即生效，无需重启。</p>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">⚡ 核心优势</h2>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">1. 原生集成，无需额外窗口</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 使用 Claude Code 原生 <strong>statusline API</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 不需要 tmux、分屏</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 任何终端都能用</p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">2. 实时更新（300ms）</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 每秒更新 3 次</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 真正的实时监控</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 不卡顿、不影响性能</p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">3. 精确 Token 数据</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 来自 Claude Code 官方 API</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ <strong>不是估算</strong>，是真实数据</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 包含输入+输出+缓存</p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">4. 智能解析</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 自动解析 transcript（工具调用记录）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 追踪 Agent 状态</p>
+<p style="margin: 4px 0; padding-left: 20px;">• ✅ 识别 Todo 列表</p>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">🎨 高度可定制</h2>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;">配置命令：</p>
+
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>/claude-hud:configure</code></pre>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>可调整内容：</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 📏 显示行数（2-5行）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🎯 信息类型（工具/Agent/Todo）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 🎨 颜色主题</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 📁 路径深度（1-3层目录）</p>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">💡 实用场景</h2>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">场景1: 监控上下文使用</h3>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;"><strong>问题：</strong> 任务跑到一半，上下文爆了</p>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;"><strong>解决：</strong></p>
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>Context ██████████ 98% │ ⚠️ 快满了！</code></pre>
+<p style="margin: 0 0 16px 0; font-size: 16px;">看到警告，主动 <code>/compact</code> 或重启任务</p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">场景2: 追踪 Agent 执行</h3>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;"><strong>问题：</strong> 不知道哪个 Agent 在跑，等半天</p>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;"><strong>解决：</strong></p>
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>◐ explore [haiku]: Finding auth code (2m 15s)</code></pre>
+<p style="margin: 0 0 16px 0; font-size: 16px;">知道它在做什么，心里有数</p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">场景3: 监控工具调用</h3>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;"><strong>问题：</strong> AI 在干啥？读文件还是写代码？</p>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;"><strong>解决：</strong></p>
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>◐ Edit: auth.ts | ✓ Read ×3 | ✓ Grep ×2</code></pre>
+<p style="margin: 0 0 16px 0; font-size: 16px;">实时看到操作记录</p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">场景4: 跟踪任务进度</h3>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;"><strong>问题：</strong> 任务列表完成度如何？</p>
+
+<p style="margin: 0 0 8px 0; font-size: 16px;"><strong>解决：</strong></p>
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>▸ Fix authentication bug (2/5)</code></pre>
+<p style="margin: 0 0 16px 0; font-size: 16px;">知道还剩多少工作量</p>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">🔗 相关项目</h2>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">Claude HUD Enhanced</h3>
+
+<p style="margin: 0 0 4px 0; font-size: 16px;"><strong>作者：</strong> alwinpaul1</p>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>特点：</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 增强版 Claude HUD</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 更多颜色主题</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 更精确的 Token 显示</p>
+
+<p style="margin: 8px 0 16px 0; font-size: 16px;"><strong>GitHub：</strong> <a href="https://github.com/alwinpaul1/claude-hud-enhanced" style="color: #0366d6;">https://github.com/alwinpaul1/claude-hud-enhanced</a></p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">CC Statusbar for Claude Relay</h3>
+
+<p style="margin: 0 0 4px 0; font-size: 16px;"><strong>作者：</strong> paceyw</p>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>特点：</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• 为 Claude Relay Service 设计</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 实时状态更新</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 完善的错误恢复</p>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>安装：</strong></p>
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>npm i -g claude-code-statusbar
+cc-statusbar --version
+cc-statusbar</code></pre>
+
+<p style="margin: 8px 0 16px 0; font-size: 16px;"><strong>GitHub：</strong> <a href="https://github.com/paceyw/cc-statusbar-for-Claude-Relay-Service" style="color: #0366d6;">https://github.com/paceyw/cc-statusbar-for-Claude-Relay-Service</a></p>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">📊 对比总结</h2>
+
+<table style="width: 100%; border-collapse: collapse; margin: 8px 0;">
+<tr style="background-color: #f6f8fa;">
+<td style="border: 1px solid #d0d7de; padding: 8px; font-weight: bold;">特性</td>
+<td style="border: 1px solid #d0d7de; padding: 8px; font-weight: bold;">Claude HUD</td>
+<td style="border: 1px solid #d0d7de; padding: 8px; font-weight: bold;">HUD Enhanced</td>
+<td style="border: 1px solid #d0d7de; padding: 8px; font-weight: bold;">CC Statusbar</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;">原生集成</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">✅</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">✅</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">❌</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;">实时更新</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">300ms</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">300ms</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">1s</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;">Token 显示</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">✅</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">✅ 增强版</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">✅</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;">主题定制</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">基础</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">更多主题</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">基础</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;">适用场景</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">Claude Code</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">Claude Code</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">Relay Service</td>
+</tr>
+<tr>
+<td style="border: 1px solid #d0d7de; padding: 8px;">安装难度</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">⭐</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">⭐</td>
+<td style="border: 1px solid #d0d7de; padding: 8px;">⭐⭐</td>
+</tr>
+</table>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">🎯 适合谁用？</h2>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">✅ 强烈推荐</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>Claude Code 重度用户</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>需要长时间运行任务的场景</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>关心上下文和 Token 消耗</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>多 Agent 协作开发</strong></p>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">⚠️ 可选</h3>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>偶尔用 Claude Code</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>短任务（&lt;30分钟）</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>不关心监控数据</strong></p>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">🛠️ 技术细节</h2>
+
+<h3 style="margin: 16px 0 8px 0; font-size: 18px;">工作原理</h3>
+
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>Claude Code → stdin JSON → claude-hud → stdout → 终端显示
+           ↘ transcript JSONL (工具/Agent/Todo)</code></pre>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>核心技术：</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• TypeScript 开发</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Node.js 18+ / Bun 1.0.80+</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 使用 Claude Code Statusline API</p>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>性能：</strong></p>
+<p style="margin: 4px 0; padding-left: 20px;">• CPU 占用：&lt;1%</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 内存占用：&lt;50MB</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 更新频率：~300ms</p>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">📝 总结</h2>
+
+<p style="margin: 0 0 16px 0; font-size: 16px;">Claude HUD 是 <strong>Claude Code 必装插件</strong>之一。</p>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>3个理由：</strong></p>
+
+<p style="margin: 8px 0; padding-left: 20px; font-size: 16px;"><strong>1️⃣ 实时监控</strong> - 上下文、Token、工具、Agent、Todo 一目了然</p>
+
+<p style="margin: 8px 0; padding-left: 20px; font-size: 16px;"><strong>2️⃣ 原生集成</strong> - 无需额外窗口，任何终端都能用</p>
+
+<p style="margin: 8px 0; padding-left: 20px; font-size: 16px;"><strong>3️⃣ 开源免费</strong> - MIT 协议，完全开源</p>
+
+<p style="margin: 8px 0 4px 0; font-size: 16px;"><strong>安装只需3步：</strong></p>
+<pre style="background-color: #f6f8fa; border-radius: 6px; padding: 12px; margin: 8px 0; overflow-x: auto;"><code>/plugin marketplace add jarrodwatts/claude-hud
+/plugin install claude-hud
+/claude-hud:setup</code></pre>
+
+<p style="margin: 16px 0; font-size: 16px;">装上之后，你会想知道之前没有它你是怎么活过来的 😂</p>
+
+<h2 style="margin: 24px 0 16px 0; font-size: 20px; border-bottom: 1px solid #d0d7de; padding-bottom: 8px;">🔗 项目地址</h2>
+
+<p style="margin: 8px 0; font-size: 16px;"><strong>Claude HUD:</strong> <a href="https://github.com/jarrodwatts/claude-hud" style="color: #0366d6;">https://github.com/jarrodwatts/claude-hud</a></p>
+
+<p style="margin: 8px 0; font-size: 16px;"><strong>Claude HUD Enhanced:</strong> <a href="https://github.com/alwinpaul1/claude-hud-enhanced" style="color: #0366d6;">https://github.com/alwinpaul1/claude-hud-enhanced</a></p>
+
+<p style="margin: 8px 0; font-size: 16px;"><strong>CC Statusbar:</strong> <a href="https://github.com/paceyw/cc-statusbar-for-Claude-Relay-Service" style="color: #0366d6;">https://github.com/paceyw/cc-statusbar-for-Claude-Relay-Service</a></p>
+
+<hr style="border: none; border-top: 1px solid #d0d7de; margin: 24px 0;">
+
+<p style="margin: 16px 0; font-size: 15px; color: #57606a; text-align: center;"><strong>觉得有用？点个"在看"，分享给更多开发者！</strong> 👇</p>
+
+<p style="margin: 8px 0; font-size: 14px; color: #57606a; text-align: center;">#ClaudeCode #AI工具 #开源项目 #开发效率</p>
+
+</body>
+</html>

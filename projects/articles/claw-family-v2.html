@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 100%;
+    padding: 20px;
+}
+h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #0366d6;
+    margin: 24px 0 16px 0;
+    border-bottom: 2px solid #0366d6;
+    padding-bottom: 8px;
+}
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0366d6;
+    margin: 20px 0 12px 0;
+}
+p {
+    margin: 8px 0;
+}
+strong {
+    color: #d73a49;
+    font-weight: bold;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+}
+th, td {
+    border: 1px solid #dfe2e5;
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #f6f8fa;
+    font-weight: bold;
+}
+.highlight-box {
+    background-color: #f0f8ff;
+    border-left: 4px solid #0366d6;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 4px;
+}
+.success-box {
+    background-color: #f0fff4;
+    border-left: 4px solid #28a745;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 4px;
+}
+hr {
+    border: none;
+    border-top: 2px solid #e1e4e8;
+    margin: 20px 0;
+}
+</style>
+</head>
+<body>
+
+<h1>OpenClaw 太重？这 8 个 AI 助手框架值得试试</h1>
+
+<p style="margin: 8px 0;">2026 年最火的 AI 助手框架大盘点，从极简到全能，总有一款适合你。</p>
+
+<hr/>
+
+<h2>💡 为什么需要这些框架？</h2>
+
+<p style="margin: 8px 0;">想象一下：你的 AI 助手 24/7 在线，发一条消息就能帮你写代码、查资料、处理文件。这就是这些框架的核心价值 —— <strong>把 AI 装进消息应用，打造专属智能秘书</strong>。</p>
+
+<p style="margin: 8px 0;">OpenClaw 虽然功能最全，但 1GB+ 内存、500 秒启动让很多人望而却步。好消息是，现在有了更多选择。</p>
+
+<hr/>
+
+<h2>📊 一分钟选型指南</h2>
+
+<div class="success-box">
+<p style="margin: 4px 0;"><strong>追求极致性能</strong> → ZeroClaw（Rust，&lt;5MB，&lt;10ms）</p>
+<p style="margin: 4px 0;"><strong>多平台支持</strong> → nanobot（8+ 通道，15.4K stars）</p>
+<p style="margin: 4px 0;"><strong>最高安全性</strong> → IronClaw（WASM 沙箱）</p>
+<p style="margin: 4px 0;"><strong>零配置上手</strong> → TrustClaw（云托管）</p>
+<p style="margin: 4px 0;"><strong>极低资源占用</strong> → PicoClaw（$10 硬件可跑）</p>
+<p style="margin: 4px 0;"><strong>长期学习记忆</strong> → memU Bot（越用越聪明）</p>
+<p style="margin: 4px 0;"><strong>功能最全</strong> → OpenClaw（生态最大）</p>
+<p style="margin: 4px 0;"><strong>容器隔离</strong> → NanoClaw（Docker 安全）</p>
+</div>
+
+<hr/>
+
+<h2>⚡ ZeroClaw - 极速轻量之王</h2>
+
+<div class="highlight-box">
+<p style="margin: 4px 0;"><strong>为什么选它？</strong> 5MB 内存、10 毫秒启动，树莓派 Zero 都能跑</p>
+</div>
+
+<p style="margin: 8px 0;"><strong>适合人群</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 低配 VPS 或树莓派用户</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 追求极致性能</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 从 OpenClaw 迁移</p>
+
+<p style="margin: 8px 0;"><strong>快速上手</strong>：</p>
+<section style="margin: 8px 0; padding: 12px; background-color: #f6f8fa; border-left: 4px solid #0366d6; border-radius: 4px; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 14px; color: #24292e;"><code style="background-color: transparent; padding: 0;">cargo build --release
+zeroclaw onboard --interactive
+zeroclaw daemon</code></section>
+
+<p style="margin: 8px 0;"><strong>GitHub</strong>: github.com/zeroclaw-labs/zeroclaw</p>
+
+<hr/>
+
+<h2>📱 nanobot - 多通道专家</h2>
+
+<div class="highlight-box">
+<p style="margin: 4px 0;"><strong>为什么选它？</strong> 一键安装支持 8+ 平台，港大团队维护</p>
+</div>
+
+<p style="margin: 8px 0;"><strong>适合人群</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 需要同时使用多个平台</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 想要快速上手</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 使用本地模型</p>
+
+<p style="margin: 8px 0;"><strong>快速上手</strong>：</p>
+<section style="margin: 8px 0; padding: 12px; background-color: #f6f8fa; border-left: 4px solid #0366d6; border-radius: 4px; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 14px; color: #24292e;"><code style="background-color: transparent; padding: 0;">pip install nanobot-ai
+nanobot init
+nanobot gateway</code></section>
+
+<p style="margin: 8px 0;"><strong>GitHub</strong>: github.com/HKUDS/nanobot</p>
+
+<hr/>
+
+<h2>🔒 IronClaw - 安全堡垒</h2>
+
+<div class="highlight-box">
+<p style="margin: 4px 0;"><strong>为什么选它？</strong> WASM 沙箱隔离，API Key 永不暴露</p>
+</div>
+
+<p style="margin: 8px 0;"><strong>适合人群</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 对安全性有极致要求</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 担心恶意插件</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 生产环境部署</p>
+
+<p style="margin: 8px 0;"><strong>快速上手</strong>：</p>
+<section style="margin: 8px 0; padding: 12px; background-color: #f6f8fa; border-left: 4px solid #0366d6; border-radius: 4px; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 14px; color: #24292e;"><code style="background-color: transparent; padding: 0;">cargo build --release
+ironclaw onboard</code></section>
+
+<p style="margin: 8px 0;"><strong>GitHub</strong>: github.com/nearai/ironclaw</p>
+
+<hr/>
+
+<h2>☁️ TrustClaw - 云端托管</h2>
+
+<div class="highlight-box">
+<p style="margin: 4px 0;"><strong>为什么选它？</strong> 零配置，OAuth 一键连接，无需服务器</p>
+</div>
+
+<p style="margin: 8px 0;"><strong>适合人群</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 不想折腾服务器</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 快速验证想法</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 需要最高安全性</p>
+
+<p style="margin: 8px 0;"><strong>快速上手</strong>：</p>
+<p style="margin: 8px 0; padding-left: 20px;">访问 trustclaw.app → 注册 → 连接应用 → 开始使用</p>
+
+<p style="margin: 8px 0;"><strong>官网</strong>: trustclaw.app</p>
+
+<hr/>
+
+<h2>🎯 PicoClaw - 极低资源</h2>
+
+<div class="highlight-box">
+<p style="margin: 4px 0;"><strong>为什么选它？</strong> 10MB 内存、$10 硬件可运行</p>
+</div>
+
+<p style="margin: 8px 0;"><strong>适合人群</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 极低配置设备</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 单文件部署</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Go 语言爱好者</p>
+
+<p style="margin: 8px 0;"><strong>快速上手</strong>：</p>
+<section style="margin: 8px 0; padding: 12px; background-color: #f6f8fa; border-left: 4px solid #0366d6; border-radius: 4px; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 14px; color: #24292e;"><code style="background-color: transparent; padding: 0;">picoclaw onboard
+picoclaw gateway</code></section>
+
+<p style="margin: 8px 0;"><strong>GitHub</strong>: github.com/sipeed/picoclaw</p>
+
+<hr/>
+
+<h2>🧠 memU Bot - 主动记忆</h2>
+
+<div class="highlight-box">
+<p style="margin: 4px 0;"><strong>为什么选它？</strong> 像文件系统一样组织记忆，越用越懂你</p>
+</div>
+
+<p style="margin: 8px 0;"><strong>适合人群</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 长期使用</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 复杂多轮对话</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 需要记忆层</p>
+
+<p style="margin: 8px 0;"><strong>快速上手</strong>：</p>
+<section style="margin: 8px 0; padding: 12px; background-color: #f6f8fa; border-left: 4px solid #0366d6; border-radius: 4px; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 14px; color: #24292e;"><code style="background-color: transparent; padding: 0;">git clone https://github.com/NevaMind-AI/MemU.git
+pip install -e .</code></section>
+
+<p style="margin: 8px 0;"><strong>GitHub</strong>: github.com/NevaMind-AI/MemU</p>
+
+<hr/>
+
+<h2>🔥 OpenClaw - 功能之王</h2>
+
+<div class="highlight-box">
+<p style="margin: 4px 0;"><strong>为什么选它？</strong> 生态最大，插件最多，文档最全</p>
+</div>
+
+<p style="margin: 8px 0;"><strong>适合人群</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 需要丰富插件</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 充足服务器资源</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 最完整体验</p>
+
+<p style="margin: 8px 0;"><strong>快速上手</strong>：</p>
+<section style="margin: 8px 0; padding: 12px; background-color: #f6f8fa; border-left: 4px solid #0366d6; border-radius: 4px; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 14px; color: #24292e;"><code style="background-color: transparent; padding: 0;">npm install -g openclaw
+openclaw gateway</code></section>
+
+<p style="margin: 8px 0;"><strong>GitHub</strong>: github.com/openclaw/openclaw</p>
+
+<hr/>
+
+<h2>🐳 NanoClaw - 容器隔离</h2>
+
+<div class="highlight-box">
+<p style="margin: 4px 0;"><strong>为什么选它？</strong> Docker 完全隔离，3 小时读完代码库</p>
+</div>
+
+<p style="margin: 8px 0;"><strong>适合人群</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 安全性要求高</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Telegram 专属</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 理解底层代码</p>
+
+<p style="margin: 8px 0;"><strong>快速上手</strong>：</p>
+<section style="margin: 8px 0; padding: 12px; background-color: #f6f8fa; border-left: 4px solid #0366d6; border-radius: 4px; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 14px; color: #24292e;"><code style="background-color: transparent; padding: 0;">cp .env.example .env
+docker compose up -d</code></section>
+
+<p style="margin: 8px 0;"><strong>GitHub</strong>: github.com/ysz/nanoClaw</p>
+
+<hr/>
+
+<h2>🎯 如何选择？</h2>
+
+<table>
+<tr>
+<th>需求</th>
+<th>推荐方案</th>
+</tr>
+<tr>
+<td><strong>最快启动</strong></td>
+<td>ZeroClaw（&lt;10ms）</td>
+</tr>
+<tr>
+<td><strong>最省内存</strong></td>
+<td>ZeroClaw / PicoClaw（&lt;10MB）</td>
+</tr>
+<tr>
+<td><strong>最多平台</strong></td>
+<td>nanobot（8+）</td>
+</tr>
+<tr>
+<td><strong>最高安全</strong></td>
+<td>IronClaw（WASM）</td>
+</tr>
+<tr>
+<td><strong>零配置</strong></td>
+<td>TrustClaw（云）</td>
+</tr>
+<tr>
+<td><strong>长期使用</strong></td>
+<td>memU Bot（学习）</td>
+</tr>
+</table>
+
+<hr/>
+
+<h2>📝 总结</h2>
+
+<p style="margin: 8px 0;">从 OpenClaw 一家独大，到现在 8 个不同定位的项目，Claw 家族已经覆盖了几乎所有使用场景：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>性能优先</strong>：ZeroClaw、PicoClaw</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>安全优先</strong>：IronClaw、NanoClaw</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>易用优先</strong>：TrustClaw、nanobot</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>功能优先</strong>：OpenClaw</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <strong>长期优先</strong>：memU Bot</p>
+
+<p style="margin: 8px 0;">无论你是追求性能、安全、还是易用性，总有一款适合你。</p>
+
+<hr/>
+
+<h2>🔗 相关资源</h2>
+
+<p style="margin: 4px 0; padding-left: 20px;">• OpenClaw 文档：docs.openclaw.ai</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Skills 市场：clawhub.com</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 社区讨论：discord.gg/clawd</p>
+
+<hr/>
+
+<p style="margin: 16px 0;"><strong>你用的是哪个 Claw？欢迎在评论区分享你的使用体验！</strong></p>
+
+</body>
+</html>

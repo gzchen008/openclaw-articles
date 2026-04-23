@@ -1,0 +1,160 @@
+<h2 style="margin-top: 0; color: #24292e; font-size: 20px; font-weight: 600;">这个版本有点猛</h2>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">60+ 项更新</strong>，覆盖移动端、Slack、Docker、浏览器控制、性能优化...</p>
+<p style="margin: 8px 0;">更关键的是：<strong style="font-weight: 600;">18 位新贡献者首次参与！</strong></p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">📱 移动端大升级</h2>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ Android：聊天设置 UI 重构 ━</p>
+<p style="margin: 8px 0;">全新的聊天设置界面，更现代、更易用：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 优化了布局和交互</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 修复了 HttpURLConnection 内存泄漏</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 使用 Google Code Scanner 扫描二维码（更稳定）</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ iOS：新增欢迎向导 ━</p>
+<p style="margin: 8px 0;">首次打开有引导页了：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 帮助新用户快速上手</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 展示核心功能</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 更友好的 onboarding 体验</p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">💬 Slack 交互式回复</h2>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">终于来了！</strong> Slack 频道支持交互式回复指令。</p>
+
+<p style="margin: 8px 0;">之前：只能被动回复消息<br/>现在：可以主动发起交互，支持按钮、菜单等交互元素</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">使用场景</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 审批请求（一键通过/拒绝）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 选择操作（多个选项按钮）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 表单填写（弹出对话框）</p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">🐳 Docker 改进</h2>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 时区支持 ━</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">docker run -e OPENCLAW_TZ=Asia/Shanghai openclaw/gateway</p>
+</section>
+
+<p style="margin: 8px 0;">终于可以设置时区了！定时任务、日志时间都能正确显示。</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 安全修复 ━</p>
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">防止 Gateway Token 泄露</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 修复了 Docker 构建上下文中的 token 泄露风险</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 更安全的构建流程</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 系统更新 ━</p>
+<p style="margin: 8px 0;">所有 Dockerfile 都添加了 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">apt-get upgrade</code>，确保基础镜像安全。</p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">🌐 浏览器控制增强</h2>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 批量操作支持 ━</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">browser.batch([</p>
+  <p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  { kind: "click", ref: "e1" },</p>
+  <p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  { kind: "type", ref: "e2", text: "hello" },</p>
+  <p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">  { kind: "press", key: "Enter" }</p>
+  <p style="margin: 4px 0 0 0; font-family: monospace; font-size: 14px; color: #24292e;">])</p>
+</section>
+
+<p style="margin: 8px 0;">一次性执行多个操作，减少往返延迟。</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 会话生命周期加固 ━</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 现有会话驱动验证更严格</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 会话生命周期管理更健壮</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 防止会话异常断开</p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">⚡ 性能翻倍</h2>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">修复 2x 内存回归</strong>：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Plugin-SDK chunks 去重</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 内存占用降低约 50%</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 更流畅的运行体验</p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">🪟 Windows 改进</h2>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">抑制控制台窗口闪烁</strong>：</p>
+<p style="margin: 8px 0;">之前重启 OpenClaw 时会弹出黑色控制台窗口<br/>现在：完全静默，后台运行</p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">🍎 macOS 改进</h2>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 防止误杀 Docker Desktop ━</p>
+<p style="margin: 8px 0;">修复了 PortGuard 在远程模式下误杀 Docker Desktop 的问题。</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 尊重审批设置 ━</p>
+<p style="margin: 8px 0;"><code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">exec-approvals.json</code> 配置在 Gateway prompter 中生效了。</p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">📨 飞书改进</h2>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 非ASCII 文件名支持 ━</p>
+<p style="margin: 8px 0;">之前：上传"报告.pdf"可能乱码<br/>现在：完美支持中文文件名</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 防止重复回复 ━</p>
+<p style="margin: 8px 0;">添加早期事件级去重，彻底解决飞书群聊重复回复问题。</p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">🔄 会话管理</h2>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 保留关键状态 ━</p>
+<p style="margin: 8px 0;">重置会话时保留：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">lastAccountId</code>：最后使用的账号</p>
+<p style="margin: 4px 0; padding-left: 20px;">• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">lastThreadId</code>：最后的线程 ID</p>
+
+<p style="margin: 20px 0 4px 0; padding: 8px; background: #0366d6; color: #fff; font-weight: 600; text-align: center; border-radius: 4px;">━ 保持角色连续性 ━</p>
+<p style="margin: 8px 0;">压缩摘要时保留：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 人设（persona）</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 语言（language）</p>
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">Agent 不会"忘记"自己是谁了。</strong></p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">⏰ Cron 改进</h2>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">防止嵌套死锁</strong>：</p>
+<p style="margin: 8px 0;">修复了隔离 cron 嵌套 lane 死锁问题，定时任务更稳定。</p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">🛡️ 其他安全修复</h2>
+
+<p style="margin: 4px 0; padding-left: 20px;">• Telegram：媒体传输策略防SSRF</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Gateway：限制未响应的客户端请求数量</p>
+<p style="margin: 4px 0; padding-left: 20px;">• UI：保持共享认证的不安全连接</p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">🌟 18 位新贡献者</h2>
+
+<p style="margin: 8px 0;">这个版本最令人兴奋的是：<strong style="font-weight: 600;">18 位开发者首次为 OpenClaw 贡献代码！</strong></p>
+
+<p style="margin: 8px 0;">包括：</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Android 修复</p>
+<p style="margin: 4px 0; padding-left: 20px;">• Docker 改进</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 配置修复</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 文档改进</p>
+<p style="margin: 4px 0; padding-left: 20px;">• UI 优化</p>
+<p style="margin: 4px 0; padding-left: 20px;">• 安全修复</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">开源社区的力量！</strong></p>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">升级方式</h2>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">npm install -g openclaw@latest</p>
+</section>
+
+<p style="margin: 8px 0;">或 Docker：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">docker pull openclaw/gateway:latest</p>
+</section>
+
+<h2 style="margin-top: 16px; color: #24292e; font-size: 20px; font-weight: 600;">我的看法</h2>
+
+<p style="margin: 8px 0;">这个版本虽然叫"修复版本"，但实际含金量很高：</p>
+
+<p style="margin: 4px 0; padding-left: 20px;">1. <strong style="font-weight: 600;">移动端体验大幅提升</strong>：Android UI 重构 + iOS 欢迎页</p>
+<p style="margin: 4px 0; padding-left: 20px;">2. <strong style="font-weight: 600;">Slack 交互式回复</strong>：企业用户福音</p>
+<p style="margin: 4px 0; padding-left: 20px;">3. <strong style="font-weight: 600;">性能翻倍</strong>：内存占用降低 50%</p>
+<p style="margin: 4px 0; padding-left: 20px;">4. <strong style="font-weight: 600;">安全加固</strong>：多处安全修复</p>
+<p style="margin: 4px 0; padding-left: 20px;">5. <strong style="font-weight: 600;">社区活力</strong>：18 位新贡献者</p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">如果你在用 OpenClaw，强烈建议升级。</strong></p>
+
+<p style="margin: 8px 0;"><strong style="font-weight: 600;">完整更新日志</strong>：https://github.com/openclaw/openclaw/releases/tag/v2026.3.13-1</p>
+
+<p style="margin: 16px 0 0 0; text-align: center; color: #586069; font-size: 14px;">如果觉得有用，点个"在看"吧 👇</p>

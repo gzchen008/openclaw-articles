@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>OpenClaw v2026.3.12 发布：Dashboard v2 + Fast Mode + 安全加固</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.8; color: #333; max-width: 100%; padding: 20px;">
+
+<h1 style="font-size: 24px; font-weight: bold; margin: 24px 0 16px 0; color: #000;">OpenClaw v2026.3.12 发布：Dashboard v2 + Fast Mode + 安全加固</h1>
+
+<p style="margin: 16px 0; color: #666; font-style: italic;">今天刚发布的大版本，重点是全新仪表盘和快速模式。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🚀 主要新特性</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">1. Control UI Dashboard v2（全新仪表盘）</strong><br/><br/>
+<strong style="font-weight: 600;">模块化视图</strong>：<br/>
+• 概览、聊天、配置、Agent、Session 五大模块<br/>
+• <strong style="font-weight: 600;">命令面板</strong> - 快速访问所有功能<br/>
+• <strong style="font-weight: 600;">移动端底部标签</strong> - 手机上更好用<br/>
+• <strong style="font-weight: 600;">增强聊天工具</strong> - 斜杠命令、搜索、导出、置顶消息</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">2. GPT-5.4 Fast Mode（快速模式）</strong><br/><br/>
+<strong style="font-weight: 600;">可配置的会话级快速切换</strong>：<br/><br/>
+• <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">/fast</code> 命令支持<br/>
+• OpenAI/Codex 请求优化<br/>
+• 更快的响应速度<br/>
+• 每个模型可配置默认值</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">3. Provider Plugin 架构</strong><br/><br/>
+<strong style="font-weight: 600;">迁移到插件架构</strong>：<br/>
+• Ollama<br/>
+• vLLM<br/>
+• SGLang<br/><br/>
+<strong style="font-weight: 600;">好处</strong>：核心代码更模块化，更容易添加新 Provider</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">4. Kubernetes 部署支持</strong><br/><br/>
+<strong style="font-weight: 600;">新增 K8s 安装路径</strong>：<br/>
+• 原始 manifests<br/>
+• Kind 集群设置<br/>
+• 完整部署文档</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">5. Slack Block Kit 支持</strong><br/><br/>
+Agent 可以发送 <strong style="font-weight: 600;">Block Kit 消息</strong>：<br/>
+• 通过标准 Slack 出站路径<br/>
+• 支持 <code style="background: #f6f8fa; padding: 2px 6px; border-radius: 3px;">channelData.slack.blocks</code><br/>
+• 更丰富的消息格式</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #f66;">🔒 安全修复（重要！）</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #f66; color: #fff; border-radius: 8px; border-left: 4px solid #000;"><strong style="font-weight: 600;">设备配对安全</strong><br/><br/>
+<strong style="font-weight: 600;">问题</strong>：之前 <code style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 3px;">/pair</code> 和 <code style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 3px;">openclaw qr</code> 会在聊天或 QR 中嵌入共享凭证。<br/><br/>
+<strong style="font-weight: 600;">修复</strong>：切换到 <strong style="font-weight: 600;">短期 bootstrap token</strong>，不再嵌入共享凭证。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">插件安全</strong><br/><br/>
+<strong style="font-weight: 600;">问题</strong>：克隆的仓库可能执行 workspace plugin 代码。<br/><br/>
+<strong style="font-weight: 600;">修复</strong>：<strong style="font-weight: 600;">禁用隐式自动加载</strong>，需要显式信任才能执行。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">Exec 审批安全</strong><br/><br/>
+<strong style="font-weight: 600;">问题</strong>：Unicode 隐藏字符可能绕过检测。<br/><br/>
+<strong style="font-weight: 600;">修复</strong>：<br/>
+• 零宽度和全角命令技巧无法绕过<br/>
+• POSIX 大小写敏感保持<br/>
+• Ruby 审批流程加固</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">Webhook 安全</strong></p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="background: #f6f8fa;">
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">平台</th>
+    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">修复</th>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">飞书</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">要求 encryptKey + verificationToken</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">LINE</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">空事件 POST 也需要签名</td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #ddd; padding: 10px;">Zalo</td>
+    <td style="border: 1px solid #ddd; padding: 10px;">无效密钥猜测限流</td>
+  </tr>
+</table>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🐛 重要 Bug 修复</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">Kimi Coding</strong><br/><br/>
+<strong style="font-weight: 600;">问题</strong>：工具调用降级为 XML/纯文本。<br/>
+<strong style="font-weight: 600;">修复</strong>：恢复 anthropic-messages 工具原生格式。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #0366d6;"><strong style="font-weight: 600;">Telegram</strong><br/><br/>
+<strong style="font-weight: 600;">问题</strong>：模型选择器不持久化。<br/>
+<strong style="font-weight: 600;">修复</strong>：内联模型按钮正确工作。</p>
+
+<p style="margin: 16px 0; padding: 16px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;"><strong style="font-weight: 600;">Mattermost</strong><br/><br/>
+<strong style="font-weight: 600;">问题</strong>：重复消息（一个线程、一个顶层）。<br/>
+<strong style="font-weight: 600;">修复</strong>：修复 block streaming 去重逻辑。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">📊 升级命令</h2>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw update</p>
+</section>
+
+<p style="margin: 12px 0;">升级后建议运行：</p>
+
+<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
+  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">openclaw doctor --fix</p>
+</section>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 12px 0; color: #000;">🎯 总结</h2>
+
+<p style="margin: 16px 0; padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;"><strong style="font-weight: 600;">v2026.3.12 的核心更新</strong>：<br/><br/>
+1. <strong style="font-weight: 600;">Dashboard v2</strong> - 全新模块化仪表盘<br/>
+2. <strong style="font-weight: 600;">Fast Mode</strong> - GPT-5.4 和 Claude 快速模式<br/>
+3. <strong style="font-weight: 600;">Provider Plugin</strong> - Ollama/vLLM/SGLang 插件化<br/>
+4. <strong style="font-weight: 600;">K8s 支持</strong> - Kubernetes 部署路径<br/>
+5. <strong style="font-weight: 600;">安全加固</strong> - 配对、插件、审批、Webhook 全面加固<br/><br/>
+<strong style="font-weight: 600;">推荐升级</strong>：安全修复很重要！</p>
+
+<hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;">
+
+<p style="margin: 16px 0; color: #666; text-align: center;">如果觉得有用，点个"在看"吧 👇</p>
+
+</body>
+</html>

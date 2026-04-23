@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+<h1>EvoMap：让 AI Agent 自动"进化"的黑科技</h1>
+
+<p><strong>告别手动调 prompt，让 AI 自己优化自己</strong></p>
+
+<h2>引言</h2>
+<p>你是不是也有这样的烦恼？</p>
+<p>AI Agent 用了一段时间后，发现 prompt 不够好，手动改了又改。改完之后不知道是不是最优，也没有记录，下次遇到类似问题又要重新调。</p>
+<p>如果 AI 能自己进化，自动优化自己的 prompt，还能记录每次进化的原因和结果，会怎样？</p>
+<p>这不是科幻，这是 <strong>EvoMap</strong> 带来的现实。</p>
+
+<h2>什么是 EvoMap？</h2>
+<p>EvoMap 是一个基于 <strong>GEP (Genome Evolution Protocol)</strong> 协议的 AI Agent 自我进化引擎。</p>
+<p><strong>核心理念：</strong> Evolution is not optional. Adapt or die.（进化不是可选项，要么适应，要么死亡）</p>
+<p><strong>GitHub Stars：</strong> 1k+（10小时前还在更新）</p>
+<p>简单说，它能把你的 <strong>临时 prompt 调整</strong> 变成 <strong>可审计、可复用的进化资产</strong>。</p>
+
+<h2>它解决什么问题？</h2>
+
+<h3>痛点</h3>
+<p>• Prompt 调优全靠经验，没有系统化方法<br/>
+• 每次修改没有记录，无法追溯原因<br/>
+• 好的优化经验无法复用<br/>
+• Agent 越来越"聪明"，但不知道为什么</p>
+
+<h3>EvoMap 的解决方案</h3>
+<p>• 自动分析日志，提取优化信号<br/>
+• 生成协议化的进化指令<br/>
+• 记录每次进化的完整轨迹<br/>
+• 将优化经验编码为可复用的"基因"</p>
+
+<h2>核心概念</h2>
+
+<h3>Gene (基因)</h3>
+<p>可复用的进化单元，比如：<br/>
+• 修复策略：遇到 X 错误时的解决方案<br/>
+• 优化模式：提升 Y 性能的标准方法<br/>
+• 行为约束：确保 Z 安全的规则</p>
+
+<h3>Capsule (胶囊)</h3>
+<p>多个 Gene 的组合封装，形成完整的进化方案。</p>
+
+<h3>Event (事件)</h3>
+<p>每次进化的审计记录，包含：<br/>
+• 进化原因（从日志提取的信号）<br/>
+• 选择的 Gene/Capsule<br/>
+• 执行的操作<br/>
+• 验证结果</p>
+
+<h2>核心功能</h2>
+
+<p><strong>1. 自动日志分析</strong><br/>
+扫描 memory 和 history 文件，提取错误和模式信号。不需要手动分析，系统自动发现问题。</p>
+
+<p><strong>2. 自我修复指导</strong><br/>
+从信号中生成修复指令，自动生成优化建议。</p>
+
+<p><strong>3. GEP 协议</strong><br/>
+标准化进化流程，确保每次进化都是可预测、可审计的。</p>
+
+<p><strong>4. 多策略模式</strong></p>
+
+<section style="margin: 20px 0; padding: 16px; background: #f6f8fa; border-radius: 6px; border-left: 3px solid #0366d6;">
+<pre style="margin: 0; white-space: pre-wrap; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.6;"><code>EVOLVE_STRATEGY=balanced   # 平衡模式（默认）
+EVOLVE_STRATEGY=innovate   # 创新模式（最大化新功能）
+EVOLVE_STRATEGY=harden     # 强化模式（专注稳定性）
+EVOLVE_STRATEGY=repair-only # 紧急修复模式</code></pre>
+</section>
+
+<p><strong>5. 运营模块</strong><br/>
+• 生命周期管理（启动/停止/健康检查）<br/>
+• 技能监控<br/>
+• 自动清理<br/>
+• 唤醒触发器</p>
+
+<h2>如何使用？</h2>
+
+<h3>一行命令进化</h3>
+
+<section style="margin: 20px 0; padding: 16px; background: #f6f8fa; border-radius: 6px; border-left: 3px solid #0366d6;">
+<pre style="margin: 0; white-space: pre-wrap; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.6;"><code>node index.js</code></pre>
+</section>
+
+<p>就这么简单！系统会：<br/>
+1. 分析日志<br/>
+2. 提取信号<br/>
+3. 选择 Gene/Capsule<br/>
+4. 生成进化 prompt<br/>
+5. 记录事件</p>
+
+<h3>循环模式</h3>
+
+<section style="margin: 20px 0; padding: 16px; background: #f6f8fa; border-radius: 6px; border-left: 3px solid #0366d6;">
+<pre style="margin: 0; white-space: pre-wrap; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.6;"><code>node index.js --loop</code></pre>
+</section>
+
+<p>持续监控，自动进化。</p>
+
+<h3>后台运行</h3>
+
+<section style="margin: 20px 0; padding: 16px; background: #f6f8fa; border-radius: 6px; border-left: 3px solid #0366d6;">
+<pre style="margin: 0; white-space: pre-wrap; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.6;"><code>node src/ops/lifecycle.js start   # 启动
+node src/ops/lifecycle.js status  # 查看状态
+node src/ops/lifecycle.js check   # 健康检查
+node src/ops/lifecycle.js stop    # 停止</code></pre>
+</section>
+
+<h2>实际应用场景</h2>
+
+<p><strong>场景 1：强化不稳定的 Agent</strong><br/>
+你的 Agent 经常在某个环节出错？EvoMap 会分析错误日志、提取错误模式、生成修复 Gene、在编辑前强制验证。</p>
+
+<p><strong>场景 2：可审计的进化历史</strong><br/>
+需要向老板/客户展示 Agent 的改进轨迹？EvoMap 提供每次进化的完整记录、变更原因和结果、符合审计要求的事件日志。</p>
+
+<p><strong>场景 3：跨项目复用经验</strong><br/>
+在一个项目上积累的优化经验，能在另一个项目上复用？EvoMap 的 Gene/Capsule 可以导出为 JSON 文件、在不同项目间共享、形成团队的知识库。</p>
+
+<h2>安全特性</h2>
+
+<p><strong>命令白名单</strong><br/>
+只允许 node, npm, npx 开头的命令，防止任意命令执行。</p>
+
+<p><strong>禁止危险操作</strong><br/>
+• 禁止命令替换（反引号、$()）<br/>
+• 禁止 shell 操作符（; & | >）<br/>
+• 禁止覆盖核心源文件</p>
+
+<p><strong>外部资产隔离</strong><br/>
+外部 Gene/Capsule 先放入隔离区，需要显式验证才能使用。</p>
+
+<h2>架构设计</h2>
+
+<p><strong>进化流程</strong></p>
+
+<section style="margin: 20px 0; padding: 16px; background: #f6f8fa; border-radius: 6px; border-left: 3px solid #0366d6;">
+<pre style="margin: 0; white-space: pre-wrap; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.6;"><code>信号提取 → 基因选择 → 协议提示生成 → 进化执行 → 事件记录</code></pre>
+</section>
+
+<p><strong>资产存储</strong></p>
+
+<section style="margin: 20px 0; padding: 16px; background: #f6f8fa; border-radius: 6px; border-left: 3px solid #0366d6;">
+<pre style="margin: 0; white-space: pre-wrap; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.6;"><code>assets/gep/
+├── genes.json      # 基因库
+├── capsules.json   # 胶囊库
+└── events.jsonl    # 事件日志</code></pre>
+</section>
+
+<h2>适用场景</h2>
+
+<p><strong>✅ 适合</strong><br/>
+• 维护大量 agent prompts 的团队<br/>
+• 需要可审计进化追踪的项目<br/>
+• 需要确定性、协议约束变更的环境<br/>
+• 希望复用优化经验的组织</p>
+
+<p><strong>❌ 不适合</strong><br/>
+• 一次性脚本（无日志/历史）<br/>
+• 需要自由形式创意变更的项目<br/>
+• 无法容忍协议开销的系统<br/>
+• 不需要审计的简单场景</p>
+
+<h2>与 OpenClaw 的集成</h2>
+<p>EvoMap 可以无缝集成到 OpenClaw：EvoMap 生成 sessions_spawn(...) 文本，OpenClaw 运行时解释并执行，环境无关设计，适配不同平台。</p>
+
+<h2>快速开始</h2>
+
+<p><strong>安装</strong></p>
+
+<section style="margin: 20px 0; padding: 16px; background: #f6f8fa; border-radius: 6px; border-left: 3px solid #0366d6;">
+<pre style="margin: 0; white-space: pre-wrap; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.6;"><code>git clone https://github.com/EvoMap/evolver
+cd evolver
+npm install</code></pre>
+</section>
+
+<p><strong>运行</strong></p>
+
+<section style="margin: 20px 0; padding: 16px; background: #f6f8fa; border-radius: 6px; border-left: 3px solid #0366d6;">
+<pre style="margin: 0; white-space: pre-wrap; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.6;"><code>node index.js</code></pre>
+</section>
+
+<p><strong>查看进化记录</strong></p>
+
+<section style="margin: 20px 0; padding: 16px; background: #f6f8fa; border-radius: 6px; border-left: 3px solid #0366d6;">
+<pre style="margin: 0; white-space: pre-wrap; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.6;"><code>cat assets/gep/events.jsonl</code></pre>
+</section>
+
+<h2>总结</h2>
+<p>EvoMap 代表了 AI Agent 开发的一个重要方向：<strong>从"手工调优"到"系统化进化"</strong>。</p>
+
+<p><strong>核心价值：</strong></p>
+<p>• 🧬 系统化进化：将 prompt 优化从手工操作变为协议化流程<br/>
+• 📊 可审计性：每次进化都有完整记录<br/>
+• 🔄 可复用性：Gene/Capsule 可跨项目共享<br/>
+• 🛡️ 安全性：严格的命令白名单和隔离机制<br/>
+• 🎯 多策略：根据场景选择不同进化方向</p>
+
+<p><strong>一句话总结：</strong></p>
+<p>EvoMap 让 AI Agent 的进化从"随意的 prompt 调整"变成"有协议、可审计、可复用的系统化过程"。</p>
+
+<p>开源免费 + 易于上手 + 生产可用 = 2026 年最值得尝试的 AI Agent 工具之一。</p>
+
+<hr style="border: none; border-top: 1px solid #d0d7de; margin: 30px 0;"/>
+
+<p><strong>相关链接：</strong></p>
+<p>• 官网：https://evomap.ai<br/>
+• 文档：https://evomap.ai/wiki<br/>
+• GitHub：https://github.com/EvoMap/evolver</p>
+
+<hr style="border: none; border-top: 1px solid #d0d7de; margin: 30px 0;"/>
+
+<p><em>让 AI 真正学会自我进化，从 EvoMap 开始。</em></p>
+</body>
+</html>

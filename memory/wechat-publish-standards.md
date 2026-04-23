@@ -22,29 +22,35 @@
 
 #### 避免多余黑点（最重要！）
 - **⚠️ 微信公众号会渲染 `<ul>/<li>` 标签时产生多余黑点，即使紧凑排列也会出问题**
-- **✅ 正确方案：不使用 `<ul>/<li>`，改用 `<p>` 标签**
+- **✅ 正确方案：不使用 `<ul>/<li>`，改用 `<p>` + `▸` 符号**
 - 错误写法（会有黑点）：
   ```html
   <ul><li>项目1</li><li>项目2</li></ul>
   ```
-- 正确写法（无黑点）：
+- 正确写法（无黑点，用 ▸ 符号）：
   ```html
-  <p style="margin: 4px 0; padding-left: 20px;">• 项目1</p>
-  <p style="margin: 4px 0; padding-left: 20px;">• 项目2</p>
+  <p style="margin: 6px 0; padding-left: 12px;">▸ 项目1</p>
+  <p style="margin: 6px 0; padding-left: 12px;">▸ 项目2</p>
   ```
 - **编号列表也用 `<p>` 代替 `<ol>/<li>`**：
   ```html
-  <p style="margin: 4px 0; padding-left: 20px;">1. 第一步</p>
-  <p style="margin: 4px 0; padding-left: 20px;">2. 第二步</p>
+  <p style="margin: 6px 0; padding-left: 12px;">1. 第一步</p>
+  <p style="margin: 6px 0; padding-left: 12px;">2. 第二步</p>
   ```
 
 #### 代码块格式
 - **⚠️ 不要用 `<pre><code>` 标签！公众号渲染有问题**
-- **✅ 正确方案：用 `<section>` + 背景色 + 等宽字体**
+- **⚠️ 不要用 pandoc 转 HTML！pandoc 输出不适合公众号**
+- **✅ 正确方案：手写 HTML，用 `<section>` + 灰底 + 蓝色左边框 + 等宽字体**
 ```html
-<section style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 8px 0;">
-  <p style="margin: 0; font-family: monospace; font-size: 14px; color: #24292e;">npm install xxx</p>
-</section>
+<section style="margin: 12px 0; padding: 12px 16px; background: #F6F8FA; border-left: 3px solid #2B579A; font-size: 14px; line-height: 2; font-family: 'Menlo', monospace; color: #24292e;">git clone https://github.com/xxx<br>cd xxx<br>npm install</section>
+```
+- 多行内容用 `<br>` 换行，不用多个 `<p>`
+
+#### 章节标题格式
+- **用 `<h2>` + 蓝色背景条**：
+```html
+<h2 style="margin: 24px 0 12px; padding: 8px 12px; background: #2B579A; color: #fff; font-size: 18px;">📖 章节标题</h2>
 ```
 
 #### 多项目/模块分隔（重要！）
@@ -113,8 +119,8 @@
 - 每次创建新草稿会生成新的 media_id
 
 ### 固定资源
-- **封面 ID**: `Sgs1hrgsJnAqIX94EoxAiNKZV3aIkaiHaO-BxJAzU0HrGitHNxAU2MGiKD6-H61W`
-- **封面文件**: `articles/default-cover.jpg`
+- **封面 ID**: `Sgs1hrgsJnAqIX94EoxAiGjxID8T5kW0p9NaZBe4sc5-vVJz3cEvJdHq7IoV66Ge`（2026-04-19 更新）
+- **封面文件**: 之前文件已丢失，使用 SVG 生成的封面
 - **最新草稿 ID**: 保存在 `articles/.draft-state.json`
 
 ### 任务流程
@@ -127,6 +133,70 @@
 6. 发送 Discord 通知给用户
 7. 用户手动发布
 ```
+
+---
+
+## 🖼️ 架构图生成（fireworks-tech-graph）
+
+### 触发场景
+- 文章涉及系统架构、项目结构、流程设计时
+- 用户明确要求画架构图
+- 介绍开源项目时，补充架构图能提升可读性
+
+### Skill 位置
+- **架构图 Skill**: `skills/fireworks-tech-graph/`
+- **依赖**: `rsvg-convert`（brew install librsvg）
+- **输出**: SVG + PNG（1920px 宽）
+
+### 工作流程
+```
+1. 分析项目/系统结构（源码包结构、README、文档）
+2. 提取模块、层级、关系
+3. 加载 Skill 参考文件（references/style-N.md）
+4. 用 Python 生成 SVG（避免字符截断）
+5. rsvg-convert 导出 1920px PNG
+6. 上传图片到微信素材库
+7. 嵌入文章 HTML
+```
+
+### 架构图嵌入文章格式
+```html
+<!-- 架构图：居中，圆角，最大宽度 100% -->
+<p style="margin: 12px 0; text-align: center;">
+  <img src="微信图片URL" style="max-width: 100%; border-radius: 6px;"/>
+</p>
+<p style="margin: 4px 0; font-size: 12px; color: #8b949e; text-align: center;">图注说明（作者绘制）</p>
+```
+
+### 上传图片到微信
+```bash
+python3 skills/wechat-mp-publish/scripts/wechat_publisher.py upload /tmp/architecture.png
+# 返回 media_id 和 url，用 url 嵌入文章
+```
+
+### SVG 生成规范
+- **必须用 Python list 方法**生成 SVG（避免字符截断）
+- ViewBox 推荐 `0 0 960 600` 或 `0 0 960 800`
+- 导出 PNG 宽度固定 1920px（2x Retina）
+- 验证命令：`rsvg-convert file.svg -o /dev/null 2>&1`
+- 导出命令：`rsvg-convert -w 1920 file.svg -o file.png`
+
+### 常见图型
+- **架构图**：分层设计，水平/垂直布局
+- **流程图**：业务流程、决策分支
+- **时序图**：API 调用时序
+- **数据流图**：数据在各模块间的流转
+- **对比矩阵**：方案/产品功能对比
+
+### 默认风格
+- Style 1（Flat Icon）：白底简洁，适合公众号
+- 可根据文章调性选择 Dark（技术文章）或 Blueprint（架构文档）
+
+### 注意事项
+- 架构图节点不宜超过 20 个，太多会拥挤
+- 中文标签用 PingFang SC / Microsoft YaHei
+- 导出前务必验证 SVG 语法
+- 图片 URL 使用微信返回的 mmbiz 域名，不要用本地路径
 
 ---
 

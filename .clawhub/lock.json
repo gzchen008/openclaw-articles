@@ -40,6 +40,18 @@
     "workspace-review": {
       "version": "1.0.2",
       "installedAt": 1776174159264
+    },
+    "workspace-cleaner": {
+      "version": "1.0.0",
+      "installedAt": 1776174449852
+    },
+    "openclaw-acp-channel-skill": {
+      "version": "0.1.4",
+      "installedAt": 1776594912558
+    },
+    "acp": {
+      "version": "1.0.0",
+      "installedAt": 1776784901590
     }
   }
 }

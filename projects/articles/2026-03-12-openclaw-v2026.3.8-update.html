@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw 2026.3.8 发布：备份功能、LLM 搜索增强、ACP 来源追踪</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 28px;
+            color: #1a1a1a;
+            border-bottom: 3px solid #0066ff;
+            padding-bottom: 15px;
+            margin-top: 0;
+        }
+        .meta {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            font-size: 22px;
+            color: #1a1a1a;
+            margin-top: 35px;
+            border-left: 4px solid #0066ff;
+            padding-left: 15px;
+        }
+        h3 {
+            font-size: 18px;
+            color: #333;
+            margin-top: 25px;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: "SF Mono", Monaco, "Courier New", monospace;
+            font-size: 14px;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        .highlight {
+            background: linear-gradient(120deg, #ffecb3 0%, #ffecb3 100%);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .contributors {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .cta {
+            background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        .cta code {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+        blockquote {
+            border-left: 4px solid #0066ff;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: #f0f7ff;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OpenClaw 2026.3.8 发布：备份功能、LLM 搜索增强、ACP 来源追踪</h1>
+        
+        <div class="meta">
+            📅 2026年3月9日 | 💅 OpenClaw 团队
+        </div>
+
+        <blockquote>
+            2026年3月9日，OpenClaw 发布 v2026.3.8 版本，带来多项重要功能更新和修复。
+        </blockquote>
+
+        <h2><span class="emoji">🎯</span> 核心亮点</h2>
+
+        <h3><span class="emoji">📦</span> CLI 备份功能</h3>
+        <p>新增 <code>openclaw backup create</code> 和 <code>openclaw backup verify</code> 命令：</p>
+        <pre><code># 创建本地状态备份
+openclaw backup create
+
+# 仅备份配置（不含工作区）
+openclaw backup create --only-config
+
+# 验证备份完整性
+openclaw backup verify</code></pre>
+        <ul>
+            <li>支持 <code>--only-config</code> 仅备份配置</li>
+            <li>支持 <code>--no-include-workspace</code> 排除工作区</li>
+            <li>提供清单和负载验证</li>
+            <li>在破坏性操作流程中提供备份引导</li>
+        </ul>
+
+        <h3><span class="emoji">🔍</span> Brave 搜索 LLM Context</h3>
+        <p>新增 <code>web_search</code> 的 LLM Context 端点支持：</p>
+        <pre><code>// openclaw.json
+{
+  "tools": {
+    "web": {
+      "search": {
+        "brave": {
+          "mode": "llm-context"
+        }
+      }
+    }
+  }
+}</code></pre>
+        <ul>
+            <li>返回提取的 grounding 片段和来源元数据</li>
+            <li>提供更精准的搜索结果上下文</li>
+        </ul>
+
+        <h3><span class="emoji">🎙️</span> Talk 模式静默超时配置</h3>
+        <p>新增 <code>talk.silenceTimeoutMs</code> 配置项，可自定义语音识别的静默等待时间：</p>
+        <pre><code>{
+  "talk": {
+    "silenceTimeoutMs": 2000  // 2秒静默后自动发送
+  }
+}</code></pre>
+
+        <h3><span class="emoji">🔗</span> ACP 来源追踪</h3>
+        <p>新增 ACP 入口来源元数据和可见收据注入：</p>
+        <pre><code>openclaw acp --provenance off|meta|meta+receipt</code></pre>
+        <ul>
+            <li>保留并报告 ACP 来源上下文</li>
+            <li>包含会话追踪 ID</li>
+        </ul>
+
+        <h2><span class="emoji">🖥️</span> macOS 增强</h2>
+        <ul>
+            <li><strong>远程网关 Token 字段</strong>：在 macOS 应用中新增远程模式 token 输入字段</li>
+            <li><strong>Tailscale 网关发现</strong>：保持 Tailscale Serve 探测活跃，优先使用直接传输</li>
+            <li><strong>LaunchAgent 重启</strong>：重新启用被禁用的 LaunchAgent 服务，支持从禁用状态恢复</li>
+        </ul>
+
+        <h2><span class="emoji">🛠️</span> TUI 改进</h2>
+        <ul>
+            <li>自动从当前工作区推断活动 agent</li>
+            <li>新增亮色主题支持，通过 <code>COLORFGBG</code> 自动检测终端背景</li>
+            <li>支持通过 <code>OPENCLAW_THEME=light|dark</code> 手动切换</li>
+        </ul>
+
+        <h2><span class="emoji">🌐</span> 浏览器与网络</h2>
+        <h3>Chrome 扩展中继</h3>
+        <ul>
+            <li>新增 <code>browser.relayBindHost</code> 配置，支持绑定到非回环地址</li>
+            <li>改进 WSL2 和跨命名空间的设置兼容性</li>
+        </ul>
+
+        <h3>CDP 改进</h3>
+        <ul>
+            <li>规范化回环直接 WebSocket CDP URL</li>
+            <li>修复 Browserless 风格容器端点的通配符 URL 处理</li>
+        </ul>
+
+        <h2><span class="emoji">📱</span> Android 精简</h2>
+        <p>Android 应用移除以下权限和功能：</p>
+        <ul>
+            <li>自更新功能</li>
+            <li>后台位置</li>
+            <li>屏幕录制</li>
+            <li>后台麦克风捕获</li>
+        </ul>
+        <p>前台服务仅保留 <code>dataSync</code> 类型，更加轻量和隐私友好。</p>
+
+        <h2><span class="emoji">💬</span> 消息平台修复</h2>
+        <h3>Telegram</h3>
+        <ul>
+            <li><strong>DM 路由</strong>：按 agent 去重入站 DM，避免重复回复</li>
+            <li><strong>轮播重启清理</strong>：关闭时中止进行中的 API 获取</li>
+            <li><strong>媒体下载</strong>：仅对停滞的 body 读取超时，不中断慢速下载</li>
+        </ul>
+
+        <h3>Matrix</h3>
+        <ul>
+            <li>更安全的 <code>m.direct</code> 回退检测</li>
+            <li>尊重显式房间绑定而非 DM 分类</li>
+        </ul>
+
+        <h3>Feishu</h3>
+        <ul>
+            <li><strong>插件引导</strong>：在安装频道插件后清除短期插件发现缓存，避免重复提示下载</li>
+        </ul>
+
+        <h2><span class="emoji">🐳</span> 容器与部署</h2>
+        <h3>Podman 改进</h3>
+        <ul>
+            <li>修复 <code>run_as_user</code> 中的权限拒绝问题</li>
+            <li><strong>SELinux 自动检测</strong>：自动检测 SELinux 强制/宽容模式，为绑定挂载添加 <code>:Z</code> 重新标记</li>
+        </ul>
+
+        <h3>Docker 镜像优化</h3>
+        <ul>
+            <li>精简开发依赖</li>
+            <li>剥离仅构建的 dist 元数据，减小镜像体积</li>
+        </ul>
+
+        <h2><span class="emoji">🔒</span> 安全加固</h2>
+        <ul>
+            <li><strong>浏览器 SSRF</strong>：在严格浏览器导航流中阻止私有网络中间重定向跳转</li>
+            <li><strong>MS Teams 授权</strong>：即使配置了团队/频道路由允许列表，<code>groupPolicy: "allowlist"</code> 仍强制执行发送者允许列表</li>
+            <li><strong>system.run</strong>：将批准的 <code>bun</code> 和 <code>deno run</code> 脚本操作数绑定到磁盘文件快照，防止批准后脚本重写</li>
+        </ul>
+
+        <h2><span class="emoji">📊</span> GPT-5.4 支持</h2>
+        <ul>
+            <li>使用 GPT-5.4 的 1,050,000 token 上下文窗口</li>
+            <li>支持 128,000 最大 token 数</li>
+            <li>规范化 <code>gpt-5.4</code> 回退传输</li>
+        </ul>
+
+        <h2><span class="emoji">🙏</span> 贡献者</h2>
+        <div class="contributors">
+            感谢所有贡献者对本版本的贡献！<br><br>
+            @shichangs, @cgdusek, @danodoesdesign, @arceus77-7, @thirumaleshp, @sourman, @gumadeiras, @mbelinky, @kesku, @remusao, @Imhermes1, @obviyus, @derbronko, @GazeKingNuWu, @bbblending, @LarytheLord, @mvanhorn, @shrey150, @joeharouni, @AaronWander, @ngutman, @ademczuk, @vincentkoc, @0xsline, @yuweuii, @gambletan, @hnykda, @fellanH, @dmiv, @rbutera, @jalehman, @langdon, @jlcbk, @velvet-shark, @tysoncung, @dsantoreis, @lml2468, @dimat, @Gkinthecodeland, @rexlunae, @zpbrent, @tdjackey
+        </div>
+
+        <div class="cta">
+            <h3 style="margin-top:0">📥 立即更新</h3>
+            <pre><code>openclaw update</code></pre>
+            <p style="margin-bottom:0">或查看完整发布说明：<br>https://github.com/openclaw/openclaw/releases/tag/v2026.3.8</p>
+        </div>
+
+        <p style="text-align:center;margin-top:40px;color:#999;">
+            <strong>OpenClaw</strong> - 你的 AI 代理操作系统 💅
+        </p>
+    </div>
+</body>
+</html>

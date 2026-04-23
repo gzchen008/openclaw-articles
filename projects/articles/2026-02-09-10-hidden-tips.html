@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw 10个隐藏技巧</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+            position: relative;
+        }
+        
+        .meta-info {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6c757d;
+            font-size: 0.95em;
+        }
+        
+        .meta-item .icon {
+            font-size: 1.2em;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .intro {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border-left: 5px solid #ff6b6b;
+        }
+        
+        .intro h2 {
+            color: #e74c3c;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .intro p {
+            color: #5d4e37;
+            font-size: 1.05em;
+        }
+        
+        .pain-points {
+            background: #fff5f5;
+            border: 2px dashed #feb2b2;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+        
+        .pain-points h3 {
+            color: #c53030;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pain-points ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .pain-points li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #744210;
+        }
+        
+        .pain-points li::before {
+            content: '❌';
+            position: absolute;
+            left: 0;
+        }
+        
+        .tip-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .tip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .tip-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .tip-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .tip-title {
+            font-size: 1.4em;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        .tip-desc {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.05em;
+        }
+        
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: #2d3748;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .code-block code {
+            display: block;
+            margin-top: 25px;
+            line-height: 1.6;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .highlight-box strong {
+            color: #22543d;
+        }
+        
+        .highlight-box p {
+            color: #276749;
+            margin: 5px 0;
+        }
+        
+        .model-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .model-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .model-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .model-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .model-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .faq-section {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+        
+        .faq-section h2 {
+            color: #2d3748;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.6em;
+        }
+        
+        .faq-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .faq-item h4 {
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .faq-item p {
+            color: #718096;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .cta-section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        
+        .cta-steps {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .cta-step {
+            background: rgba(255,255,255,0.2);
+            padding: 20px 30px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .cta-step .day {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .cta-step .action {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+        
+        .footer .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .footer .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .tip-card {
+                padding: 20px;
+            }
+            
+            .cta-steps {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔥 OpenClaw 的 10 个隐藏技巧</h1>
+            <p class="subtitle">90% 的人不知道，但能让效率提升 3 倍</p>
+        </header>
+        
+        <div class="meta-info">
+            <div class="meta-item">
+                <span class="icon">📅</span>
+                <span>系列第 6 天</span>
+            </div>
+            <div class="meta-item">
+                <span class="icon">⏱️</span>
+                <span>阅读约 8 分钟</span>
+            </div>
+            <div class="meta-item">
+                <span class="icon">📊</span>
+                <span>难度 ⭐⭐⭐</span>
+            </div>
+            <div class="meta-item">
+                <span class="icon">🎯</span>
+                <span>适合：已安装 OpenClaw 想提升效率的用户</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="intro">
+                <h2>💡 为什么你需要这些技巧？</h2>
+                <p>用了两周 OpenClaw，我发现 <strong>90% 的用户只用到它 30% 的功能</strong>。每天还在手动复制粘贴？还在一个对话框里挤所有任务？还在用同一个模型处理所有问题？如果你也是这样，那这篇文章就是为你写的。</p>
+            </div>
+            
+            <div class="pain-points">
+                <h3>🚨 这些困扰你有吗？</h3>
+                <ul>
+                    <li>所有对话都在一个会话里，历史记录混乱</li>
+                    <li>不知道当前用的什么模型，响应快慢全靠运气</li>
+                    <li>重复的任务每次都手动操作</li>
+                    <li>想让 AI 查个网页，结果只给了文字描述</li>
+                </ul>
+            </div>
+            
+            <!-- Tip 1 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">1</div>
+                    <h3 class="tip-title">/status - 一键查看会话状态</h3>
+                </div>
+                <p class="tip-desc">查看当前会话的详细信息，包括使用的模型、token 消耗、会话类型等。感觉回复变慢了？先检查状态！</p>
+                <div class="code-block"><code>/status</code></div>
+                <div class="highlight-box">
+                    <strong>💡 你会看到：</strong>
+                    <p>🎯 当前模型（kimi-coding/k2p5）</p>
+                    <p>💰 Token 消耗估算</p>
+                    <p>🌐 频道类型（Discord/Telegram/Slack）</p>
+                    <p>⚙️ 推理模式状态</p>
+                </div>
+            </div>
+            
+            <!-- Tip 2 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">2</div>
+                    <h3 class="tip-title">/reasoning - 开启深度思考模式</h3>
+                </div>
+                <p class="tip-desc">让 AI 在回答前展示完整的思考过程，适合复杂问题分析。Debug 时看 AI 如何定位问题，学习新知识点时理解思考方式。</p>
+                <div class="code-block"><code>/reasoning on   # 开启
+/reasoning off  # 关闭</code></div>
+                <div class="highlight-box">
+                    <strong>💡 使用建议：</strong>
+                    <p>编程 Debug 时开启，简单问答时关闭节省 token</p>
+                </div>
+            </div>
+            
+            <!-- Tip 3 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">3</div>
+                    <h3 class="tip-title">多模型切换 - 不同任务用不同武器</h3>
+                </div>
+                <p class="tip-desc">OpenClaw 支持多个 AI 模型，根据任务类型自由切换。写代码、写文案、分析数据，各找各的专家。</p>
+                <table class="model-table">
+                    <tr>
+                        <th>模型</th>
+                        <th>适用场景</th>
+                        <th>特点</th>
+                    </tr>
+                    <tr>
+                        <td>@kimi-coding</td>
+                        <td>编程、技术问题</td>
+                        <td>代码能力强，响应快</td>
+                    </tr>
+                    <tr>
+                        <td>@claude</td>
+                        <td>写作、分析、长文本</td>
+                        <td>逻辑清晰，表达自然</td>
+                    </tr>
+                    <tr>
+                        <td>@gpt4</td>
+                        <td>通用任务、创意生成</td>
+                        <td>综合能力最强</td>
+                    </tr>
+                    <tr>
+                        <td>@glm</td>
+                        <td>中文内容、翻译</td>
+                        <td>中文理解好</td>
+                    </tr>
+                </table>
+                <div class="code-block"><code>@kimi-coding 帮我写这段 Python 代码
+@claude 帮我润色这封邮件
+@gpt4 帮我分析这个商业案例</code></div>
+            </div>
+            
+            <!-- Tip 4 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">4</div>
+                    <h3 class="tip-title">子会话 spawn - 并行处理多任务</h3>
+                </div>
+                <p class="tip-desc">在后台启动独立的子会话，同时处理多个任务，互不干扰。让 AI 在后台跑耗时任务，你继续做其他事。</p>
+                <div class="code-block"><code>spawn: 帮我分析这份数据，晚上给我结果
+
+# 详细配置
+spawn:
+任务：分析附件中的销售数据，生成周报
+模型：kimi-coding
+超时：300秒
+标签：周报分析</code></div>
+                <div class="highlight-box">
+                    <strong>💡 管理子会话：</strong>
+                    <p>sessions_list - 查看所有子会话状态</p>
+                    <p>sessions_send - 给子会话发送消息</p>
+                </div>
+            </div>
+            
+            <!-- Tip 5 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">5</div>
+                    <h3 class="tip-title">memory_search - 秒搜历史记忆</h3>
+                </div>
+                <p class="tip-desc">语义搜索你之前和 AI 的对话记录，快速找到需要的信息。再也不用翻历史记录了！</p>
+                <div class="code-block"><code>帮我搜索之前讨论过的 Docker 配置方法
+
+# 直接调用工具
+memory_search: 查询关于 "数据库备份" 的记忆</code></div>
+                <div class="highlight-box">
+                    <strong>💡 小贴士：</strong>
+                    <p>重要结论让 AI 写入 MEMORY.md，方便长期保存</p>
+                </div>
+            </div>
+            
+            <!-- Tip 6 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">6</div>
+                    <h3 class="tip-title">浏览器自动化 - 让 AI 帮你「逛」网页</h3>
+                </div>
+                <p class="tip-desc">OpenClaw 可以控制浏览器，截图、点击、填写表单，真正「看懂」网页。不只是描述，而是实际访问！</p>
+                <div class="code-block"><code>帮我打开 https://github.com/trending，截图看看今天的趋势
+
+打开 https://example.com，点击登录按钮，截图给我看登录页面</code></div>
+                <div class="highlight-box">
+                    <strong>💡 适用场景：</strong>
+                    <p>监控网页变化、自动化填写表单、截图验证页面效果、数据采集</p>
+                </div>
+            </div>
+            
+            <!-- Tip 7 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">7</div>
+                    <h3 class="tip-title">Cron 定时任务 - 设置一次，每天自动执行</h3>
+                </div>
+                <p class="tip-desc">让 AI 在指定时间自动执行任务，每天早上自动生成工作日报、定时提醒、自动报告。</p>
+                <div class="code-block"><code># 创建定时任务
+每天早上 9 点帮我生成今日待办事项
+
+# 手动配置示例
+{
+  "name": "每日早报",
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 9 * * *"
+  },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "生成今日早报"
+  }
+}</code></div>
+                <div class="highlight-box">
+                    <strong>💡 小贴士：</strong>
+                    <p>一次性提醒用 at 类型，循环任务用 cron 表达式</p>
+                </div>
+            </div>
+            
+            <!-- Tip 8 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">8</div>
+                    <h3 class="tip-title">代码执行与文件操作 - AI 直接动手</h3>
+                </div>
+                <p class="tip-desc">OpenClaw 可以直接执行代码、读写文件、运行命令，不只是「说说而已」。让 AI 真正帮你干活！</p>
+                <div class="code-block"><code># 执行命令
+帮我查看当前目录下的所有文件
+
+# 读写文件
+把这段代码保存到 test.py 文件
+读取 ~/.openclaw/workspace/config.json 给我看看
+
+# 运行代码
+运行这段 Python 代码，看看输出结果</code></div>
+            </div>
+            
+            <!-- Tip 9 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">9</div>
+                    <h3 class="tip-title">TTS 语音输出 - 让 AI 开口说话</h3>
+                </div>
+                <p class="tip-desc">将文字转换为语音，支持多种声音和输出格式。把长文章转成音频，通勤时听！</p>
+                <div class="code-block"><code>把这段话转成语音："欢迎使用 OpenClaw"
+
+# 代码调用
+tts(text="你好世界", channel="telegram")</code></div>
+                <div class="highlight-box">
+                    <strong>💡 适用场景：</strong>
+                    <p>长文章转音频、视频配音、播客内容、视障辅助阅读</p>
+                </div>
+            </div>
+            
+            <!-- Tip 10 -->
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-number">10</div>
+                    <h3 class="tip-title">跨会话消息发送 - 多群组协同</h3>
+                </div>
+                <p class="tip-desc">在不同会话/频道之间发送消息，实现跨群通知、多频道同步。主会话监控多个子会话状态。</p>
+                <div class="code-block"><code># 发送到指定会话
+发送消息到工作群：今天的会议取消了
+
+# 直接调用
+sessions_send(sessionKey="xxx", message="任务完成")
+
+# 查看所有会话
+sessions_list</code></div>
+            </div>
+            
+            <!-- FAQ -->
+            <div class="faq-section">
+                <h2>❓ 常见问题</h2>
+                
+                <div class="faq-item">
+                    <h4>Q1: 这些技巧会消耗很多 token 吗？</h4>
+                    <p>大部分不会。只有 /reasoning 和浏览器自动化会额外消耗，建议按需使用。</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h4>Q2: 可以同时使用多个技巧吗？</h4>
+                    <p>完全可以！比如在子会话中使用浏览器自动化，同时主会话继续对话。</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h4>Q3: 技巧记不住怎么办？</h4>
+                    <p>收藏这篇文章，或者在 MEMORY.md 中记录你常用的技巧。</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h4>Q4: 某些功能提示权限不足？</h4>
+                    <p>部分功能需要特定配置或权限，检查你的 OpenClaw 配置。</p>
+                </div>
+            </div>
+            
+            <!-- CTA -->
+            <div class="cta-section">
+                <h2>🚀 下一步建议</h2>
+                <p>看完这 10 个技巧，建议你这样开始：</p>
+                <div class="cta-steps">
+                    <div class="cta-step">
+                        <div class="day">今天</div>
+                        <div class="action">挑 2-3 个技巧马上试试</div>
+                    </div>
+                    <div class="cta-step">
+                        <div class="day">本周</div>
+                        <div class="action">整理成自己的速查表</div>
+                    </div>
+                    <div class="cta-step">
+                        <div class="day">持续</div>
+                        <div class="action">关注新功能第一时间体验</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>📢 下期预告：《7天玩转 OpenClaw：从安装到精通的全流程》</p>
+            <p>把 7 天的内容串起来，给你一个完整的学习路径</p>
+            <br>
+            <p>如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！</p>
+            <p>有任何问题，欢迎在评论区留言 👋</p>
+        </footer>
+    </div>
+</body>
+</html>

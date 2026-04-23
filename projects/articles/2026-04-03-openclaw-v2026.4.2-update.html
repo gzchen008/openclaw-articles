@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>OpenClaw v2026.4.2 发布：重大更新与功能增强</title>
+  <style>
+
+html {
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 12px;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+html {
+background-color: white;
+}
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+svg {
+height: auto;
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+font-size: 85%;
+margin: 0;
+hyphens: manual;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+border: none;
+border-top: 1px solid #1a1a1a;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">OpenClaw v2026.4.2 发布：重大更新与功能增强</h1>
+</header>
+<h1 id="openclaw-v2026.4.2-发布重大更新与功能增强">OpenClaw v2026.4.2
+发布：重大更新与功能增强</h1>
+<p><strong>发布日期：</strong> 2026年4月3日<br />
+<strong>版本号：</strong> v2026.4.2<br />
+<strong>更新类型：</strong> 重大功能更新</p>
+<h2 id="版本概览">🎉 版本概览</h2>
+<p>OpenClaw v2026.4.2
+是一个重要的版本更新，带来了大量功能增强、性能优化和重要的架构改进。本次更新重点关注插件系统重构、任务流管理、安全性增强以及多平台支持改进。</p>
+<h2 id="主要新特性">🚀 主要新特性</h2>
+<h3 id="插件系统重大重构">1. 插件系统重大重构</h3>
+<ul>
+<li><strong>配置路径标准化</strong>：将 x_search 和 web_fetch
+配置从核心工具迁移到插件专属路径</li>
+<li><strong>配置迁移工具</strong>：新增
+<code>openclaw doctor --fix</code> 命令自动迁移旧配置</li>
+<li><strong>统一的认证机制</strong>：标准化了 API 密钥和认证配置</li>
+</ul>
+<h3 id="任务流管理-task-flow-系统">2. 任务流管理 (Task Flow) 系统</h3>
+<ul>
+<li><strong>核心任务流
+substrate</strong>：恢复并增强了核心任务流管理功能</li>
+<li><strong>托管与镜像同步模式</strong>：支持灵活的任务流同步策略</li>
+<li><strong>持久化状态跟踪</strong>：任务流状态和版本跟踪功能</li>
+<li><strong><code>openclaw flows</code>
+检查/恢复工具</strong>：提供任务流管理界面</li>
+</ul>
+<h3 id="安全性重大改进">3. 安全性重大改进</h3>
+<ul>
+<li><strong>传输策略集中化</strong>：统一请求认证、代理、TLS
+和头部处理</li>
+<li><strong>安全性验证</strong>：阻止不安全的 TLS 和运行时传输覆盖</li>
+<li><strong>执行权限系统</strong>：改进了 exec 批准流程和安全策略</li>
+</ul>
+<h3 id="多平台增强">4. 多平台增强</h3>
+<ul>
+<li><strong>Android 助手集成</strong>：新增 Google Assistant App Actions
+支持</li>
+<li><strong>Android 入口点</strong>：支持从 Assistant 启动 OpenClaw</li>
+<li><strong>多渠道支持改进</strong>：Telegram、Feishu、Matrix
+等渠道的功能增强</li>
+</ul>
+<h2 id="详细更新内容">🔧 详细更新内容</h2>
+<h3 id="breaking-changes">Breaking Changes</h3>
+<h4 id="插件配置迁移">插件配置迁移</h4>
+<ul>
+<li><strong>xAI 插件</strong>：将 <code>x_search</code> 设置从
+<code>tools.web.x_search.*</code> 迁移到
+<code>plugins.entries.xai.config.xSearch.*</code></li>
+<li><strong>认证标准化</strong>：统一使用
+<code>plugins.entries.xai.config.webSearch.apiKey</code> /
+<code>XAI_API_KEY</code></li>
+<li><strong>Web Fetch 插件</strong>：将 Firecrawl 配置从
+<code>tools.web.fetch.firecrawl.*</code> 迁移到
+<code>plugins.entries.firecrawl.config.webFetch.*</code></li>
+</ul>
+<h3 id="功能增强">功能增强</h3>
+<h4 id="任务流管理">任务流管理</h4>
+<ul>
+<li><strong>托管子任务生成</strong>：支持外部协调器停止调度</li>
+<li><strong>粘性取消意图</strong>：任务流取消机制改进</li>
+<li><strong>API 接口</strong>：新增 <code>api.runtime.taskFlow</code>
+供插件使用</li>
+</ul>
+<h4 id="android-集成">Android 集成</h4>
+<ul>
+<li><strong>助手角色入口</strong>：新增 assistant-role entrypoints</li>
+<li><strong>App Actions 元数据</strong>：支持从 Assistant 启动</li>
+<li><strong>提示传递</strong>：支持将提示传递到聊天编辑器</li>
+</ul>
+<h4 id="执行系统改进">执行系统改进</h4>
+<ul>
+<li><strong>默认安全模式</strong>：网关/节点主机执行默认为 YOLO
+模式</li>
+<li><strong>提供者回放钩子</strong>：支持转录策略、回放清理和推理模式调度</li>
+<li><strong>插件钩子</strong>：新增 <code>before_agent_reply</code>
+钩子</li>
+</ul>
+<h3 id="平台支持改进">平台支持改进</h3>
+<h4 id="feishu-平台">Feishu 平台</h4>
+<ul>
+<li><strong>评论系统增强</strong>：专门的 Drive 评论事件流</li>
+<li><strong>评论上下文解析</strong>：支持话题回复</li>
+<li><strong>评论操作</strong>：新增文档协作工作流</li>
+</ul>
+<h4 id="matrix-平台">Matrix 平台</h4>
+<ul>
+<li><strong>标准化提及</strong>：符合规范的 <code>m.mentions</code>
+元数据</li>
+<li><strong>客户端兼容</strong>：Element 等客户端的可靠通知</li>
+</ul>
+<h4 id="其他改进">其他改进</h4>
+<ul>
+<li><strong>差异查看器</strong>：插件专属的
+<code>viewerBaseUrl</code></li>
+<li><strong>代理支持</strong>：稳定的代理/公共源支持</li>
+<li><strong>压缩算法</strong>：一致的模型配置解析</li>
+</ul>
+<h3 id="bug-修复">Bug 修复</h3>
+<h4 id="安全性修复">安全性修复</h4>
+<ul>
+<li><strong>传输策略</strong>：集中化 HTTP、流和 WebSocket 路径</li>
+<li><strong>Copilot 提供</strong>：分类本机 GitHub Copilot API 主机</li>
+<li><strong>流式传输头部</strong>：统一 OpenAI websocket
+和代理流路径</li>
+</ul>
+<h4 id="执行系统修复">执行系统修复</h4>
+<ul>
+<li><strong>网关/节点回退</strong>：恢复空配对设备令牌映射的传统角色回退</li>
+<li><strong>子agent 权限</strong>：固定管理员子agent 网关调用</li>
+<li><strong>执行批准</strong>：规范化无效的安全和询问值</li>
+</ul>
+<h4 id="平台特定修复">平台特定修复</h4>
+<ul>
+<li><strong>Slack 格式化</strong>：内置 Slack mrkdwn 指导</li>
+<li><strong>WhatsApp 状态</strong>：自聊模式下发送不可用状态</li>
+<li><strong>Matrix 预览</strong>：保持实时部分预览</li>
+<li><strong>Feishu 评论</strong>：加强文档评论线程传递</li>
+</ul>
+<h2 id="升级建议">🛠️ 升级建议</h2>
+<h3 id="必需操作">必需操作</h3>
+<ol type="1">
+<li><strong>配置迁移</strong>：运行 <code>openclaw doctor --fix</code>
+迁移旧配置</li>
+<li><strong>重启服务</strong>：升级后重启 OpenClaw 服务</li>
+<li><strong>权限检查</strong>：验证执行策略和权限设置</li>
+</ol>
+<h3 id="兼容性注意事项">兼容性注意事项</h3>
+<ul>
+<li><strong>插件配置</strong>：旧配置路径将被废弃，请及时迁移</li>
+<li><strong>API 变更</strong>：部分 API 接口有所调整</li>
+<li><strong>依赖更新</strong>：某些外部依赖可能需要更新版本</li>
+</ul>
+<h3 id="性能优化建议">性能优化建议</h3>
+<ul>
+<li>启用新的任务流管理功能以获得更好的性能</li>
+<li>考虑启用新的压缩算法以减少内存使用</li>
+<li>利用改进的缓存机制提高响应速度</li>
+</ul>
+<h2 id="下载链接">📋 下载链接</h2>
+<ul>
+<li><strong>macOS 版本</strong>：<a href="https://github.com/openclaw/openclaw/releases/download/v2026.4.2/OpenClaw-2026.4.2.dmg">OpenClaw-2026.4.2.dmg</a></li>
+<li><strong>源代码</strong>：<a href="https://github.com/openclaw/openclaw/releases/download/v2026.4.2/OpenClaw-2026.4.2.zip">OpenClaw-2026.4.2.zip</a></li>
+<li><strong>调试符号</strong>：<a href="https://github.com/openclaw/openclaw/releases/download/v2026.4.2/OpenClaw-2026.4.2.dSYM.zip">OpenClaw-2026.4.2.dSYM.zip</a></li>
+</ul>
+<h2 id="技术支持">📞 技术支持</h2>
+<p>如遇到升级问题或有任何疑问，请通过以下方式获取支持：</p>
+<ol type="1">
+<li><strong>GitHub Issues</strong>：<a href="https://github.com/openclaw/openclaw/issues">提交问题报告</a></li>
+<li><strong>官方文档</strong>：<a href="https://github.com/openclaw/openclaw/wiki">查看详细文档</a></li>
+<li><strong>社区论坛</strong>：<a href="https://github.com/openclaw/openclaw/discussions">加入讨论</a></li>
+</ol>
+<h2 id="安全更新提醒">🔒 安全更新提醒</h2>
+<p>本次版本包含重要的安全更新： - 传输策略集中化 - 执行权限系统改进 -
+认证机制标准化</p>
+<p>建议所有用户尽快升级到最新版本。</p>
+<hr />
+<p><em>OpenClaw - 让 AI 助手更强大的开源平台</em><br />
+<em>版本：v2026.4.2</em><br />
+<em>发布日期：2026年4月2日</em></p>
+</body>
+</html>

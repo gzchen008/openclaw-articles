@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在终端里上网？这个 17K Star 的项目做到了！</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 100%; padding: 20px;">
+
+<h1 style="font-size: 24px; font-weight: bold; margin: 0 0 20px 0;">在终端里上网？这个 17K Star 的项目做到了！</h1>
+
+<p style="margin: 16px 0;">你有没有想过，在黑底白字的终端里，也能像在浏览器一样刷网页、看视频、逛 GitHub？</p>
+
+<p style="margin: 16px 0;">今天要介绍的开源项目 <strong>Carbonyl</strong>，就把这件事变成了现实。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 16px 0;">🌟 项目亮点</h2>
+
+<p style="margin: 8px 0; padding-left: 20px;">• <strong>17,003 Stars</strong> - GitHub 热门项目</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <strong>Rust 编写</strong> - 高性能、内存安全</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <strong>完整 Chromium</strong> - 支持所有现代网页特性</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <strong>终端原生渲染</strong> - 用 Unicode 字符实现高分辨率显示</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 16px 0;">🔥 核心功能</h2>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">1️⃣ 终端里跑浏览器</h3>
+
+<p style="margin: 16px 0;">不需要图形界面，在 SSH 远程服务器、Docker 容器、甚至树莓派上，都能用 Carbonyl 浏览网页。</p>
+
+<p style="margin: 8px 0;"><strong>应用场景：</strong></p>
+<p style="margin: 8px 0; padding-left: 20px;">• 服务器运维时快速查文档</p>
+<p style="margin: 8px 0; padding-left: 20px;">• 在无 GUI 的 Linux 环境下调试 Web 应用</p>
+<p style="margin: 8px 0; padding-left: 20px;">• 远程桌面替代品（低带宽友好）</p>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">2️⃣ Bitmap 模式 - 高清画质</h3>
+
+<p style="margin: 16px 0;">Carbonyl 支持 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px;">--bitmap</code> 参数，在支持的终端里可以达到 <strong>1080p@40FPS</strong> 的流畅度！</p>
+
+<p style="margin: 8px 0;"><strong>推荐终端：</strong></p>
+<p style="margin: 8px 0; padding-left: 20px;">• Alacritty（性能最佳）</p>
+<p style="margin: 8px 0; padding-left: 20px;">• Kitty（支持良好）</p>
+<p style="margin: 8px 0; padding-left: 20px;">• macOS Terminal（仅文本模式）</p>
+
+<pre style="background: #f5f5f5; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 16px 0;"><code># 启动 bitmap 模式
+carbonyl --bitmap --zoom=1.5</code></pre>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">3️⃣ Quadrant Binarization 技术</h3>
+
+<p style="margin: 16px 0;">这是 Carbonyl 的黑科技：用 Unicode 字符 <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px;">▄ ▖ ▗ ▝ ▘ ▞ ▐ ▌ ▚</code> 实现 <strong>每终端格显示 4 个像素</strong>，比传统方案清晰度提升 2 倍！</p>
+
+<p style="margin: 8px 0;"><strong>原理：</strong></p>
+<p style="margin: 8px 0; padding-left: 20px;">• 传统方案：1 终端格 = 2 像素</p>
+<p style="margin: 8px 0; padding-left: 20px;">• Carbonyl：1 终端格 = 4 像素（用 quadrant 字符）</p>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">4️⃣ 轻量级依赖</h3>
+
+<p style="margin: 16px 0;">早期版本需要 20+ 依赖，现在优化到只需 4 个：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">• <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px;">libnss3</code> - SSL 证书</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px;">libexpat1</code> - XML 解析</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px;">libasound2</code> - 音频播放</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px;">libfontconfig1</code> - 字体配置</p>
+
+<p style="margin: 16px 0;">Docker 镜像从 160MB 缩减到 <strong>110MB</strong>。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 16px 0;">🚀 快速开始</h2>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">方式1：直接下载</h3>
+
+<pre style="background: #f5f5f5; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 16px 0;"><code># macOS/Linux
+wget https://github.com/fathyb/carbonyl/releases/latest/download/carbonyl
+chmod +x carbonyl
+./carbonyl https://github.com</code></pre>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">方式2：Docker（推荐）</h3>
+
+<pre style="background: #f5f5f5; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 16px 0;"><code>docker run --rm -it fathyb/carbonyl https://github.com</code></pre>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">方式3：npm 安装</h3>
+
+<pre style="background: #f5f5f5; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 16px 0;"><code>npm install -g carbonyl
+carbonyl https://google.com</code></pre>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 16px 0;">💡 实用技巧</h2>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">技巧1：调整缩放</h3>
+
+<pre style="background: #f5f5f5; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 16px 0;"><code># 放大到 1.5 倍
+carbonyl --zoom=1.5 https://github.com</code></pre>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">技巧2：指定用户代理</h3>
+
+<pre style="background: #f5f5f5; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 16px 0;"><code># 模拟移动端
+carbonyl --user-agent="Mozilla/5.0 (iPhone...)" https://m.baidu.com</code></pre>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">技巧3：调试模式</h3>
+
+<pre style="background: #f5f5f5; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 16px 0;"><code># 显示 Chromium 控制台
+carbonyl --inspect https://example.com</code></pre>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 16px 0;">📊 性能对比</h2>
+
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+<thead>
+<tr style="background: #f5f5f5;">
+<th style="border: 1px solid #ddd; padding: 12px; text-align: left;">终端</th>
+<th style="border: 1px solid #ddd; padding: 12px; text-align: left;">模式</th>
+<th style="border: 1px solid #ddd; padding: 12px; text-align: left;">分辨率</th>
+<th style="border: 1px solid #ddd; padding: 12px; text-align: left;">FPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #ddd; padding: 12px;">Alacritty</td>
+<td style="border: 1px solid #ddd; padding: 12px;">Bitmap</td>
+<td style="border: 1px solid #ddd; padding: 12px;">1080p</td>
+<td style="border: 1px solid #ddd; padding: 12px;">~40</td>
+</tr>
+<tr>
+<td style="border: 1px solid #ddd; padding: 12px;">Kitty</td>
+<td style="border: 1px solid #ddd; padding: 12px;">Bitmap</td>
+<td style="border: 1px solid #ddd; padding: 12px;">720p</td>
+<td style="border: 1px solid #ddd; padding: 12px;">~30</td>
+</tr>
+<tr>
+<td style="border: 1px solid #ddd; padding: 12px;">macOS Terminal</td>
+<td style="border: 1px solid #ddd; padding: 12px;">Text</td>
+<td style="border: 1px solid #ddd; padding: 12px;">480p</td>
+<td style="border: 1px solid #ddd; padding: 12px;">~20</td>
+</tr>
+</tbody>
+</table>
+
+<p style="margin: 16px 0;"><strong>M1 Mac + Alacritty</strong> 可以达到最佳性能。</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 16px 0;">🎯 适用场景</h2>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">✅ 推荐使用</h3>
+
+<p style="margin: 8px 0; padding-left: 20px;">• 服务器环境调试 Web 应用</p>
+<p style="margin: 8px 0; padding-left: 20px;">• SSH 远程访问时的轻量级浏览</p>
+<p style="margin: 8px 0; padding-left: 20px;">• 自动化脚本中的网页截图</p>
+<p style="margin: 8px 0; padding-left: 20px;">• CI/CD 流水线中的 Web 测试</p>
+
+<h3 style="font-size: 18px; font-weight: bold; margin: 20px 0 12px 0;">❌ 不推荐</h3>
+
+<p style="margin: 8px 0; padding-left: 20px;">• 日常网页浏览（体验不如原生浏览器）</p>
+<p style="margin: 8px 0; padding-left: 20px;">• 视频播放（性能有限）</p>
+<p style="margin: 8px 0; padding-left: 20px;">• 复杂交互的 Web 应用</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 16px 0;">🔧 技术实现</h2>
+
+<p style="margin: 16px 0;">Carbonyl 基于 Chromium，但做了以下优化：</p>
+
+<p style="margin: 8px 0; padding-left: 20px;">1. <strong>移除 GUI 依赖</strong> - 不依赖 X11/Wayland/Windows GUI</p>
+<p style="margin: 8px 0; padding-left: 20px;">2. <strong>自定义渲染器</strong> - 用 Rust 实现终端输出</p>
+<p style="margin: 8px 0; padding-left: 20px;">3. <strong>事件批处理</strong> - 输入事件在独立线程处理，提升流畅度</p>
+<p style="margin: 8px 0; padding-left: 20px;">4. <strong>PGO 优化</strong> - 使用 Chromium PGO profile 编译，性能提升 4%</p>
+<p style="margin: 8px 0; padding-left: 20px;">5. <strong>LTO 链接</strong> - macOS 使用 LLVM lld + LTO，性能提升 15%</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 16px 0;">📈 项目数据</h2>
+
+<p style="margin: 8px 0; padding-left: 20px;">• <strong>Stars</strong>: 17,003 ⭐</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <strong>语言</strong>: Rust</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <strong>许可证</strong>: BSD 3-Clause</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <strong>创建时间</strong>: 2023年1月</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <strong>最近更新</strong>: 2026年3月（持续维护中）</p>
+<p style="margin: 8px 0; padding-left: 20px;">• <strong>作者</strong>: @fathyb</p>
+
+<h2 style="font-size: 20px; font-weight: bold; margin: 24px 0 16px 0;">🎉 总结</h2>
+
+<p style="margin: 16px 0;">Carbonyl 是一个"看起来没用，但关键时刻能救命"的工具。它把完整的 Chromium 浏览器塞进了终端，让你在无 GUI 环境下也能浏览网页。</p>
+
+<p style="margin: 8px 0;"><strong>适合人群：</strong></p>
+<p style="margin: 8px 0; padding-left: 20px;">• 运维工程师</p>
+<p style="margin: 8px 0; padding-left: 20px;">• 后端开发者</p>
+<p style="margin: 8px 0; padding-left: 20px;">• CI/CD 工程师</p>
+<p style="margin: 8px 0; padding-left: 20px;">• 终端爱好者</p>
+
+<p style="margin: 16px 0;"><strong>项目地址：</strong> <a href="https://github.com/fathyb/carbonyl" style="color: #0366d6; text-decoration: none;">https://github.com/fathyb/carbonyl</a></p>
+
+<hr style="border: none; border-top: 1px solid #e1e4e8; margin: 24px 0;">
+
+<p style="margin: 16px 0; text-align: center; color: #666; font-size: 14px;">💡 <strong>一句话总结</strong>：在终端里刷 GitHub、查文档、调试 Web 应用，Carbonyl 让这一切成为可能！</p>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>OpenClaw 2026.3.23 发布</title>
+</head>
+<body>
+<h1>OpenClaw 2026.3.23 发布：安全加固、UI 重构与 50+ 项修复</h1>
+
+<p>从 2026.3.13 到 2026.3.23，OpenClaw 带来了重大更新：CSP 安全加固、全新 Control UI 主题、多平台稳定性修复，以及针对开发者体验的全面优化。</p>
+
+<h2>🔒 安全与合规</h2>
+
+<h3>CSP 内联脚本白名单</h3>
+<p>Control UI 现在自动计算所有内联脚本的 SHA-256 哈希值，并将其加入 CSP script-src 指令。这意味着：</p>
+<ul>
+<li>默认阻止所有内联脚本</li>
+<li>仅允许经过哈希验证的引导代码</li>
+<li>完全符合现代安全标准</li>
+</ul>
+
+<h3>执行审批安全增强</h3>
+<p>Shell 包装器的白名单匹配现在更加严格：</p>
+<ul>
+<li>拒绝单引号的 $0/$n 令牌</li>
+<li>禁止换行符分隔的 exec</li>
+<li>仅接受 exec -- 载体形式</li>
+</ul>
+
+<h2>🎨 Control UI 重构</h2>
+
+<h3>全新 Knot 主题</h3>
+<ul>
+<li>配色方案：黑红配色，WCAG 2.1 AA 级对比度</li>
+<li>按钮系统：统一 btn--icon、btn--ghost、btn--xs 原语</li>
+<li>圆角控制：用离散档位替代滑块</li>
+<li>无障碍：全面添加 aria-label</li>
+</ul>
+
+<h3>配置图标增强</h3>
+<p>Diagnostics、CLI、Secrets、ACP、MCP 等配置区域现在拥有专属图标，导航更加直观。</p>
+
+<h2>🤖 模型支持更新</h2>
+
+<h3>Qwen（阿里云 ModelStudio）</h3>
+<p>新增标准按量付费端点：</p>
+<ul>
+<li>中国区 DashScope 端点</li>
+<li>全球区 Qwen API 端点</li>
+<li>保留原有的 Coding Plan 端点</li>
+<li>Provider 组重命名为 Qwen (Alibaba Cloud Model Studio)</li>
+</ul>
+
+<h3>Mistral 模型修复</h3>
+<ul>
+<li>降低 bundled Mistral 最大 token 默认值到安全输出预算</li>
+<li>openclaw doctor --fix 现在可以修复旧的 Mistral 配置</li>
+<li>解决 422 拒绝错误</li>
+</ul>
+
+<h3>OpenAI Codex OAuth</h3>
+<p>支持环境配置的 HTTP/HTTPS 代理，解决代理环境下的 OAuth 刷新问题。</p>
+
+<h2>🔧 50+ 项 Bug 修复</h2>
+
+<h3>核心修复</h3>
+<ul>
+<li>Auth：OpenAI token 保存不再回退到过期值</li>
+<li>Plugins：恢复 bundled plugin runtime 打包</li>
+<li>CLI：channels login/logout 自动选择单通道</li>
+<li>ClawHub：macOS 认证路径修复，技能浏览不再 429</li>
+<li>Browser：Chrome MCP attach 流程稳定性提升</li>
+<li>Gateway：锁冲突不再导致 crash-loop</li>
+</ul>
+
+<h3>平台特定修复</h3>
+<ul>
+<li>Telegram：DM topics 线程上下文修复</li>
+<li>Discord：特权命令返回明确的未授权回复</li>
+<li>LINE：jiti 启动时的符号重定义错误</li>
+<li>Matrix：运行时 API 导出冲突</li>
+<li>WhatsApp：doctor --fix 不再写入无效的 allowlist</li>
+</ul>
+
+<h2>📦 安装与升级</h2>
+
+<p>全局安装最新版本：</p>
+<p>npm install -g openclaw@latest</p>
+
+<p>验证版本：</p>
+<p>openclaw --version</p>
+<p>应显示：OpenClaw 2026.3.23</p>
+
+<h2>🙏 贡献者感谢</h2>
+
+<p>感谢以下贡献者参与本版本开发：</p>
+<p>BunsDev、vincentkoc、futhgar、scoootscooob、07akioni、RolfHegr、Lukavyi、ayushozha、Drickon、bakhtiersizhaev、osolmaz、drobison00、haroldfabla2-hue、sallyom、openperf、jzakirov</p>
+
+<h2>📅 版本时间线</h2>
+
+<ul>
+<li>2026.3.23 - 2026-03-23</li>
+<li>2026.3.22 - 2026-03-23</li>
+<li>2026.3.13 - 2026-03-14</li>
+</ul>
+
+<h2>🔗 相关链接</h2>
+
+<ul>
+<li>GitHub Release: github.com/openclaw/openclaw/releases/tag/v2026.3.23</li>
+<li>npm Package: npmjs.com/package/@anthropic/openclaw</li>
+<li>文档: github.com/openclaw/openclaw</li>
+</ul>
+
+<p>升级建议：强烈建议所有用户升级到此版本，尤其是关注安全性和稳定性的生产环境。</p>
+
+</body>
+</html>
