@@ -1,0 +1,48 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">OpenClaw 2026.4.20 更新：安全加固、Kimi K2.6 默认上线、Cron 全面进化</h2>
+<p>你还在为 AI 助手频繁掉线、模型切换莫名报错、定时任务经常"静默失败"而头疼吗？</p>
+<p>OpenClaw 2026.4.20 版本来了一次大规模更新，横跨安全、模型、调度、协议四大板块。如果你还在跑 2026.4.15 或更早版本，这篇文章帮你快速抓住重点。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">📌 版本速览</h2>
+<p>从 2026.4.15 升级到 2026.4.20，主要涵盖 2026.4.18、2026.4.19-beta、2026.4.20 三个版本。涉及变更 200+ 项，修复 150+ 项。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🔒 安全：全方位加固</h2>
+<p>安全永远是第一优先级。这次更新堵上了多个重要漏洞：</p>
+<p style="padding-left: 20px;"><b>设备配对权限收窄</b>：非管理员配对设备只能查看和管理自己的配对记录，无法枚举其他设备或审批他人的配对请求。</p>
+<p style="padding-left: 20px;"><b>Config 变异防护</b>：Agent 无法通过 gateway tool 篡改沙箱配置、插件信任、网关认证/TLS、SSRF 策略等关键路径。</p>
+<p style="padding-left: 20px;"><b>WebSocket 广播权限</b>：配对设备和 Node 角色的会话无法再被动接收聊天内容，需要 operator.read 权限。</p>
+<p style="padding-left: 20px;"><b>环境变量隔离</b>：工作区 .env 文件中所有 OPENCLAW_* 键被自动屏蔽，防止不受信任的工作区配置影响运行时。</p>
+<p style="padding-left: 20px;"><b>MCP 环境键过滤</b>：MCP stdio 服务启动时自动屏蔽 NODE_OPTIONS 等解释器环境键。</p>
+<p style="padding-left: 20px;"><b>Host Key 强制校验</b>：macOS 远程 SSH 不再自动接受未知主机密钥，必须提前信任。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🧠 模型：Kimi K2.6 上位、Codex 全面修复</h2>
+<p style="padding-left: 20px;"><b>Kimi K2.6 成为默认</b>：绑定的 Moonshot 设置、网页搜索、媒体理解默认使用 kimi-k2.6，保留 k2.5 兼容。K2.6 支持 thinking.keep = "all"。</p>
+<p style="padding-left: 20px;"><b>Claude Opus 4.7 xhigh 推理</b>：新增 xhigh 推理力度档位，与自适应 thinking 独立控制。</p>
+<p style="padding-left: 20px;"><b>OpenAI Codex 大修</b>：OAuth 请求改走正确端点，子进程崩溃不再拖垮 Gateway，凭证管理全面规范化。</p>
+<p style="padding-left: 20px;"><b>GPT 推理修复</b>：/think off 不再发送无效的 reasoning.effort: "none" 载荷，各模型映射终于对齐。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">⏰ Cron：从"能用"到"好用"</h2>
+<p>Cron 模块几乎是重写级别的改进：</p>
+<p style="padding-left: 20px;">• 运行时状态拆到独立 jobs-state.json，jobs.json 只存定义，方便 Git 追踪</p>
+<p style="padding-left: 20px;">• Telegram 投递去重键改为每次执行独立，不再静默跳过后续发送</p>
+<p style="padding-left: 20px;">• delivery:none 不再产生虚假的"投递失败"记录</p>
+<p style="padding-left: 20px;">• cron list/show 现在能看到投递目标预览</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🌐 Telegram：长连接治理</h2>
+<p style="padding-left: 20px;">• 修复连接池泄漏：每个 origin 严格连接数上限，不再累积数百个僵尸连接</p>
+<p style="padding-left: 20px;">• 轮询看门狗从 90s 提到 120s，长任务不再被误判卡死</p>
+<p style="padding-left: 20px;">• 流式回复去重：compaction 重试时预览消息不再重复</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">💬 BlueBubbles（iMessage）：更稳更智能</h2>
+<p style="padding-left: 20px;">• 发送超时从 10s 扩到 30s，macOS 26 不再丢消息</p>
+<p style="padding-left: 20px;">• 非 iMessage 标准表情自动降级到最接近的 tapback</p>
+<p style="padding-left: 20px;">• 同一联系人优先走 iMessage 而非 SMS</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">🛠 其他重要改进</h2>
+<p style="padding-left: 20px;">• Session 维护：内置条目上限和过期清理默认启用，不再 OOM</p>
+<p style="padding-left: 20px;">• Compaction 通知：上下文压缩时发送可选的开始/完成通知</p>
+<p style="padding-left: 20px;">• Mattermost 流式回复：thinking、工具活动和部分回复流式展示</p>
+<p style="padding-left: 20px;">• 插件启动修复：Discord、WhatsApp、Slack 等插件运行时依赖自动修复</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">⚡ 升级建议</h2>
+<p>这是一个安全+稳定性双重加固的大版本，<b>强烈建议所有用户升级</b>。</p>
+<p>升级命令：</p>
+<p style="padding-left: 20px;">npm install -g openclaw@latest</p>
+<p style="padding-left: 20px;">openclaw gateway restart</p>
+<p>升级后建议检查：</p>
+<p style="padding-left: 20px;">• Cron 任务是否正常投递（openclaw cron list）</p>
+<p style="padding-left: 20px;">• Telegram 连接数是否正常</p>
+<p style="padding-left: 20px;">• 设备配对状态是否正常（openclaw devices）</p>
+<p>完整 changelog 见：<a href="https://docs.openclaw.ai">https://docs.openclaw.ai</a></p>
+<p style="color: #999; font-size: 13px; margin-top: 20px;">本文基于 OpenClaw 2026.4.20 官方 Changelog 整理，感谢所有社区贡献者。</p>
