@@ -1,0 +1,167 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">为什么安全这件事很重要？</h2>
+<p>你让 AI 帮你整理邮件，它需要访问你的收件箱。你让 AI 帮你管理日程，它需要读取你的日历。你让 AI 帮你写代码，它会看到你的项目文件。</p>
+<p>这些数据一旦泄露，后果不堪设想。而市面上很多 AI 服务，你的数据是存在云端的，你根本不知道谁在后面看。</p>
+<p><strong>OpenClaw 的核心安全理念：你的数据，你的规则。</strong></p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">OpenClaw 的安全架构</h2>
+<p>🏠 <strong>本地部署，数据不外泄</strong></p>
+<p>OpenClaw 最根本的安全优势：<strong>它运行在你自己的机器上</strong>。</p>
+<p style="padding-left: 20px;">传统 AI 服务：你的设备 → 云端服务器（数据在别人手里）</p>
+<p style="padding-left: 20px;">OpenClaw：你的设备 → 本地 Gateway（数据在你自己手里）</p>
+<p>这意味着：</p>
+<p style="padding-left: 20px;">✅ 你的聊天记录存储在你自己的机器上</p>
+<p style="padding-left: 20px;">✅ 你的配置文件只有你能访问</p>
+<p style="padding-left: 20px;">✅ 你的 API Key 保存在本地，不会上传到任何第三方</p>
+<p style="padding-left: 20px;">✅ 即使断网，大部分功能仍然可用</p>
+
+<p>🔑 <strong>认证体系</strong></p>
+<p>OpenClaw 的认证设计采用<strong>零信任</strong>原则：</p>
+<p style="padding-left: 20px;">• 每个连接都需要独立认证</p>
+<p style="padding-left: 20px;">• 不存在"默认信任"的连接</p>
+<p style="padding-left: 20px;">• Token 有过期机制，不会永久有效</p>
+<p style="padding-left: 20px;">• 所有敏感操作都需要二次确认</p>
+
+<p>🛡️ <strong>权限分级</strong></p>
+<p>OpenClaw 对操作进行了严格的权限分级：</p>
+<p><strong>🟢 低风险操作（自动执行）：</strong></p>
+<p style="padding-left: 20px;">• 读取文件</p>
+<p style="padding-left: 20px;">• 搜索网页</p>
+<p style="padding-left: 20px;">• 查看日历</p>
+<p style="padding-left: 20px;">• 内部计算和处理</p>
+<p><strong>🟡 中风险操作（需要记录）：</strong></p>
+<p style="padding-left: 20px;">• 安装软件包</p>
+<p style="padding-left: 20px;">• Docker 容器操作</p>
+<p style="padding-left: 20px;">• 系统服务管理</p>
+<p style="padding-left: 20px;">• Cron 任务配置</p>
+<p><strong>🔴 高风险操作（必须确认）：</strong></p>
+<p style="padding-left: 20px;">• 删除文件（特别是批量删除）</p>
+<p style="padding-left: 20px;">• 发送外部消息（邮件、推文）</p>
+<p style="padding-left: 20px;">• 修改认证配置</p>
+<p style="padding-left: 20px;">• 访问敏感目录</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">安全配置实操</h2>
+<p><strong>1️⃣ 配置文件安全</strong></p>
+<p>OpenClaw 的核心配置文件在 <code>~/.openclaw/openclaw.json</code>，里面存储着你的 API Key 和各种凭证。</p>
+<p>保护措施：</p>
+<p style="padding-left: 20px;">• 确保文件权限正确：<code>chmod 600 ~/.openclaw/openclaw.json</code></p>
+<p style="padding-left: 20px;">• 不要把这个文件提交到 Git</p>
+<p style="padding-left: 20px;">• 定期检查文件内容，清理不再使用的 Key</p>
+<p style="padding-left: 20px;">• 使用环境变量替代明文存储敏感信息</p>
+<p>检查当前权限：</p>
+<pre><code>ls -la ~/.openclaw/openclaw.json
+# 应该显示：-rw------- (只有你自己能读写)</code></pre>
+<p>如果权限不对，立即修复：</p>
+<pre><code>chmod 600 ~/.openclaw/openclaw.json</code></pre>
+
+<p><strong>2️⃣ API Key 管理</strong></p>
+<p>API Key 是 AI 助手的"钥匙"，管理不善后果严重。</p>
+<p>最佳实践：</p>
+<p style="padding-left: 20px;">• 为 OpenClaw 创建专用的 API Key</p>
+<p style="padding-left: 20px;">• 设置使用额度上限</p>
+<p style="padding-left: 20px;">• 定期轮换 Key</p>
+<p style="padding-left: 20px;">• 不要在多个服务间共用同一个 Key</p>
+<p style="padding-left: 20px;">• 一旦怀疑泄露，立即撤销并重新生成</p>
+
+<p><strong>3️⃣ 网络安全</strong></p>
+<p>OpenClaw Gateway 默认只监听本机连接。如果需要远程访问，必须做好防护：</p>
+<p>推荐的远程访问方案：</p>
+<p style="padding-left: 20px;">• <strong>Tailscale</strong>（推荐，零配置安全隧道）</p>
+<p style="padding-left: 20px;">• <strong>SSH 隧道</strong>（经典方案，稳定可靠）</p>
+<p style="padding-left: 20px;">• <strong>Nginx 反向代理 + HTTPS</strong>（进阶方案）</p>
+<p>不推荐的方案：</p>
+<p style="padding-left: 20px;">❌ 直接暴露端口到公网</p>
+<p style="padding-left: 20px;">❌ 使用 HTTP 明文传输</p>
+<p style="padding-left: 20px;">❌ 简单密码认证</p>
+<p style="padding-left: 20px;">❌ 不限制 IP 访问</p>
+
+<p><strong>4️⃣ 消息平台安全</strong></p>
+<p>把 OpenClaw 接入微信、Discord、Telegram 等平台时：</p>
+<p style="padding-left: 20px;">• 使用专用的 Bot 账号，不要绑定个人主账号</p>
+<p style="padding-left: 20px;">• 在群聊中，AI 只响应被 @ 的消息</p>
+<p style="padding-left: 20px;">• 设置敏感词过滤，防止 AI 泄露私人信息</p>
+<p style="padding-left: 20px;">• 定期审查 AI 的对话历史</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">高级安全策略</h2>
+<p>🔄 <strong>审计日志</strong></p>
+<p>OpenClaw 记录了所有操作日志，定期检查可以发现异常：</p>
+<pre><code># 查看会话日志
+ls -lt ~/.openclaw/sessions/
+
+# 查看最近的文件操作
+grep -r "write|edit|exec" ~/.openclaw/sessions/ | tail -20</code></pre>
+<p>建议的审计频率：</p>
+<p style="padding-left: 20px;">• 每周检查一次操作日志</p>
+<p style="padding-left: 20px;">• 关注文件写入和外部请求</p>
+<p style="padding-left: 20px;">• 特别注意深夜或异常时间的操作</p>
+<p style="padding-left: 20px;">• 发现问题及时调整权限配置</p>
+
+<p>🧹 <strong>数据清理</strong></p>
+<p>定期清理不需要的数据，减少潜在风险：</p>
+<pre><code># 清理旧的会话记录（保留最近30天）
+find ~/.openclaw/sessions/ -mtime +30 -type f -delete
+
+# 清理临时文件
+rm -rf ~/.openclaw/tmp/*</code></pre>
+<p>建议的清理策略：</p>
+<p style="padding-left: 20px;">• 会话记录保留 30-90 天</p>
+<p style="padding-left: 20px;">• 临时文件用完即删</p>
+<p style="padding-left: 20px;">• 媒体文件按需保存</p>
+<p style="padding-left: 20px;">• 敏感文件单独加密存储</p>
+
+<p>🔐 <strong>敏感操作防护</strong></p>
+<p>OpenClaw 内置了多层防护机制：</p>
+<p style="padding-left: 20px;">• 使用 <code>trash</code> 替代 <code>rm</code>，删除可恢复</p>
+<p style="padding-left: 20px;">• 拦截带有 Token/Key 的外发请求</p>
+<p style="padding-left: 20px;">• 禁止反弹 Shell</p>
+<p style="padding-left: 20px;">• 关键配置文件有写保护</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">安全 Checklist</h2>
+<p><strong>基础检查项：</strong></p>
+<p style="padding-left: 20px;">✅ 配置文件权限是否为 600</p>
+<p style="padding-left: 20px;">✅ API Key 是否定期轮换</p>
+<p style="padding-left: 20px;">✅ 是否使用了强密码或 Token</p>
+<p style="padding-left: 20px;">✅ Gateway 是否只监听本地或安全隧道</p>
+<p style="padding-left: 20px;">✅ 是否配置了操作审计</p>
+
+<p><strong>进阶检查项：</strong></p>
+<p style="padding-left: 20px;">✅ 群聊中 AI 是否只响应 @ 消息</p>
+<p style="padding-left: 20px;">✅ 是否设置了敏感词过滤</p>
+<p style="padding-left: 20px;">✅ 是否定期清理旧数据</p>
+<p style="padding-left: 20px;">✅ 是否有数据备份机制</p>
+<p style="padding-left: 20px;">✅ 是否开启了 HTTPS</p>
+
+<p><strong>终极检查项：</strong></p>
+<p style="padding-left: 20px;">✅ 是否审查过 AI 的所有外部请求</p>
+<p style="padding-left: 20px;">✅ 是否限制了 AI 的文件系统访问范围</p>
+<p style="padding-left: 20px;">✅ 是否有应急响应计划</p>
+<p style="padding-left: 20px;">✅ 是否定期更新 OpenClaw 到最新版本</p>
+<p style="padding-left: 20px;">✅ 是否在多台设备上使用不同的认证凭证</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">常见安全问题 FAQ</h2>
+<p><strong>Q：OpenClaw 会不会把我的数据发送到第三方？</strong></p>
+<p>不会。OpenClaw 运行在你本地，只有调用 AI 模型 API 时才会发送必要的对话内容到模型提供商。你可以选择使用本地模型（如 Ollama）来完全避免数据外发。</p>
+
+<p><strong>Q：我的 API Key 安全吗？</strong></p>
+<p>API Key 存储在本地配置文件中，只要你做好文件权限管理，就是安全的。建议设置 <code>chmod 600</code> 并定期轮换。</p>
+
+<p><strong>Q：群聊里 AI 会不会泄露我的私人信息？</strong></p>
+<p>OpenClaw 有多层防护。默认情况下，AI 在群聊中不会主动分享私聊内容。你可以通过配置 <code>respondTo: "mention_only"</code> 和敏感词过滤来进一步加强安全。</p>
+
+<p><strong>Q：如果有人获得了我的 Gateway 访问权限怎么办？</strong></p>
+<p>立即轮换所有 API Key，检查操作日志，重新生成 Gateway Token。建议从一开始就做好网络隔离和访问控制。</p>
+
+<p><strong>Q：用 Docker 部署更安全吗？</strong></p>
+<p>Docker 提供了一层额外的隔离，但安全性更多取决于你的配置。如果你不熟悉 Docker 安全配置，直接本机部署 + 好的权限管理可能更简单也更安全。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">从今天开始，给 AI 助手加把锁</h2>
+<p>安全不是一个开关，而是一种习惯。你不需要一次做到完美，但可以从这几步开始：</p>
+<p style="padding-left: 20px;">1️⃣ <strong>今天就做</strong>：检查 <code>openclaw.json</code> 的文件权限</p>
+<p style="padding-left: 20px;">2️⃣ <strong>这周完成</strong>：设置群聊的响应规则和敏感词过滤</p>
+<p style="padding-left: 20px;">3️⃣ <strong>这个月</strong>：审查一遍所有 API Key，清理不需要的凭证</p>
+<p style="padding-left: 20px;">4️⃣ <strong>长期坚持</strong>：定期检查操作日志，保持 OpenClaw 更新</p>
+<p>记住：<strong>便利和安全不是对立的</strong>。OpenClaw 的设计理念就是让你在享受 AI 助手便利的同时，始终掌控自己的数据。</p>
+
+<p>---</p>
+<p>如果这篇文章对你帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！</p>
+<p>有任何问题，欢迎在评论区留言，我会一一回复。</p>
+<p>明天见 👋</p>
