@@ -1,0 +1,67 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">OpenClaw 2026.4.23 更新：图像生成全面升级、子代理上下文继承、安全加固</h2>
+<p>OpenClaw 2026.4.23 版本正式发布！本次更新带来了多项重量级功能：OpenAI 和 OpenRouter 的图像生成与编辑能力全面接入、子代理可选的上下文继承机制、生成工具的超时控制、本地嵌入上下文可配置，以及大量安全修复和稳定性改进。</p>
+<p>这是一个质量优先的版本，超过 120 项变更和修复，覆盖图像生成、代理架构、安全防护、平台适配等多个维度。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🎨 图像生成能力全面升级</h2>
+<p>本次更新对图像生成做了系统性增强：</p>
+<p style="padding-left: 20px;">• <strong>OpenAI 图像生成免 Key 可用</strong>：通过 Codex OAuth 认证，<code>openai/gpt-image-2</code> 无需额外配置 OPENAI_API_KEY 即可使用</p>
+<p style="padding-left: 20px;">• <strong>OpenRouter 图像生成支持</strong>：持有 OPENROUTER_API_KEY 即可通过 OpenRouter 使用各类图像模型</p>
+<p style="padding-left: 20px;">• <strong>参考图编辑修复</strong>：OpenAI 多参考图编辑通过 multipart 上传恢复正常</p>
+<p style="padding-left: 20px;">• <strong>Azure OpenAI 图像支持</strong>：自动识别 Azure 风格的图像端点，支持 api-key 认证和部署 URL</p>
+<p style="padding-left: 20px;">• <strong>Google Gemini 图像生成 SSRF 修复</strong>：私有网络代理配置下的 image_generate 现在可以正常工作</p>
+<p style="padding-left: 20px;">• <strong>图片质量与格式控制</strong>：代理可以请求 provider 支持的质量和输出格式提示，支持 OpenAI 的背景、压缩等高级参数</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🤖 子代理上下文继承</h2>
+<p>新增可选的"分叉上下文"机制，允许 <code>sessions_spawn</code> 的子代理继承父会话的对话记录，同时保持默认的隔离模式不变。</p>
+<p>这意味着你可以按需让子代理"了解上下文"再执行任务，而不是每次都从零开始。适用于多步骤编排、任务委托等复杂场景。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">⏱️ 生成工具超时控制</h2>
+<p>图像、视频、音乐和 TTS 生成工具现在支持按调用设置 <code>timeoutMs</code>，对于需要长时间生成的任务，你可以单独延长超时，而不是受全局限制的约束。</p>
+<p>配合网关层面的 undici 流超时修复（不再被短 header 超时覆盖），慢速生成任务（如 Gemini 图像）现在可以稳定完成。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🧠 本地嵌入上下文可调</h2>
+<p>新增 <code>memorySearch.local.contextSize</code> 配置项（默认 4096），让本地嵌入上下文大小可以根据硬件条件灵活调整，在资源受限的设备上也能流畅使用向量检索。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🔒 安全修复亮点</h2>
+<p>安全是本次更新的核心主题之一，大量来自社区的安全加固贡献：</p>
+<p style="padding-left: 20px;">• <strong>网关配置编辑白名单化</strong>：agent 驱动的配置修改改为显式白名单机制，只允许修改提示词、模型等安全路径</p>
+<p style="padding-left: 20px;">• <strong>MCP 工具权限隔离</strong>：修复 ACPX OpenClaw 工具桥接暴露 cron 等仅限 owner 工具的权限提升漏洞</p>
+<p style="padding-left: 20px;">• <strong>Teams 跨 Bot Token 防护</strong>：要求 Bot Framework token 必须包含已配置的 app ID，阻止跨 Bot 重放</p>
+<p style="padding-left: 20px;">• <strong>Android 安全加固</strong>：要求回环地址才能使用明文网关连接；外部 App 意图不再自动发送提示词</p>
+<p style="padding-left: 20px;">• <strong>Secret 热重载</strong>：Webhook 路由密钥支持即时刷新，无需重启网关</p>
+<p style="padding-left: 20px;">• <strong>权限审批显式启用</strong>：不再自动启用审批客户端，需要显式配置</p>
+<p style="padding-left: 20px;">• <strong>Discord 斜杠命令策略</strong>：原生斜杠命令不再绕过频道策略限制</p>
+<p style="padding-left: 20px;">• <strong>WhatsApp 安全</strong>：联系人/vCard 信息不再内联到消息体，防止隐藏的提示注入</p>
+<p style="padding-left: 20px;">• <strong>群聊安全</strong>：频道来源的群名和参与者标签不再直接注入系统提示</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">💻 平台适配改进</h2>
+<p><strong>Windows：</strong></p>
+<p style="padding-left: 20px;">• 修复 codex.cmd shim 解析问题，无需手动创建 .exe shim</p>
+<p style="padding-left: 20px;">• 修复插件 SDK 别名更新时的 ENOTEMPTY/EPERM 竞争条件</p>
+<p style="padding-left: 20px;">• 文件备份密钥支持 UTF-8 BOM 剥离</p>
+<p><strong>Linux：</strong></p>
+<p style="padding-left: 20px;">• 网关子进程自动提升 oom_score_adj，内存压力下优先终止临时进程</p>
+<p><strong>WhatsApp：</strong></p>
+<p style="padding-left: 20px;">• 修复并发重连导致消息重复发送 7-12 倍的问题</p>
+<p style="padding-left: 20px;">• 统一出站媒体归一化逻辑</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🔧 其他重要修复</h2>
+<p style="padding-left: 20px;">• <strong>记忆系统</strong>：MEMORY.md 大小写规范化，openclaw doctor --fix 可自动合并分裂的记忆文件</p>
+<p style="padding-left: 20px;">• <strong>记忆 dreaming</strong>：从心跳中解耦为独立的轻量代理任务，不再被心跳禁用影响</p>
+<p style="padding-left: 20px;">• <strong>Codex 驱动</strong>：固定会话级别的 harness 选择，防止配置变更导致热切换</p>
+<p style="padding-left: 20px;">• <strong>块流式传输</strong>：修复部分传输中止后的重复回复问题</p>
+<p style="padding-left: 20px;">• <strong>模型状态</strong>：/status 新增 Runner 字段，清晰显示当前运行器类型</p>
+<p style="padding-left: 20px;">• <strong>依赖升级</strong>：Pi 升级到 0.70.0，支持上游 gpt-5.5 目录元数据</p>
+<p style="padding-left: 20px;">• <strong>Slack 群聊</strong>：MPIM 群组 DM 正确归类为群聊上下文，不再泄露工具进度</p>
+<p style="padding-left: 20px;">• <strong>WebChat</strong>：生成图片持久化为认证媒体，历史重载不再丢失图片</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">📦 如何升级</h2>
+<p>一行命令完成升级：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 4px;">npm install -g openclaw@latest && openclaw gateway restart</p>
+<p>升级后建议运行健康检查：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 4px;">openclaw doctor --fix</p>
+<p>Doctor 会自动处理记忆文件规范化、Codex 驗证清理、dreaming cron 迁移等兼容性问题。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🙏 致谢</h2>
+<p>感谢所有社区贡献者！本次版本涉及 @notamicrodose、@ottodeng、@aalekh-sarvam、@100yenadmin、@jalehman、@truffle-dev、@mattznojassist、@VictorJeon、@vincentkoc、@apezam、@giangthb、@seitzbg、@Takhoffman、@dashhuang 等多位贡献者的提交。</p>
+<p>完整更新日志：<a href="https://github.com/nicepkg/openclaw/releases">GitHub Releases</a></p>

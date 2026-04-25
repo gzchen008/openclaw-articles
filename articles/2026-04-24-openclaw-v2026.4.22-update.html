@@ -1,0 +1,57 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">OpenClaw 2026.4.22 更新：xAI 全家桶来了，还有本地终端模式和诊断神器</h2>
+<p style="color: #7f8c8d; font-style: italic;">从图片生成到语音转录，从无网关聊天到一键诊断导出，这次更新分量十足。</p>
+<h2 style="color: #e74c3c; margin-top: 28px;">🔥 一句话概括</h2>
+<p>OpenClaw 2026.4.22 新增了 xAI 图片生成、语音合成与转录的全链路支持，加入了无需 Gateway 的本地终端模式，并带来了大量开发者体验提升——插件加载速度提升近 90%，doctor 诊断提速 74%，还有腾讯云、Amazon Bedrock Mantle 等新 Provider 接入。</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">一、xAI 全家桶：图片、语音、转录一站搞定</h2>
+<p>这可能是本次更新最重磅的部分。OpenClaw 现在完整支持 xAI 的 Grok 系列能力：</p>
+<p style="padding-left: 20px;">• <strong>图片生成</strong>：支持 grok-imagine-image 和 grok-imagine-image-pro 两个模型，还支持参考图编辑模式</p>
+<p style="padding-left: 20px;">• <strong>语音合成（TTS）</strong>：内置 6 种 xAI 原生语音，支持 MP3、WAV、PCM、G.711 四种音频格式输出</p>
+<p style="padding-left: 20px;">• <strong>语音转录（STT）</strong>：grok-stt 支持音频文件转文字，还支持 Voice Call 场景的实时流式转录</p>
+<p>如果你已经在用 xAI 的 Grok 模型做对话，现在可以直接把图片和语音能力也接上了，不用额外配置其他 Provider。</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">二、语音通话转录扩展：Deepgram、ElevenLabs、Mistral</h2>
+<p>Voice Call 的实时流式转录不再只有 OpenAI 和 xAI 两个选择。本次更新新增了三个 Provider：</p>
+<p style="padding-left: 20px;">• <strong>Deepgram</strong>：高速语音识别，适合实时场景</p>
+<p style="padding-left: 20px;">• <strong>ElevenLabs</strong>：除实时转录外，还新增了 Scribe v2 批量音频转录，可以直接处理收到的语音消息</p>
+<p style="padding-left: 20px;">• <strong>Mistral</strong>：欧洲用户的好选择</p>
+<p>这意味着你的语音助手方案更灵活了——可以根据延迟、成本、语言需求自由搭配。</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">三、本地终端模式：不需要 Gateway 也能聊</h2>
+<p>新增的 TUI 本地嵌入模式是一个很实用的功能：</p>
+<p style="padding-left: 20px;">• 不需要启动 Gateway 守护进程，直接在终端里跑 OpenClaw 聊天</p>
+<p style="padding-left: 20px;">• 插件审批门仍然生效，不会因为本地运行就跳过安全检查</p>
+<p style="padding-left: 20px;">• 适合快速调试、离线开发、或资源受限的环境</p>
+<p>简单理解：以前要 openclaw gateway start 再聊，现在直接终端里就能对话了。</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">四、新 Provider 接入：腾讯云和 Amazon Bedrock Mantle</h2>
+<p><strong>腾讯云</strong></p>
+<p style="padding-left: 20px;">• 正式内置腾讯云 Provider 插件，支持 TokenHub 快速接入</p>
+<p style="padding-left: 20px;">• 包含 hy3-preview 模型目录和分层定价元数据</p>
+<p><strong>Amazon Bedrock Mantle</strong></p>
+<p style="padding-left: 20px;">• 新增 Claude Opus 4.7 通过 Mantle 的 Anthropic Messages 路由调用</p>
+<p style="padding-left: 20px;">• 使用 Provider 自有的 Bearer Auth 流式传输，不再把 AWS Token 当 API Key 用</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">五、开发者体验大升级</h2>
+<p><strong>/models add 命令</strong></p>
+<p>以前要手动改配置文件才能加新模型。现在直接在聊天里输入 /models add，注册模型后立即使用，不用重启 Gateway。</p>
+<p><strong>插件加载提速 82-90%</strong></p>
+<p>内置插件现在优先使用原生 Jiti 加载已打包的 dist 模块，实测加载时间减少了 82% 到 90%。启动更快，重启也不心疼了。</p>
+<p><strong>Doctor 诊断提速 74%</strong></p>
+<p>openclaw doctor --non-interactive 的运行时间减少了约 74%——通过懒加载插件路径和优先使用已编译产物实现。</p>
+<p><strong>Gateway 一键诊断导出</strong></p>
+<p style="padding-left: 20px;">• 自动脱敏的日志和配置</p>
+<p style="padding-left: 20px;">• 包含状态、健康检查、稳定性快照</p>
+<p style="padding-left: 20px;">• 直接用于 Bug 报告，不用手动收集信息</p>
+<p><strong>Tokenjuice 支持</strong></p>
+<p>新增可选的 Tokenjuice 插件，专门为 Pi 嵌入式运行设计，能自动压缩冗长的 exec 和 bash 工具输出，节省 Token 消耗。</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">六、其他值得关注的更新</h2>
+<p style="padding-left: 20px;">• <strong>OpenAI 原生 Web Search</strong>：使用 OpenAI Responses 模型时自动使用原生 web_search 工具</p>
+<p style="padding-left: 20px;">• <strong>WhatsApp 增强</strong>：支持配置原生回复引用模式，群组和私聊支持独立 System Prompt</p>
+<p style="padding-left: 20px;">• <strong>Claude CLI 改进</strong>：默认使用热 stdio 会话，重启后自动恢复</p>
+<p style="padding-left: 20px;">• <strong>GPT-5 Prompt 统一</strong>：无论通过哪个 Provider 调用，行为一致</p>
+<p style="padding-left: 20px;">• <strong>Pi 更新到 0.68.1</strong>：新增 kimi-k2.6、Qwen、GLM、MiMo、MiniMax 等模型</p>
+<p style="padding-left: 20px;">• <strong>本地模型 Token 统计修复</strong>：vLLM、llama.cpp 等后端不再显示 unknown</p>
+<p style="padding-left: 20px;">• <strong>Thinking 默认值优化</strong>：推理模型默认 thinking level 提升到 medium</p>
+<p style="padding-left: 20px;">• <strong>企业微信插件展示</strong>：在外部渠道目录中显示官方名称和描述</p>
+<h2 style="color: #2c3e50; margin-top: 28px;">七、升级建议</h2>
+<p>一行命令搞定：</p>
+<p style="padding-left: 20px;">• npm update -g openclaw</p>
+<p style="padding-left: 20px;">• openclaw gateway restart</p>
+<p>如果你在用 xAI、腾讯云、或 Amazon Bedrock，这次升级值得立刻安排。本地终端模式和诊断导出也是实打实的效率工具。</p>
+<p style="color: #7f8c8d; margin-top: 20px;">完整更新日志：<a href="https://github.com/openclaw/openclaw/releases/tag/v2026.4.22">GitHub Releases</a></p>
