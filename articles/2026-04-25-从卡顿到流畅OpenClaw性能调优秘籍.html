@@ -1,0 +1,91 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">你有没有遇到过这种情况——</h2>
+<p>AI 助手突然变得像蜗牛一样慢，一条消息等半分钟才回？或者 Mac mini 的风扇呼呼转，一看资源占用直接起飞？</p>
+<p>别慌。今天我们就来聊聊 <strong>OpenClaw 的性能调优</strong>，从模型选择到系统配置，一步步帮你把响应速度拉满。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🎯 调优后你能得到什么</h2>
+<p style="padding-left: 20px;">• 消息响应从 10 秒降到 3 秒以内</p>
+<p style="padding-left: 20px;">• 内存占用减少 40%</p>
+<p style="padding-left: 20px;">• 长对话不再越聊越慢</p>
+<p style="padding-left: 20px;">• 多任务并发也能稳如老狗</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">一、先找准瓶颈</h2>
+<p>性能问题千差万别，先搞清楚是哪个环节拖了后腿。</p>
+<p><strong>常见三大瓶颈：</strong></p>
+<p><strong>1️⃣ 模型响应慢</strong></p>
+<p>最常见的。不同模型速度差异巨大——GPT-4 级别可能要 5-10 秒才出第一个字，轻量模型 1-2 秒就开始回复。</p>
+<p style="padding-left: 20px;">💡 判断方法：看 Gateway 日志里 <code>ttft</code>（Time To First Token）指标</p>
+<p><strong>2️⃣ 上下文太长</strong></p>
+<p>聊了 50 轮后突然变慢？大概率是上下文膨胀了。每条历史消息都要发给模型，token 越多，响应越慢。</p>
+<p style="padding-left: 20px;">💡 判断方法：日志里看 <code>prompt_tokens</code>，超过 8000 就该注意</p>
+<p><strong>3️⃣ 系统资源不足</strong></p>
+<p>老设备或同时跑了太多服务，内存和 CPU 成了瓶颈。</p>
+<p style="padding-left: 20px;">💡 判断方法：终端跑 <code>top</code> 看看 Node.js 进程的内存占用</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">二、模型选择：速度与质量的平衡术</h2>
+<p>这是调优投入产出比最高的一步。</p>
+<p><strong>日常对话用轻量模型</strong></p>
+<p style="padding-left: 20px;">• 日常闲聊、简单问答用 turbo 级别模型</p>
+<p style="padding-left: 20px;">• 速度快 3-5 倍，成本更低</p>
+<p style="padding-left: 20px;">• 复杂场景（代码生成、长文写作）再切旗舰模型</p>
+<p>💡 <strong>技巧：</strong>对话中用 <code>/model</code> 命令随时切换，简单问题用快模型，复杂问题切旗舰。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">三、上下文管理：控制 Token 膨胀</h2>
+<p>上下文膨胀是"越聊越慢"的罪魁祸首。</p>
+<p><strong>策略一：设置合理的上下文窗口</strong></p>
+<p>限制只保留最近 N 个 token 的对话历史。默认值通常够用，但长对话变慢时可以适当缩小。</p>
+<p><strong>策略二：用总结代替原始历史</strong></p>
+<p>OpenClaw 的记忆系统天然支持——重要信息写入 MEMORY.md 和每日笔记，而不是全靠上下文窗口。</p>
+<p style="padding-left: 20px;">• 每隔 20-30 轮对话做一次小结写入 memory</p>
+<p style="padding-left: 20px;">• 新会话自动加载 memory，不堆砌历史</p>
+<p style="padding-left: 20px;">• 保留关键信息，token 数不失控</p>
+<p><strong>策略三：清理无用会话</strong></p>
+<p>定期清理过期会话，减少数据库负担。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">四、系统层面优化</h2>
+<p><strong>Node.js 内存限制</strong></p>
+<p>内存有限的设备（如树莓派），可以限制 Node.js 堆内存。512MB 对大多数场景足够。</p>
+<p><strong>日志级别调优</strong></p>
+<p>生产环境把日志级别设为 warn，减少磁盘 IO。调试时再改回 debug。</p>
+<p><strong>数据库维护</strong></p>
+<p>OpenClaw 使用 SQLite 存储会话数据。每月执行一次 vacuum，保持查询速度。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">五、并发与资源调度</h2>
+<p><strong>心跳间隔调优</strong></p>
+<p>默认 30 分钟一次心跳。根据使用频率调整——一天看几次消息的，45-60 分钟足够。</p>
+<p><strong>Cron 任务错峰</strong></p>
+<p>多个 Cron 任务不要挤在同一时间执行，错开几分钟，避免瞬间负载过高。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">六、监控与诊断</h2>
+<p>定期检查这些指标，及时发现性能退化：</p>
+<p style="padding-left: 20px;">• Gateway 状态总览</p>
+<p style="padding-left: 20px;">• 最近请求的 ttft（首 token 延迟）</p>
+<p style="padding-left: 20px;">• 系统资源占用</p>
+<p style="padding-left: 20px;">• 磁盘空间（数据库膨胀预警）</p>
+<p style="padding-left: 20px;">• 网络延迟（影响模型 API 响应）</p>
+<p>💡 把这些命令串起来做成 Cron 任务，每天自动跑一次，异常时发消息通知——这就是 <strong>OpenClaw 自我监控</strong> 的玩法。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">七、极端情况：降级策略</h2>
+<p>有时候就是网络差、API 限流、服务器抽风。需要有降级方案：</p>
+<p><strong>模型自动降级</strong></p>
+<p>配置备用模型，主模型超时时自动切换到轻量模型。</p>
+<p><strong>本地模型兜底</strong></p>
+<p>如果部署了本地模型（如 Ollama），可以作为最后的兜底。网络全挂的情况下，至少还能用本地模型应急。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🎯 调优 Checklist</h2>
+<p style="padding-left: 20px;">☐ 日常对话是否用了轻量模型？</p>
+<p style="padding-left: 20px;">☐ 上下文窗口是否设置合理（4000-8000）？</p>
+<p style="padding-left: 20px;">☐ 是否定期清理旧会话？</p>
+<p style="padding-left: 20px;">☐ 日志级别是否为 warn 或 info？</p>
+<p style="padding-left: 20px;">☐ 心跳间隔是否合理？</p>
+<p style="padding-left: 20px;">☐ Cron 任务是否错峰？</p>
+<p style="padding-left: 20px;">☐ 是否配置了 fallback 模型？</p>
+<p style="padding-left: 20px;">☐ 是否定期做数据库 vacuum？</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">写在最后</h2>
+<p>性能调优不是一次性的活，而是持续的过程。随着使用习惯变化、对话量增长、新功能加入，都需要定期回头看看有没有可以优化的地方。</p>
+<p>最关键的一点：<strong>先测量，再优化</strong>。不要凭感觉调，用日志和指标说话。找到真正的瓶颈，针对性解决，效果立竿见影。</p>
+
+<hr>
+<p>如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！</p>
+<p>有任何问题，欢迎在评论区留言，我会一一回复。</p>
+<p>明天我们聊聊《遇到问题别慌：OpenClaw 常见问题解决手册》，敬请期待 👋</p>
