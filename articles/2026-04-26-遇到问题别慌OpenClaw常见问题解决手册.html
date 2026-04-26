@@ -1,0 +1,158 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">遇到问题别慌：OpenClaw 常见问题解决手册</h2>
+<p><em>本文由 OpenClaw AI 助手协助整理</em></p>
+<p>【快速导航】</p>
+<p style="padding-left: 20px;">• 本文适合：所有 OpenClaw 用户</p>
+<p style="padding-left: 20px;">• 预计阅读：8 分钟</p>
+<p style="padding-left: 20px;">• 难度等级：⭐⭐</p>
+<p>你兴冲冲装好了 OpenClaw，结果一启动就报错？或者用着用着突然连不上了？</p>
+<p>别慌。90% 的 OpenClaw 问题，都可以在 5 分钟内解决。</p>
+<p>这篇文章整理了用户反馈最多的常见问题，按「症状 → 原因 → 解决方案」的格式编排。遇到问题，直接按目录查找就行。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">一、安装阶段常见问题</h2>
+<h3 style="color: #34495e;">1️⃣ npm install -g openclaw 报权限错误</h3>
+<p><strong>症状：</strong>EACCES permission denied 或 npm ERR! code EPERM</p>
+<p><strong>原因：</strong>npm 全局安装目录权限不足</p>
+<p><strong>解决方案：</strong></p>
+<p>方案 A（推荐）——修改 npm 全局路径：</p>
+<p style="padding-left: 20px;">• <code>mkdir -p ~/.npm-global</code></p>
+<p style="padding-left: 20px;">• <code>npm config set prefix '~/.npm-global'</code></p>
+<p style="padding-left: 20px;">• <code>echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc</code></p>
+<p style="padding-left: 20px;">• <code>source ~/.zshrc</code></p>
+<p style="padding-left: 20px;">• <code>npm install -g openclaw</code></p>
+<p>方案 B——使用 nvm 管理 Node.js 版本，安装后自动解决权限问题。</p>
+<h3 style="color: #34495e;">2️⃣ Node.js 版本过低</h3>
+<p><strong>症状：</strong>SyntaxError: Unexpected token 或 ERR_MODULE_NOT_FOUND</p>
+<p><strong>原因：</strong>OpenClaw 要求 Node.js 20+，建议 v22+</p>
+<p><strong>解决方案：</strong></p>
+<p style="padding-left: 20px;">• <code>node -v</code> 先检查当前版本</p>
+<p style="padding-left: 20px;">• 如果低于 v20，用 nvm 升级：<code>nvm install 22 && nvm use 22</code></p>
+<h3 style="color: #34495e;">3️⃣ 安装成功但 openclaw 命令找不到</h3>
+<p><strong>症状：</strong>command not found: openclaw</p>
+<p><strong>原因：</strong>npm 全局 bin 目录不在 PATH 中</p>
+<p><strong>解决方案：</strong></p>
+<p style="padding-left: 20px;">• <code>npm config get prefix</code> 查看 npm 全局路径</p>
+<p style="padding-left: 20px;">• 把输出的 bin 目录加到 PATH：<code>echo 'export PATH=$(npm config get prefix)/bin:$PATH' >> ~/.zshrc</code></p>
+<p style="padding-left: 20px;">• <code>source ~/.zshrc</code></p>
+<h2 style="color: #2c3e50; margin-top: 24px;">二、Gateway 启动问题</h2>
+<h3 style="color: #34495e;">4️⃣ Gateway 启动失败：端口被占用</h3>
+<p><strong>症状：</strong>Error: listen EADDRINUSE: address already in use :::5800</p>
+<p><strong>原因：</strong>另一个 OpenClaw 实例或其他程序占用了端口</p>
+<p><strong>解决方案：</strong></p>
+<p style="padding-left: 20px;">• <code>lsof -i :5800</code> 查找占用进程</p>
+<p style="padding-left: 20px;">• <code>kill -9 &lt;PID&gt;</code> 根据输出 kill 掉对应进程</p>
+<p style="padding-left: 20px;">• <code>openclaw gateway start</code> 重新启动</p>
+<h3 style="color: #34495e;">5️⃣ Gateway 启动后立即退出</h3>
+<p><strong>症状：</strong>openclaw gateway start 后没有报错但立刻退出</p>
+<p><strong>原因：</strong>配置文件有误或缺少必要字段</p>
+<p><strong>解决方案：</strong></p>
+<p style="padding-left: 20px;">• <code>openclaw gateway start --verbose</code> 查看详细日志</p>
+<p style="padding-left: 20px;">• <code>cat ~/.openclaw/openclaw.json | head -50</code> 检查配置文件</p>
+<p>常见配置问题：</p>
+<p style="padding-left: 20px;">• API Key 格式错误（多了空格或引号）</p>
+<p style="padding-left: 20px;">• JSON 语法错误（多了逗号、少了括号）</p>
+<p style="padding-left: 20px;">• model 名称拼写错误</p>
+<h3 style="color: #34495e;">6️⃣ Gateway 频繁重启或内存占用过高</h3>
+<p><strong>症状：</strong>Gateway 自动重启，或者内存使用超过 1GB</p>
+<p><strong>原因：</strong>会话历史过长、日志堆积</p>
+<p><strong>解决方案：</strong></p>
+<p style="padding-left: 20px;">• <code>rm -rf ~/.openclaw/logs/*.log.*.gz</code> 清理旧日志</p>
+<p style="padding-left: 20px;">• <code>openclaw gateway restart</code> 重启</p>
+<p style="padding-left: 20px;">• <code>openclaw sessions list</code> 检查活跃会话数</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">三、消息通道问题</h2>
+<h3 style="color: #34495e;">7️⃣ Discord Bot 不回复消息</h3>
+<p><strong>症状：</strong>Gateway 正常运行，但 Discord 消息无响应</p>
+<p><strong>排查步骤：</strong></p>
+<p>第一步，检查 Bot 是否在线：在 Discord 服务器成员列表中，Bot 头像是否有绿色在线标识。</p>
+<p>第二步，检查 Token 配置：<code>openclaw configure --show | grep discord</code></p>
+<p>第三步，检查权限：确保 Bot 有「发送消息」和「读取消息历史」权限。</p>
+<p>第四步，检查频道映射：确认 openclaw.json 中 discord.channels 配置了正确的频道 ID。</p>
+<h3 style="color: #34495e;">8️⃣ 微信/飞书消息延迟严重</h3>
+<p><strong>症状：</strong>消息要等几十秒甚至几分钟才收到回复</p>
+<p><strong>原因：</strong>模型 API 响应慢或网络延迟</p>
+<p><strong>解决方案：</strong></p>
+<p style="padding-left: 20px;">• 切换到更快的模型（如 gpt-4o-mini 或 claude-3.5-haiku）</p>
+<p style="padding-left: 20px;">• 检查网络到 API 端点的延迟</p>
+<p style="padding-left: 20px;">• 如果使用代理，检查代理服务器性能</p>
+<h3 style="color: #34495e;">9️⃣ 飞书 Bot 发送失败：权限不足</h3>
+<p><strong>症状：</strong>日志显示 permission denied 或 no authority</p>
+<p><strong>原因：</strong>飞书应用权限配置不完整</p>
+<p><strong>解决方案：</strong></p>
+<p>登录飞书开放平台 → 你的应用 → 权限管理，确保已开通：</p>
+<p style="padding-left: 20px;">• im:message — 发送消息</p>
+<p style="padding-left: 20px;">• im:message.receive_v1 — 接收消息</p>
+<p style="padding-left: 20px;">• im:resource — 获取资源</p>
+<p>然后重新发布应用版本。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">四、模型与 API 问题</h2>
+<h3 style="color: #34495e;">🔟 API Key 无效</h3>
+<p><strong>症状：</strong>401 Unauthorized 或 invalid_api_key</p>
+<p><strong>解决方案：</strong></p>
+<p style="padding-left: 20px;">• 确认 Key 没有多余的空格或换行符</p>
+<p style="padding-left: 20px;">• 确认 Key 没有过期或被撤销</p>
+<p style="padding-left: 20px;">• 确认 Key 对应的模型有访问权限</p>
+<p>重新配置：<code>openclaw configure --section model</code></p>
+<h3 style="color: #34495e;">1️⃣1️⃣ 回复内容被截断</h3>
+<p><strong>症状：</strong>AI 回复到一半突然中断</p>
+<p><strong>原因：</strong>达到了模型的最大输出 token 限制</p>
+<p><strong>解决方案：</strong></p>
+<p>在 openclaw.json 中调整 maxTokens 参数：</p>
+<p style="padding-left: 20px;">• <code>"maxTokens": 8192</code></p>
+<p>如果内容确实很长，可以在对话中告诉 AI「请继续」。</p>
+<h3 style="color: #34495e;">1️⃣2️⃣ 模型响应速度不稳定</h3>
+<p><strong>症状：</strong>有时秒回，有时要等很久</p>
+<p><strong>原因：</strong>API 服务商负载波动</p>
+<p><strong>解决方案：</strong></p>
+<p>配置备用模型（fallback），OpenClaw 会自动降级：</p>
+<p style="padding-left: 20px;">• 主模型：anthropic/claude-sonnet-4</p>
+<p style="padding-left: 20px;">• 备用：openai/gpt-4o、openai/gpt-4o-mini</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">五、文件与权限问题</h2>
+<h3 style="color: #34495e;">1️⃣3️⃣ AI 无法读取本地文件</h3>
+<p><strong>症状：</strong>回复「找不到文件」或「权限不足」</p>
+<p><strong>原因：</strong>文件路径不在工作区内</p>
+<p><strong>解决方案：</strong></p>
+<p>OpenClaw 默认工作目录是 ~/.openclaw/workspace。确保文件放在这个目录下，或者使用绝对路径。</p>
+<h3 style="color: #34495e;">1️⃣4️⃣ Git 操作失败</h3>
+<p><strong>症状：</strong>git push 报 Permission denied (publickey)</p>
+<p><strong>解决方案：</strong></p>
+<p style="padding-left: 20px;">• <code>ssh -T git@github.com</code> 检查 SSH Key 是否配置</p>
+<p style="padding-left: 20px;">• 如果没有 Key：<code>ssh-keygen -t ed25519</code></p>
+<p style="padding-left: 20px;">• <code>cat ~/.ssh/id_ed25519.pub</code> 复制到 GitHub SSH Keys 设置</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">六、性能问题</h2>
+<h3 style="color: #34495e;">1️⃣5️⃣ Gateway 占用 CPU 过高</h3>
+<p><strong>症状：</strong>openclaw 进程 CPU 占用持续超过 50%</p>
+<p><strong>排查步骤：</strong></p>
+<p style="padding-left: 20px;">• <code>openclaw sessions list</code> 检查是否有大量并发请求</p>
+<p style="padding-left: 20px;">• <code>openclaw cron list</code> 检查是否有死循环的 Cron 任务</p>
+<p style="padding-left: 20px;">• <code>openclaw gateway restart</code> 重启释放资源</p>
+<h3 style="color: #34495e;">1️⃣6️⃣ 磁盘空间不足</h3>
+<p><strong>症状：</strong>日志报 ENOSPC: no space left on device</p>
+<p><strong>解决方案：</strong></p>
+<p style="padding-left: 20px;">• <code>du -sh ~/.openclaw/*</code> 查看目录占用</p>
+<p style="padding-left: 20px;">• <code>find ~/.openclaw/logs -name "*.gz" -mtime +30 -delete</code> 清理旧日志</p>
+<p style="padding-left: 20px;">• <code>find ~/.openclaw/sessions -mtime +60 -exec rm -rf {} +</code> 清理旧会话</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">七、终极排查法</h2>
+<p>如果上面的方案都没解决你的问题，试试这个万能排查流程：</p>
+<p><strong>第一步：查看日志</strong></p>
+<p style="padding-left: 20px;">• <code>openclaw gateway logs --lines 100</code></p>
+<p>日志里通常写着真正的错误原因。</p>
+<p><strong>第二步：更新到最新版</strong></p>
+<p style="padding-left: 20px;">• <code>npm update -g openclaw</code></p>
+<p style="padding-left: 20px;">• <code>openclaw gateway restart</code></p>
+<p>很多问题在新版本中已经修复。</p>
+<p><strong>第三步：重置配置（谨慎）</strong></p>
+<p style="padding-left: 20px;">• <code>cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.bak</code> 先备份</p>
+<p style="padding-left: 20px;">• <code>openclaw configure</code> 重新配置</p>
+<p><strong>第四步：求助社区</strong></p>
+<p>如果以上都没用，可以到以下渠道寻求帮助：</p>
+<p style="padding-left: 20px;">• GitHub Issues：搜索是否有相同问题</p>
+<p style="padding-left: 20px;">• Discord 社区：实时交流</p>
+<p style="padding-left: 20px;">• 官方文档：查看 FAQ 和排障指南</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">速查表</h2>
+<p><strong>安装报错</strong> → <code>node -v && npm -v</code> → 升级 Node.js 22+</p>
+<p><strong>端口冲突</strong> → <code>lsof -i :5800</code> → Kill 占用进程</p>
+<p><strong>Bot 不回复</strong> → <code>openclaw gateway logs</code> → 检查 Token 和权限</p>
+<p><strong>API 报错</strong> → <code>openclaw configure --show</code> → 检查 Key 有效性</p>
+<p><strong>CPU 过高</strong> → <code>openclaw sessions list</code> → 减少并发和 Cron</p>
+<p><strong>磁盘满</strong> → <code>du -sh ~/.openclaw/*</code> → 清理日志和旧会话</p>
+<p>把这篇文章收藏起来，下次遇到问题直接翻。</p>
+<p><strong>如果这篇文章对你有帮助，欢迎点赞、在看、转发三连支持！</strong></p>
+<p>有问题欢迎评论区留言，我会一一回复。</p>
+<p>明天见 👋</p>
