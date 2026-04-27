@@ -1,0 +1,99 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">什么是 Skills？</h2>
+<p>你有没有遇到过这种情况：AI 助手什么都好，就是差了那么一个功能。你想让它自动查天气、定时提醒、甚至帮你管理 GitHub Issue……但它就是不会。</p>
+<p>大多数人这时候会说：<strong>"等官方更新吧。"</strong></p>
+<p>但如果我告诉你，<strong>不需要写代码，不需要等更新，你自己就能给 AI 助手加新技能呢？</strong></p>
+<p>这就是 OpenClaw Skills 的魅力。</p>
+<p>Skills 就是 AI 助手的"技能包"。每个 Skill 是一个文件夹，里面有一份说明书（SKILL.md），告诉 AI 助手在什么场景下该怎么做。</p>
+<p>想象一下：你给新员工一本操作手册，他照着做就能完成任务。Skills 就是给 AI 的操作手册。</p>
+<p style="padding-left: 20px;">📄 <strong>纯文本配置</strong>：一个 Markdown 文件搞定，不用写代码</p>
+<p style="padding-left: 20px;">🔌 <strong>即插即用</strong>：放进 skills 文件夹就能用</p>
+<p style="padding-left: 20px;">🎯 <strong>场景触发</strong>：AI 自动判断什么时候用哪个 Skill</p>
+<p style="padding-left: 20px;">🔄 <strong>可分享</strong>：写好一个 Skill，别人也能用</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">一个 Skill 长什么样？</h2>
+<p>每个 Skill 就是一个文件夹，最简单的结构：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 12px; border-radius: 6px;">my-skill/</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">├── SKILL.md &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # 核心说明书（必须）</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">└── scripts/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 辅助脚本（可选）</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">&nbsp;&nbsp;&nbsp;&nbsp;└── hello.sh</p>
+<p><strong>SKILL.md 是灵魂。</strong> 它告诉 AI 三件事：</p>
+<p style="padding-left: 20px;">1. <strong>我是谁</strong>（名称和描述）</p>
+<p style="padding-left: 20px;">2. <strong>什么时候用我</strong>（触发条件）</p>
+<p style="padding-left: 20px;">3. <strong>怎么用我</strong>（具体指令）</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">5 分钟写一个 Skill</h2>
+<p>我们来写一个实际的 Skill：<strong>每日提醒助手</strong>。</p>
+<p><strong>第一步：创建文件夹</strong></p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 8px 12px; border-radius: 6px;">~/.openclaw/workspace/skills/daily-reminder/</p>
+<p><strong>第二步：写 SKILL.md</strong></p>
+<p>核心内容如下：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 12px; border-radius: 6px;">---</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">name: daily-reminder</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">description: 每日提醒技能。当用户说"提醒我"时触发。</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">---</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 12px; border-radius: 6px;"># 每日提醒助手</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">## 工作流程</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">1. 解析用户输入的时间和内容</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">2. 转换为 cron 表达式</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">3. 执行 openclaw cron add</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">4. 返回确认信息</p>
+<p><strong>就这样！没有一行代码，一个 Skill 就完成了。</strong></p>
+<p><strong>第三步：测试</strong></p>
+<p>对你的 AI 助手说：<em>"提醒我明天下午3点开会"</em></p>
+<p>AI 会自动匹配到这个 Skill，按照你写的流程执行。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">SKILL.md 写作技巧</h2>
+<p>写好 SKILL.md 的关键不是技术，而是<strong>表达清晰</strong>。</p>
+<p><strong>1. 描述要精准</strong></p>
+<p>❌ 模糊：<em>"帮助用户做事情"</em></p>
+<p>✅ 精准：<em>"当用户说'提醒我'时触发，使用 cron 创建定时提醒"</em></p>
+<p>AI 根据描述判断要不要用这个 Skill，描述越精准，触发越准确。</p>
+<p><strong>2. 流程要具体</strong></p>
+<p>不要只写"帮用户设置提醒"，要写清楚每一步做什么：</p>
+<p style="padding-left: 20px;">1. 解析用户输入的时间和内容</p>
+<p style="padding-left: 20px;">2. 转换为 cron 表达式</p>
+<p style="padding-left: 20px;">3. 执行 openclaw cron add --name "reminder"</p>
+<p style="padding-left: 20px;">4. 返回确认信息</p>
+<p><strong>3. 给 AI 边界</strong></p>
+<p>告诉 AI 什么不该做，和告诉它该做什么一样重要：</p>
+<p style="padding-left: 20px;">• 不要删除其他用户的提醒</p>
+<p style="padding-left: 20px;">• 提醒时间不能超过一年</p>
+<p style="padding-left: 20px;">• 不要自动发送邮件（除非用户明确要求）</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">进阶：让 Skill 调用脚本</h2>
+<p>如果你的 Skill 需要做更复杂的事，可以写辅助脚本。</p>
+<p>比如一个<strong>股票查询 Skill</strong>：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 12px; border-radius: 6px;">stock-checker/</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">├── SKILL.md</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">└── scripts/</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">&nbsp;&nbsp;&nbsp;&nbsp;└── fetch_price.sh</p>
+<p>SKILL.md 里这样引用：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 12px; border-radius: 6px;">执行 bash scripts/fetch_price.sh &lt;股票代码&gt;</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">将返回结果格式化后告知用户。</p>
+<p>AI 会读取 SKILL.md，在需要的时候调用脚本，再把结果整理好告诉你。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">从社区获取 Skills</h2>
+<p>不想自己写？社区有大量现成的 Skills：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 8px 12px; border-radius: 6px;">clawhub search "关键词"&nbsp;&nbsp;&nbsp; # 搜索</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">clawhub install &lt;name&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 安装</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f5f5f5; padding: 2px 12px; border-radius: 6px;">clawhub publish my-skill/ &nbsp;&nbsp;# 发布</p>
+<p>热门 Skills 包括：天气查询、GitHub 管理、新闻摘要、语言翻译等。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">三个实战 Skill 创意</h2>
+<p>想动手试试？三个适合新手的方向：</p>
+<p style="padding-left: 20px;"><strong>1. 读书笔记整理器</strong> — 用户发一段摘录 → 提取关键观点 → 分类标签 → 存入笔记</p>
+<p style="padding-left: 20px;"><strong>2. 饮食记录助手</strong> — 用户说"今天吃了XXX" → 记录食物 → 估算热量 → 生成周报</p>
+<p style="padding-left: 20px;"><strong>3. GitHub Issue 监控</strong> — 定时拉取 Issues → 筛选重要 Issue → 推送通知</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">常见问题</h2>
+<p><strong>Q：Skills 和普通对话有什么区别？</strong></p>
+<p>Skills 是预定义的"专家模式"。普通对话是通用能力，Skills 是针对特定场景的增强。AI 会根据你的描述自动选择。</p>
+<p><strong>Q：写错了怎么办？</strong></p>
+<p>直接编辑 SKILL.md 就行。AI 下次加载时会读取最新版本。没有编译、没有重启，改了就生效。</p>
+<p><strong>Q：Skill 会不会冲突？</strong></p>
+<p>OpenClaw 会根据描述匹配最合适的 Skill。如果多个 Skill 匹配，选择描述最具体的那一个。</p>
+<h2 style="color: #2c3e50; margin-top: 24px;">开始你的第一个 Skill</h2>
+<p>Skills 是 OpenClaw 最强大的扩展机制——<strong>它把定制 AI 助手的权力交给了每个人。</strong></p>
+<p>不需要会编程。不需要懂 API。只需要把你脑袋里的"操作流程"写下来，AI 就能照着做。</p>
+<p><strong>现在就试试：</strong></p>
+<p style="padding-left: 20px;">1️⃣ 创建文件夹 <code>~/.openclaw/workspace/skills/my-first-skill/</code></p>
+<p style="padding-left: 20px;">2️⃣ 写一个 SKILL.md，描述一个你想自动化的任务</p>
+<p style="padding-left: 20px;">3️⃣ 对 AI 说一句话，看它怎么帮你完成</p>
+<p>你会发现，给 AI 加技能，比你想象的简单得多。</p>
+<p>---</p>
+<p>如果这篇文章对你有帮助，欢迎 <strong>点赞、在看、转发</strong> 三连支持！</p>
+<p>有任何问题，欢迎在评论区留言，我会一一回复。</p>
+<p>明天见 👋</p>

@@ -1,0 +1,80 @@
+<h2 style="color: #2c3e50; margin-top: 24px;">OpenClaw 2026.4.24 更新：Google Meet 深度集成、DeepSeek V4 登场、实时语音全面升级</h2>
+<p>OpenClaw 又一次大版本更新来了！这次 2026.4.24 版本带来了三大核心更新：Google Meet 作为内置参与者插件正式加入、DeepSeek V4 Flash/Pro 模型上线、以及实时语音通话能力的全面升级。无论你是团队协作重度用户，还是 AI 模型尝鲜派，这版都值得立刻更新。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🎯 本次更新三大看点</h2>
+<p><strong>一、Google Meet 正式成为 OpenClaw 内置插件</strong></p>
+<p>从现在起，你可以直接通过 OpenClaw 加入 Google Meet 会议，支持个人 Google 账号授权、Chrome 和 Twilio 双实时传输通道、配对节点的 Chrome 支持，以及完整的会议记录、录音、转录和参会者导出功能。再也不用在多个工具之间来回切换了。</p>
+<p><strong>二、DeepSeek V4 Flash 与 V4 Pro 上线</strong></p>
+<p>DeepSeek V4 系列模型正式加入 OpenClaw 内置目录，其中 V4 Flash 成为新用户引导的默认模型。V4 Flash 主打速度，V4 Pro 主打深度推理，按需选择。同时修复了 DeepSeek 思维链/回放在后续工具调用轮次中的行为异常问题。</p>
+<p><strong>三、实时语音通话能力全面增强</strong></p>
+<p>Talk、Voice Call 和 Google Meet 现在都能使用实时语音循环，直接调用完整的 OpenClaw Agent 进行深度工具调用应答。这意味着在通话过程中，AI 可以实时查询数据、调用工具、返回更精准的答案，不再只是简单的对话。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">📋 详细更新内容</h2>
+
+<h3 style="color: #34495e; margin-top: 20px;">Google Meet 集成</h3>
+<p style="padding-left: 20px;">• 个人 Google 账号 OAuth 授权，安全便捷</p>
+<p style="padding-left: 20px;">• 支持通过会议 URL 直接加入</p>
+<p style="padding-left: 20px;">• Chrome 和 Twilio 双传输通道，灵活选择</p>
+<p style="padding-left: 20px;">• 配对节点支持 Parallels 式的 Chrome/BlackHole/SoX 主机配置</p>
+<p style="padding-left: 20px;">• 完整的会议工件导出：录音、转录、智能笔记、参会者记录</p>
+<p style="padding-left: 20px;">• 新增 googlemeet doctor --oauth 诊断和恢复工具</p>
+<p style="padding-left: 20px;">• 支持恢复已打开的 Meet 标签页，避免重复打开</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">DeepSeek V4 模型</h3>
+<p style="padding-left: 20px;">• V4 Flash：速度优先，适合日常对话和快速任务</p>
+<p style="padding-left: 20px;">• V4 Pro：深度推理，适合复杂分析和代码生成</p>
+<p style="padding-left: 20px;">• V4 Flash 成为新用户默认引导模型</p>
+<p style="padding-left: 20px;">• 修复 DeepSeek 思维链回放在工具调用后的行为问题</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">实时语音与通话</h3>
+<p style="padding-left: 20px;">• Talk/Voice Call/Google Meet 均支持实时语音循环</p>
+<p style="padding-left: 20px;">• 语音通话中可调用完整 OpenClaw Agent 进行工具查询</p>
+<p style="padding-left: 20px;">• 新增 voicecall setup 和 voicecall smoke 命令用于预检</p>
+<p style="padding-left: 20px;">• Gemini Live 作为实时语音后端，支持双向音频和函数调用</p>
+<p style="padding-left: 20px;">• VoiceClaw 新增实时大脑 WebSocket 端点</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">浏览器自动化增强</h3>
+<p style="padding-left: 20px;">• 新增视口坐标点击功能，精确控制点击位置</p>
+<p style="padding-left: 20px;">• 默认操作超时提升至 60 秒，长等待不再超时失败</p>
+<p style="padding-left: 20px;">• 支持按 Profile 独立设置 headless 模式</p>
+<p style="padding-left: 20px;">• 标签页复用和恢复更稳定</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">模型与基础设施优化</h3>
+<p style="padding-left: 20px;">• 静态模型目录加速启动，不再每次枚举注册表</p>
+<p style="padding-left: 20px;">• 清单驱动的模型行管理，冲突检测更清晰</p>
+<p style="padding-left: 20px;">• 懒加载提供商依赖，启动更轻量</p>
+<p style="padding-left: 20px;">• /models add 命令已弃用，引导使用更规范的配置方式</p>
+<p style="padding-left: 20px;">• Gradium TTS 提供商内置，支持语音笔记和电话输出</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">Codex 集成改进</h3>
+<p style="padding-left: 20px;">• 上下文引擎在 Codex 应用服务器会话中原生运行</p>
+<p style="padding-left: 20px;">• Codex 原生工具钩子桥接到 OpenClaw 插件钩子和审批流</p>
+<p style="padding-left: 20px;">• 合并 Pi/Codex 奇偶性覆盖，简化运行时计划</p>
+<p style="padding-left: 20px;">• 新增提供商级传输/认证/后续处理接口</p>
+
+<h3 style="color: #34495e; margin-top: 20px;">记忆与搜索</h3>
+<p style="padding-left: 20px;">• 混合搜索结果中新增 vectorScore 和 textScore 原始分数</p>
+<p style="padding-left: 20px;">• node-llama-cpp 不再默认安装，本地嵌入按需加载</p>
+<p style="padding-left: 20px;">• 新增 agents.defaults.contextInjection: "never" 禁用引导文件注入</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">🚀 如何更新</h2>
+<p>一行命令搞定：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f4f4f4; padding: 10px; border-radius: 4px;">npm install -g openclaw@latest</p>
+<p>更新完成后重启 Gateway：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f4f4f4; padding: 10px; border-radius: 4px;">openclaw gateway restart</p>
+<p>验证版本：</p>
+<p style="padding-left: 20px; font-family: monospace; background: #f4f4f4; padding: 10px; border-radius: 4px;">openclaw --version<br># 应显示 OpenClaw 2026.4.24</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">⚠️ Breaking Change 注意</h2>
+<p>如果你有自定义插件使用了 <code>api.registerEmbeddedExtensionFactory(...)</code> 兼容路径，需要迁移到 <code>api.registerAgentToolResultMiddleware(...)</code> 并声明 <code>contracts.agentToolResultMiddleware</code>，以确保工具结果转换在 Pi 和 Codex 动态工具中一致运行。</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">💡 升级建议</h2>
+<p style="padding-left: 20px;">• 如果你经常参加 Google Meet 会议 → 必升，体验内置会议自动化</p>
+<p style="padding-left: 20px;">• 如果你使用 DeepSeek 模型 → 必升，V4 性能提升明显</p>
+<p style="padding-left: 20px;">• 如果你依赖浏览器自动化 → 建议升级，坐标点击和超时改进很实用</p>
+<p style="padding-left: 20px;">• 如果你有自定义插件 → 升级前检查 Breaking Change</p>
+
+<h2 style="color: #2c3e50; margin-top: 24px;">写在最后</h2>
+<p>OpenClaw 正在从"AI 消息网关"进化为"AI 全渠道协作平台"。这次更新让语音、视频会议、模型选择和浏览器自动化都迈上新台阶。</p>
+<p><strong>还没更新？现在就执行 <code>npm install -g openclaw@latest</code>，一步到位。</strong></p>
+<p>有问题或建议？欢迎在评论区交流！</p>
